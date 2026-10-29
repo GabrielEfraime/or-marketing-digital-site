@@ -1,0 +1,21 @@
+/* ===== abertura ===== */
+#intro{position:fixed;inset:0;z-index:200;background:#000;color:#F5F5F3;display:grid;place-items:center;text-align:center;transition:opacity .8s ease,transform .8s ease,filter .8s ease}
+#intro::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(46% 38% at 50% 56%,rgba(255,90,0,.2),transparent 72%)}
+#intro.sai{opacity:0;transform:scale(1.04);filter:blur(10px);pointer-events:none}
+.in-c{position:relative;display:grid;gap:22px;justify-items:center;padding:24px;max-width:100%}
+.in-n{display:flex;gap:clamp(10px,2.6vw,30px);font:300 clamp(54px,13vw,160px)/1 var(--fd);color:#F5F5F3}
+.in-n span{display:block;animation:inl 1.3s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*.16s + .2s)}
+@keyframes inl{from{filter:blur(18px);opacity:0;transform:translateY(10px)}to{filter:blur(0);opacity:1;transform:none}}
+.in-s{margin:0;font:600 clamp(11px,1.3vw,14px) var(--fb);letter-spacing:.42em;text-transform:uppercase;opacity:.65;animation:inl 1.2s ease .9s both}
+.in-l{display:flex;align-items:center;gap:14px;margin-top:26px;width:min(340px,72vw)}
+.in-l.ok{display:none}
+.in-bar{flex:1;height:2px;background:rgba(255,255,255,.16);overflow:hidden}
+.in-bar i{display:block;height:100%;background:#FF5A00;transform:scaleX(0);transform-origin:0 50%}
+.in-p{font:600 13px var(--fb);min-width:3.4em;text-align:right;font-variant-numeric:tabular-nums;opacity:.85}
+.in-b{all:unset;box-sizing:border-box;cursor:pointer;margin-top:22px;min-height:56px;padding:0 36px;display:inline-flex;align-items:center;border:1.5px solid #FF5A00;border-radius:999px;color:#FF5A00;font:700 15px var(--fb);letter-spacing:.22em;text-transform:uppercase;animation:inl .9s ease both;transition:background .2s,color .2s}
+.in-b[hidden]{display:none}
+.in-b:hover{background:#FF5A00;color:#0B0B0B}
+.in-b:focus-visible,.in-sk:focus-visible{outline:3px solid #ffd166;outline-offset:3px}
+.in-sk{all:unset;box-sizing:border-box;cursor:pointer;position:absolute;right:clamp(16px,3vw,32px);bottom:clamp(16px,3vw,32px);min-height:44px;padding:0 14px;display:inline-flex;align-items:center;font:600 13px var(--fb);letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+.in-sk:hover{opacity:1}.in-sk[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.in-n span,.in-s,.in-b{animation:none}#intro,#intro.sai{transition:none}}

@@ -1,0 +1,130 @@
+function pub(){
+  if(P.done)return thanks();
+  if(P.page==='vagas'&&!P.mod)return vagasPage();
+  if(/^svc:/.test(P.page||'')&&!P.mod&&SOBRE[P.page.slice(4)])return svcPage(P.page.slice(4));
+  if(!P.mod){
+    setApp(`${nav2(1)}<main class="home v2" id="conteudo">
+    <section class="v-hero v-base v-gl v-hc" id="topo"><div class="v-wrap v-hero-in"><div class="v-hero-t"><h1 class="v-h1">Marketing digital sob medida.</h1><p class="v-lead">Para pequenos negócios e criadores de conteúdo no Rio de Janeiro. Você responde um briefing de poucos minutos e recebe um plano e um orçamento em 3 opções, pelo WhatsApp.</p><div class="v-act"><button type="button" class="v-btn" data-brief="1"><span>Solicitar orçamento</span>${ARR}</button><button type="button" class="v-link" data-scroll="como">Ver como funciona</button></div><ul class="v-tiles" aria-label="O que você recebe"><li>Plano para o seu caso</li><li>Orçamento em 3 opções</li><li>Resposta no WhatsApp</li></ul></div></div><ul class="v-fl" aria-label="Serviços">${Object.entries(MODS).filter(([k,m])=>!m.oculto).slice(0,9).map(([k,m])=>`<li><button type="button" class="v-fc" data-svc="${k}"><span class="v-fi" aria-hidden="true">${ICON[k]||""}</span><span class="v-fn">${esc(m.name.replace(/\s*\(.*\)/,''))}</span></button></li>`).join("")}</ul></section>
+
+    <section class="v-sec v-base v-gl v-mfs" id="manifesto"><div class="v-wrap"><h2 class="v-h2 v-rv v-mh"><span class="g">A IA organiza.</span> A equipe revisa.</h2><p class="v-p v-rv v-ms">Do briefing ao orçamento, uma pessoa da equipe revisa tudo antes de chegar até você. Os ${Object.values(MODS).filter(m=>!m.oculto).length} serviços podem ser combinados.</p><div class="v-mg"><article class="v-mc v-rv"><span class="v-mn">01</span><h3>Você responde</h3><p>Um briefing guiado, com perguntas sob medida para o seu negócio.</p><ul><li>Leva poucos minutos</li><li>4–7 perguntas, até 10 no combo</li><li>Sem compromisso</li></ul><p class="v-mf">Você conta o que precisa e a gente cuida do resto.</p></article><article class="v-mc v-rv"><span class="v-mn">02</span><h3>A IA organiza</h3><p>A IA ajuda a organizar as respostas e a montar o plano e o orçamento.</p><ul><li>Organiza o que você respondeu</li><li>Monta o plano e o orçamento</li><li>Valores só da tabela de preços: a IA não faz conta</li></ul><p class="v-mf">A IA apoia. Quem decide é a equipe.</p></article><article class="v-mc v-rv"><span class="v-mn">03</span><h3>A equipe revisa</h3><p>Uma pessoa da equipe confere tudo antes de a proposta chegar até você.</p><ul><li>Nada vai para você sem revisão</li><li>Valores explicados</li><li>Sem promessa de milagre</li></ul><p class="v-mf">Um plano claro e uma conversa franca pelo WhatsApp.</p></article><article class="v-mc v-rv"><span class="v-mn">04</span><h3>Você recebe 3 opções</h3><p>O orçamento chega em três pacotes para você escolher.</p><ul><li>Essencial, Crescimento e Completo</li><li>O que está incluso, valor total, prazo e forma de pagamento</li><li>Resposta pelo WhatsApp</li></ul><p class="v-mf">Você escolhe a opção que faz sentido para o seu caso.</p></article></div><div class="v-mb v-rv"><button type="button" class="v-pill" data-scroll="como">Ver como funciona</button></div></div></section>
+
+    <section class="v-sec v-lime" id="opcoes"><div class="v-wrap"><h2 class="v-h2 v-rv">Três opções para escolher.</h2><p class="v-p v-rv">Depois do briefing você recebe o orçamento em três pacotes. Cada um traz o que está incluso, o valor total, o prazo e a forma de pagamento.</p>
+    <ul class="v-opts"><li class="v-rv"><h3>Essencial</h3><p>Resolve uma necessidade específica, com escopo enxuto. Se você nos disser quanto quer investir, procuramos caber nisso.</p></li><li class="v-rv"><h3>Crescimento</h3><p>Soma entregas que justificam a diferença de investimento. Só indicamos quando faz sentido para o seu caso.</p></li><li class="v-rv"><h3>Completo</h3><p>Para uma necessidade mais ampla, com mais frentes trabalhando juntas.</p></li></ul></div></section>
+
+    <section class="v-sec v-base v-gl v-ai" id="sobre"><div class="v-wrap"><div class="v-ai-in"><div class="v-ai-t"><h2 class="v-h2 v-ai-h v-rv">AI-Driven.</h2><p class="v-ai-s v-rv">Visão estratégica, alma criativa e IA trabalhando a seu favor.</p><p class="v-p v-rv">Unimos estratégia, criatividade e tecnologia para ajudar marcas a crescerem de forma mais inteligente, rápida e eficiente. A IA agiliza o trabalho, e toda proposta é revisada por uma pessoa da equipe.</p><button type="button" class="v-btn v-rv" data-scroll="contato"><span>Vamos conversar</span>${ARR}</button></div>
+    <div class="v-ai-stage" aria-hidden="true"><canvas class="v-orb" id="orb" width="900" height="900"></canvas></div></div>
+    <ul class="v-list v-four"><li class="v-rv"><b>Atendimento próximo</b><span>Conversa simples e soluções pensadas para a sua realidade.</span></li><li class="v-rv"><b>Preço transparente</b><span>O valor aparece no orçamento, sem letra miúda. Você só aprova se fizer sentido.</span></li><li class="v-rv"><b>Estratégia com os pés no chão</b><span>Não prometemos resultados milagrosos: prometemos qualidade, dedicação e honestidade.</span></li><li class="v-rv"><b>Gente em cada projeto</b><span>Usamos tecnologia para trabalhar melhor, mas toda proposta é revisada por uma pessoa da equipe.</span></li></ul></div></section>
+
+    <section class="v-sec v-base v-gl" id="briefing"><div class="v-wrap"><h2 class="v-h2 v-rv">Descubra o que você precisa.</h2>
+    <p class="v-p v-rv">Você não precisa saber o que contratar. Muita gente chega sem saber se precisa de anúncios, de um site ou de ajuda com as redes sociais, e tudo bem: o briefing existe para isso.</p>
+    <p class="v-p v-rv">Você responde algumas perguntas simples sobre o seu negócio. A partir das suas respostas, nós indicamos os serviços certos, na ordem certa, e montamos um plano e um orçamento sob medida, com 3 opções para você escolher.</p>
+    <div class="v-2col v-gap"><div><h3 class="v-h3 v-rv">Como é o briefing</h3><ol class="v-steps">
+      <li class="v-rv"><b>Seu contato</b><span>Nome e WhatsApp, só para te enviar o plano e o orçamento.</span></li>
+      <li class="v-rv"><b>Seu negócio</b><span>Duas perguntas rápidas sobre o que você faz e para quem.</span></li>
+      <li class="v-rv"><b>Perguntas sob medida</b><span>De 4 a 7 perguntas que mudam conforme as suas respostas. Quem escolhe mais de um serviço pode ter até 10.</span></li>
+      <li class="v-rv"><b>Investimento</b><span>Prazo, uma faixa de valor e a forma de contratar, para as 3 opções caberem no seu momento.</span></li></ol></div>
+    <div><h3 class="v-h3 v-rv">O que você recebe</h3><ul class="v-list">
+      <li class="v-rv"><b>Um plano para o seu caso</b><span>Direção clara do que fazer primeiro, escrita para o seu negócio e não um modelo pronto.</span></li>
+      <li class="v-rv"><b>Orçamento em 3 opções</b><span>Essencial, Crescimento e Completo, com o que está incluso em cada um e o valor total. Você só aprova se fizer sentido.</span></li>
+      <li class="v-rv"><b>Resposta pelo WhatsApp</b><span>A proposta chega por mensagem, e você tira dúvidas direto com quem vai cuidar do seu projeto.</span></li>
+      <li class="v-rv"><b>Revisão feita por uma pessoa</b><span>Usamos tecnologia para ganhar tempo, mas nada vai para você sem a revisão da equipe.</span></li></ul></div></div>
+    <div class="v-cta-row v-rv"><div><h3>Leva poucos minutos e não tem compromisso</h3><p>Do que você nos contar, montamos o plano e o orçamento com 3 opções.</p></div><button type="button" class="v-btn" data-brief="1" id="guiastart"><span>Responder o briefing</span>${ARR}</button></div></div></section>
+
+    <section class="v-sec v-base v-gl" id="oferta"><div class="v-wrap"><h2 class="v-h2 v-rv">Soluções para o seu negócio<sup class="v-n">(${String(Object.values(MODS).filter(m=>!m.oculto).length).padStart(2,'0')})</sup>.</h2><p class="v-p v-rv">Escolha um serviço para ver o que é, como funciona e o que esperar. Pode contratar um só ou combinar vários.</p>
+    <div class="v-rows">${Object.entries(MODS).filter(([k,m])=>!m.oculto).sort((a,b)=>(a[0]==='press')-(b[0]==='press')).map(([k,m])=>`<button type="button" class="v-row v-rv" data-svc="${k}"><span class="v-rn">${m.name}</span><span class="v-rd">${m.desc}</span><span class="v-ra" aria-hidden="true">${ARR}</span></button>`).join('')}</div></div></section>
+
+    <section class="v-scene est" id="como" aria-labelledby="como-t"><div class="v-stick"><div class="v-wrap v-scene-in"><div class="v-sc-l"><p class="v-sc-k">Como funciona</p><h2 id="como-t" class="v-sr">Como funciona, em quatro passos</h2><ol class="v-sc-steps"><li class="on"><h3>Você conta sobre o seu negócio</h3><p>Perguntas curtas e simples. Dá para responder pelo celular, em poucos minutos.</p></li><li><h3>Montamos o plano</h3><p>Lemos tudo e ajustamos a estratégia ao seu caso. Uma pessoa da equipe revisa antes de seguir.</p></li><li><h3>Três opções de orçamento</h3><p>Essencial, Crescimento e Completo, com o que está incluso, o valor total e o prazo.</p></li><li><h3>A gente conversa no WhatsApp</h3><p>Mandamos tudo por lá, tiramos as suas dúvidas e, se fizer sentido, a gente começa.</p></li></ol><p class="v-sc-n" aria-hidden="true"><b>00</b><span>%</span></p></div><div class="v-sc-c" aria-hidden="true"><canvas></canvas></div></div></div></section>
+
+    <section class="v-sec v-ink" id="duvidas"><div class="v-wrap"><h2 class="v-h2 v-rv">Como podemos ajudar?<sup class="v-n">(08)</sup></h2><p class="v-p v-rv">Reunimos as dúvidas que mais aparecem antes de alguém pedir um orçamento. Se a sua não estiver aqui, é só falar com a equipe.</p>
+    <div class="v-faq">
+    <div class="v-rv"><h3>Quanto custa?</h3><p>Depende do serviço e do tamanho do projeto. Depois do briefing você recebe 3 opções com valores claros e só decide se quiser.</p></div>
+    <div class="v-rv"><h3>Preciso passar a senha das minhas contas?</h3><p>Não. Para anúncios e redes sociais você nos dá acesso por convite ou vínculo, e pode cancelar quando quiser.</p></div>
+    <div class="v-rv"><h3>Vocês garantem resultado?</h3><p>Não prometemos resultado garantido, porque ele depende de mercado, verba e regras das plataformas. Prometemos um plano claro, trabalho bem feito e conversa franca.</p></div>
+    <div class="v-rv"><h3>O que acontece com os meus dados?</h3><p>Usamos para montar o seu plano e o orçamento e para falar com você. Parte das respostas passa por uma ferramenta de inteligência artificial para ajudar na análise, e nós revisamos tudo. Os detalhes estão na <button type="button" class="plink" data-priv="1">política de privacidade</button>.</p></div>
+    <div class="v-rv"><h3>Quanto tempo leva o briefing?</h3><p>Poucos minutos. Dá para fazer pelo celular, e você pode voltar uma pergunta se quiser mudar a resposta.</p></div>
+    <div class="v-rv"><h3>Preciso ter site ou redes sociais para começar?</h3><p>Não. Dá para começar do zero: se o seu negócio ainda não tem site ou perfis, isso entra no plano e no orçamento.</p></div>
+    <div class="v-rv"><h3>Posso contratar mais de um serviço?</h3><p>Pode. No briefing você marca os serviços que quer combinar e cada uma das 3 opções do orçamento já junta todos eles.</p></div>
+    <div class="v-rv"><h3>Como eu recebo o orçamento?</h3><p>Depois do briefing a equipe analisa, revisa e envia as 3 opções para o seu WhatsApp. Você pode tirar dúvidas na mesma conversa.</p></div></div>
+    <div class="v-cta-row v-rv"><div><h3>Ainda ficou com dúvida?</h3><p>Converse com a equipe ou comece o briefing: não tem compromisso.</p></div><div class="v-act"><button type="button" class="v-btn dk" data-brief="1"><span>Começar o briefing</span>${ARR}</button>${CFG.whats?`<a class="v-link" href="https://wa.me/${wnum(CFG.whats)}" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>`:''}</div></div></div></section>
+
+    <section class="v-sec v-base" id="contato"><div class="v-wrap"><h2 class="v-h2 v-rv">Fale com a equipe.</h2><div class="v-contact">
+    <div class="v-rv"><h3>Equipe daqui do Rio</h3><p>Atendemos pequenos negócios e criadores de conteúdo, com conversa simples e por WhatsApp.</p></div>
+    <div class="v-rv"><h3>Comece pelo briefing</h3><p>Leva poucos minutos e não tem compromisso. Você recebe 3 opções para escolher.</p><button type="button" class="v-link" data-brief="1">Solicitar orçamento</button></div>
+    ${CFG.whats?`<div class="v-rv"><h3>Converse com a gente</h3><p>Prefere falar direto? Chame a equipe pelo WhatsApp.</p><a class="v-link" href="https://wa.me/${wnum(CFG.whats)}" target="_blank" rel="noopener noreferrer">Abrir conversa</a></div>`:''}
+    ${PRIV_EMAIL?`<div class="v-rv"><h3>Dúvidas e dados pessoais</h3><p>Para dúvidas, ou para pedir acesso, correção ou exclusão dos seus dados.</p><a class="v-link" href="mailto:${esc(PRIV_EMAIL)}">${esc(PRIV_EMAIL)}</a></div>`:''}</div></div></section>
+
+    <section class="v-sec v-lime v-end"><div class="v-wrap"><h2 class="v-h2 v-big v-rv">Vamos tirar suas ideias do papel?</h2><p class="v-p v-rv">Conte para a gente o que você precisa e descubra como podemos ajudar o seu negócio ou a sua marca a crescer. Solicite o seu orçamento e dê o próximo passo com estratégia, transparência e criatividade.</p><div class="v-act v-rv"><button type="button" class="v-btn dk" data-brief="1"><span>Solicitar orçamento</span>${ARR}</button>${CFG.whats?`<a class="v-link" href="https://wa.me/${wnum(CFG.whats)}" target="_blank" rel="noopener noreferrer">Falar direto no WhatsApp</a>`:''}</div><p class="v-micro">Sem compromisso: você só aprova se fizer sentido.</p></div></section>
+
+    <footer class="foot v-foot"><div class="v-wrap"><div class="foot-top"><div><div class="brandb static">${logo}${WM}</div><p>Estratégia, criatividade e transparência para pequenos negócios e criadores de conteúdo.</p></div>
+    <ul class="fcol"><li><button type="button" data-scroll="topo">Início</button></li><li><button type="button" data-scroll="sobre">Quem somos</button></li><li><button type="button" data-scroll="oferta">Serviços</button></li><li><button type="button" data-scroll="como">Como funciona</button></li></ul>
+    <ul class="fcol"><li><button type="button" data-scroll="duvidas">Dúvidas</button></li><li><button type="button" data-scroll="contato">Contato</button></li><li><button type="button" data-vagas="1">Vagas</button></li><li><button type="button" data-priv="1">Política de privacidade</button></li>${ADMV()?'<li><button type="button" data-nav="admin">Minha área</button></li>':''}</ul></div>
+    <div class="v-mega" aria-hidden="true">OR</div>
+    <div class="foot-b"><span>${esc(CFG.brand)} · Rio de Janeiro · versão ${BUILD}</span><span>© ${new Date().getFullYear()} ${esc(CFG.brand)}. Todos os direitos reservados.</span></div></div></footer></main>${CFG.whats?`<a class="wafab" href="https://wa.me/${wnum(CFG.whats)}" target="_blank" rel="noopener noreferrer" aria-label="Falar com a equipe no WhatsApp">${WAI}</a>`:''}<button type="button" class="totop ${CFG.whats?'wa':''}" id="totop" aria-label="Voltar ao topo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>`);
+    const start=ks=>{P.mods=ks;P.mod=ks[0];P.qa=[];P.cur=null;P.fail=false;P.aiDone=false;P.skipTp=new Set();pub();window.scrollTo(0,0)};
+    app.querySelectorAll('[data-brief]').forEach(b=>b.onclick=()=>start(['guia']));
+    $('#guiastart').onclick=()=>start(['guia']);
+    vMarkStart();heroFlutuarStart();orbStart();dotsStart();capitulos();cenaStart();megaStart();rotulos();introStart();
+    app.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{P.page='svc:'+b.dataset.svc;pub();window.scrollTo(0,0)});
+    $('#totop').onclick=()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    return;
+  }
+  if(!P.who)return gate();
+  P.cur?wizard():nextQ();
+}
+function svcPage(k){
+  const m=MODS[k],o=SOBRE[k],wa=CFG.whats?'https://wa.me/'+wnum(CFG.whats):'';
+  setApp(`${nav2(3)}<main class="svp v2" id="conteudo"><section class="top dark svp-top"><canvas class="aif-canvas svp-orb" id="aifc" width="640" height="640" aria-hidden="true"></canvas><div class="v-wrap svp-hero"><p class="svp-eb">O que fazemos</p><h1 class="svp-h">${m.name}</h1><button type="button" class="svp-dn" data-scroll="svp-corpo" aria-label="Ver a explicação"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div></section>
+  <section class="v-sec v-base v-gl" id="svp-corpo"><div class="v-wrap"><button type="button" class="v-link" data-back="1">Voltar para os serviços</button><div class="v-2col svp-split"><div class="svp-lt"><h2 class="v-h2 svp-t2 v-rv">${o.t}</h2><p class="v-lead v-rv">${o.i}</p></div><ul class="v-list svp-info"><li class="v-rv"><b>O que é</b><span>${o.o}</span></li><li class="v-rv"><b>Quando faz sentido contratar</b><span>${o.q}</span></li><li class="v-rv"><b>Como aplicamos</b><span>${o.c}</span></li><li class="v-rv"><b>O que você pode esperar</b><span>${o.e}</span></li></ul></div>
+  ${MOSTRAR_PRECOS?'<p class="v-p"><b>'+precoDe(k)+'</b></p>':''}</div></section>
+  <section class="v-sec v-lime"><div class="v-wrap v-2col"><h2 class="v-h2 v-rv">O diferencial AI-Driven.</h2><p class="v-p v-rv" style="margin-top:0">${o.d}</p></div></section>
+  <section class="v-sec v-ink v-end"><div class="v-wrap"><h2 class="v-h2 v-big v-rv">Pronto para dar o próximo passo?</h2><p class="v-p v-rv">Responda o briefing e receba um plano e um orçamento com 3 opções para o seu caso. Leva poucos minutos e não tem compromisso.</p><div class="v-act v-rv"><button type="button" class="v-btn dk" data-go="1"><span>Responder o briefing</span>${ARR}</button>${wa?'<a class="v-link" href="'+wa+'" target="_blank" rel="noopener noreferrer">Falar direto no WhatsApp</a>':''}</div></div></section>
+  <footer class="foot v-foot"><div class="v-wrap"><div class="foot-top"><div><div class="brandb static">${logo}${WM}</div><p>Estratégia, criatividade e transparência para pequenos negócios e criadores de conteúdo.</p></div><ul class="fcol"><li><button type="button" data-home="1">Início</button></li><li><button type="button" data-vagas="1">Vagas</button></li></ul><ul class="fcol"><li><button type="button" data-priv="1">Política de privacidade</button></li>${ADMV()?'<li><button type="button" data-nav="admin">Minha área</button></li>':''}</ul></div>
+  <div class="v-mega" aria-hidden="true">OR</div>
+  <div class="foot-b"><span>${esc(CFG.brand)} · Rio de Janeiro</span><span>© ${new Date().getFullYear()} ${esc(CFG.brand)}. Todos os direitos reservados.</span></div></div></footer></main>`);
+  aifStart();megaStart();rotulos();
+  $('[data-back]').onclick=()=>{P.page=null;pub();const e=document.getElementById('oferta');if(e)e.scrollIntoView()};
+  $('[data-go]').onclick=()=>{P.mods=['guia'];P.mod='guia';P.qa=[];P.cur=null;P.fail=false;P.aiDone=false;P.skipTp=new Set();pub();window.scrollTo(0,0)};
+}
+function vagasPage(){
+  const VG=vagasLista();
+  const n=VG.length,foto=/^(https:|data:image)/.test(FOTO);
+  setApp(`${nav2(2)}<main class="vg v2" id="conteudo">
+  <section class="v-hero v-base v-gl"><div class="v-wrap v-hero-in"><div class="v-hero-t"><h1 class="v-h1" style="font-size:clamp(44px,8vw,128px);max-width:11ch">Faça parte da nossa equipe.</h1><p class="v-lead">Unimos estratégia, criatividade e tecnologia para ajudar marcas a crescer. Se isso te move, encontre a sua vaga abaixo ou deixe o seu cadastro.</p><div class="v-act"><button type="button" class="v-btn" data-scroll="${n?'vagas-lista':'cadastro'}"><span>${n?'Explorar vagas abertas':'Deixar meu cadastro'}</span>${ARR}</button></div></div>
+  <div class="v-hero-3d">${foto?'<img class="vg-foto" src="'+esc(FOTO)+'" alt="Foto da equipe">':'<img class="v-or-hero" src="'+VMARK+'" alt="Símbolo da OR Marketing Digital">'}</div></div></section>
+  <section class="v-sec v-ink" id="vagas-lista"><div class="v-wrap"><div class="vg-head"><div><h2 class="v-h2 v-rv">Vagas abertas.</h2><p class="v-p v-rv">Encontre a sua área e candidate-se. Não achou a sua? Deixe o seu cadastro mesmo assim.</p></div><span class="v-count v-rv">${n} ${n===1?'oportunidade':'oportunidades'}</span></div>
+  ${n?`<ul class="v-jobs">${VG.map((v,i)=>`<li class="v-job v-rv"><div><h3>${esc(v.titulo)}</h3><p class="jm">${[v.area,v.local,v.modelo].filter(Boolean).map(x=>'<span class="v-tag">'+esc(x)+'</span>').join('')}</p>${v.descricao?'<p>'+esc(v.descricao)+'</p>':''}${(v.requisitos||[]).length?'<ul>'+v.requisitos.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>':''}</div><button type="button" class="v-btn dk" data-apply="${i}"><span>Candidatar-me</span>${ARR}</button></li>`).join('')}</ul>`:`<div class="v-empty v-rv"><h3>Nenhuma vaga aberta agora</h3><p>Mesmo assim, queremos conhecer você. Deixe o seu cadastro abaixo e entramos em contato quando surgir uma oportunidade na sua área.</p></div>`}</div></section>
+  <section class="v-sec v-base v-gl" id="cadastro"><div class="v-wrap"><h2 class="v-h2 v-rv">Deixe o seu cadastro.</h2><form class="v-form" id="tform" novalidate>
+  <label for="tn">Nome</label><input id="tn" autocomplete="name" maxlength="80">
+  <label for="tw">WhatsApp com DDD</label><input id="tw" type="tel" autocomplete="tel" maxlength="20" placeholder="(21) 90000-0000">
+  <label for="te">E-mail (opcional)</label><input id="te" type="email" autocomplete="email" maxlength="120">
+  <label for="ta">Área de interesse</label><select id="ta">${AREAS.map(a=>'<option>'+esc(a)+'</option>').join('')}</select>
+  <label for="tv">Vaga</label><select id="tv"><option value="">Banco de talentos (sem vaga específica)</option>${VG.map(v=>'<option>'+esc(v.titulo)+'</option>').join('')}</select>
+  <label for="tl">Portfólio ou LinkedIn (opcional, começa com https://)</label><input id="tl" type="url" maxlength="300" autocomplete="off">
+  <label for="tcv">Currículo (opcional: PDF, DOCX ou TXT, até 3 MB)</label><input id="tcv" type="file" accept=".pdf,.docx,.txt"><p class="hint" style="margin:0">O arquivo é conferido e guardado apenas neste navegador.</p>
+  <label for="tm">Conte um pouco sobre você</label><textarea id="tm" maxlength="600" rows="3"></textarea>
+  <div class="hp" aria-hidden="true"><label for="tz">Não preencha</label><input id="tz" tabindex="-1" autocomplete="off"></div>
+  <label class="cons"><input type="checkbox" id="tc"><span>Concordo com o uso dos meus dados para o processo seletivo da ${esc(CFG.brand)}. Eles ficam guardados por até ${RETENCAO_MESES} meses e não são enviados a serviços de IA. Li a <button type="button" class="plink" data-priv="1">política de privacidade</button>.</span></label>
+  <div class="v-act"><button class="v-btn" id="tgo" type="button"><span>Enviar cadastro</span>${ARR}</button></div><p class="err2" id="ter" role="alert"></p><p class="okm" id="tok" role="status"></p></form></div></section>
+  <footer class="foot v-foot"><div class="v-wrap"><div class="foot-top"><div><div class="brandb static">${logo}${WM}</div><p>Estratégia, criatividade e transparência para pequenos negócios e criadores de conteúdo.</p></div><ul class="fcol"><li><button type="button" data-home="1">Início</button></li><li><button type="button" data-vagas="1">Vagas</button></li></ul><ul class="fcol"><li><button type="button" data-priv="1">Política de privacidade</button></li>${ADMV()?'<li><button type="button" data-nav="admin">Minha área</button></li>':''}</ul></div>
+  <div class="v-mega" aria-hidden="true">OR</div>
+  <div class="foot-b"><span>${esc(CFG.brand)} · Rio de Janeiro</span><span>© ${new Date().getFullYear()} ${esc(CFG.brand)}. Todos os direitos reservados.</span></div></div></footer></main>`);
+  vMarkStart();dotsStart();megaStart();rotulos();
+  app.querySelectorAll('[data-apply]').forEach(b=>b.onclick=()=>{const v=VG[+b.dataset.apply];if(!v)return;$('#tv').value=v.titulo;if(v.area&&AREAS.includes(v.area))$('#ta').value=v.area;document.getElementById('cadastro').scrollIntoView({behavior:'smooth'});$('#tn').focus({preventScroll:true})});
+  $('#tgo').onclick=async()=>{
+    const er=$('#ter'),ok=$('#tok'),g=id=>$('#'+id).value;er.textContent='';ok.textContent='';
+    const nome=txtT(g('tn'),80),dig=g('tw').replace(/\D/g,''),mail=txtT(g('te'),120),link=txtT(g('tl'),300);
+    if(nome.length<2)return er.textContent='Escreva o seu nome.';
+    if(dig.length<10||dig.length>13)return er.textContent='Informe o WhatsApp com DDD.';
+    if(mail&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail))return er.textContent='Confira o e-mail.';
+    if(link&&!/^https:\/\/\S+$/i.test(link))return er.textContent='O link precisa começar com https://';
+    if(!$('#tc').checked)return er.textContent='Marque a caixa de concordância para enviar.';
+    if(g('tz'))return ok.textContent='Cadastro recebido. Obrigado!';
+    const ult=+(sget('tlast')||0);if(Date.now()-ult<20000)return er.textContent='Aguarde alguns segundos antes de enviar de novo.';
+    const cvf=$('#tcv').files[0];let cvr=null;if(cvf){cvr=await cvValida(cvf);if(!cvr.ok)return er.textContent=cvr.erro}
+    sset('tlast',String(Date.now()));
+    const nid=uid();let cvok=false;if(cvf){try{await cvPut(nid,cvf);cvok=true}catch(e){}}
+    setT([{id:nid,nome,whats:dig,email:mail,area:g('ta'),vaga:g('tv'),link,msg:txtT(g('tm'),600,1),data:new Date().toLocaleString('pt-BR'),t:Date.now(),...(cvok?{cvnome:txtT(cvf.name,120),cvtam:cvf.size,cvtipo:cvr.ext.toUpperCase()}:{})},...getT()]);
+    $('#tform').querySelectorAll('input:not([type=checkbox]),textarea').forEach(i=>i.value='');$('#tc').checked=false;
+    ok.textContent='Cadastro recebido. Obrigado! Entramos em contato se surgir uma oportunidade para você.'+(cvf&&!cvok?' Atenção: não consegui guardar o currículo neste navegador.':'');
+  };
+}

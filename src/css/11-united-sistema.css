@@ -1,0 +1,57 @@
+/* ================= SISTEMA VISUAL "UNITED" EM TODO O SITE PÚBLICO ================= */
+body.pub{--bg:#0B0B0B;--panel:#141414;--surf:#ffffff0d;--bd:#ffffff26}
+/* texturas de pontos em todos os fundos */
+.v-base,.v-ai,.v-scene,.v-foot{background-image:radial-gradient(rgba(244,245,251,.13) 1px,transparent 1.5px);background-size:24px 24px}
+.v-ink{background-color:#fff;background-image:radial-gradient(rgba(11,11,11,.12) 1px,transparent 1.5px);background-size:24px 24px;color:#0E0E0E}
+.v-lime{background-image:radial-gradient(rgba(11,11,11,.16) 1px,transparent 1.5px);background-size:24px 24px}
+.v-ai{background-color:var(--bg)!important}
+.v-gl::before{display:none}
+/* topo: faixa de avisos */
+.v-tick{overflow:hidden;background:#FF5A00;color:#0B0B0B;padding:9px 0;font:600 11.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+.v-tick-t{display:flex;gap:26px;width:max-content;align-items:center;animation:vtk 40s linear infinite}
+.v-tick-t i{font-style:normal}
+@keyframes vtk{to{transform:translateX(-50%)}}
+.nav,.nav.scr{background:var(--bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.wmw .wm{text-transform:uppercase;letter-spacing:.22em;font-weight:700}
+.mnav button{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace!important;letter-spacing:.12em!important}
+.nav-cta,.v-btn{font:700 12.5px ui-monospace,"Cascadia Mono",Consolas,monospace!important;letter-spacing:.14em;text-transform:uppercase}
+.v-btn{min-height:52px;padding:0 28px}
+.v-link{font:600 12.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.14em;text-transform:uppercase}
+/* tipografia de título */
+.v-h1{text-transform:uppercase;font-size:clamp(42px,8.2vw,128px);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.v-ai-s{text-transform:uppercase;font-size:clamp(18px,2.1vw,30px);letter-spacing:-.01em}
+.v-h3,.v-faq h3,.v-contact h3,.v-cta-row h3,.v-job h3,.v-sc-steps h3{letter-spacing:-.015em}
+.v-faq h3,.v-contact h3{text-transform:uppercase;font-size:clamp(16px,1.5vw,21px)}
+/* rótulos com índice */
+.v-lab{margin:0 0 clamp(28px,4vw,56px);font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;opacity:.75}
+.v-lab b{font-weight:700;color:#FF5A00;margin-right:.6em}
+.v-ink .v-lab b,:root[data-theme=light] .v-base .v-lab b{color:#C24400}
+.v-lime .v-lab b{color:#0B0B0B}
+/* linhas finas entre itens */
+.v-list li,.v-steps li,.v-faq>div,.v-contact>div,.v-job{border-top:1px solid color-mix(in srgb,currentColor 24%,transparent);padding-top:clamp(16px,2vw,24px)}
+.v-faq,.v-contact{gap:clamp(28px,3.4vw,48px) clamp(32px,6vw,112px)}
+.v-row{background:transparent!important;border-top:1px solid color-mix(in srgb,currentColor 26%,transparent);border-radius:0;min-height:96px}
+.v-gl .v-row{background:transparent!important;backdrop-filter:none;box-shadow:none;border:0;border-top:1px solid color-mix(in srgb,currentColor 26%,transparent)}
+.v-rows{gap:0}
+.v-row:hover,.v-row:focus-visible,.v-gl .v-row:hover,.v-gl .v-row:focus-visible{background:#FF5A00!important;color:#0B0B0B!important}
+.v-cta-row,.v-job,.v-empty,.v-form{border-radius:0}
+.v-tiles li{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase}
+.v-count,.v-tag{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+.v-form label{font:600 12.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}
+.v-foot{background-color:#000}
+.foot .fcol button,.foot-b{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase}
+/* briefing (assistente) no mesmo estilo */
+.svc{border-radius:0;font:600 12.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}
+.ph li{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.ph li i{border-radius:0}
+.gl{border-radius:0;backdrop-filter:none}
+.gl h1,.gl h2{text-transform:none}
+@media(prefers-reduced-motion:reduce){.v-tick-t{animation:none}}
+.v-form .cons{font:500 15px/1.5 var(--fb);letter-spacing:0;text-transform:none}
+.v-list b,.v-steps b{text-transform:uppercase;letter-spacing:.02em}
+.v-form .cons .plink{text-transform:none}
+/* linhas de serviço: efeito leve ao passar o mouse */
+.v-row:hover,.v-row:focus-visible,.v-gl .v-row:hover,.v-gl .v-row:focus-visible{background:rgba(255,255,255,.05)!important;color:var(--fg)!important}
+.v-row .v-rn{transition:color .2s ease}
+.v-row:hover .v-rn,.v-row:focus-visible .v-rn{color:#FF5A00}
+.v-row:hover .v-ra,.v-row:focus-visible .v-ra{color:#FF5A00}

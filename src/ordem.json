@@ -1,0 +1,207 @@
+{
+  "molde": "src/index.molde.html",
+  "css": [
+    {
+      "arquivo": "src/css/01-base-e-minha-area.css",
+      "descricao": "Base: variáveis (tokens), reset, tipografia, navegação, home antiga, briefing (assistente), Minha área, acompanhamento"
+    },
+    {
+      "arquivo": "src/css/02-apple-hig.css",
+      "descricao": "Camada Apple HIG: fonte do sistema, alvos de 44px, foco, cantos"
+    },
+    {
+      "arquivo": "src/css/03-solucoes-descubra-duvidas.css",
+      "descricao": "Seção Soluções (cartões), \"Descubra o que você precisa\" e \"Como podemos ajudar\""
+    },
+    {
+      "arquivo": "src/css/04-home-v2.css",
+      "descricao": "Home v2: blocos de cor chapada, primeira tela, três opções, listas, passos, dúvidas, contato, rodapé"
+    },
+    {
+      "arquivo": "src/css/05-vidro.css",
+      "descricao": "Vidro (glass) no site e na Minha área, com fallback sólido"
+    },
+    {
+      "arquivo": "src/css/06-ai-driven.css",
+      "descricao": "Bloco AI-Driven e orbe"
+    },
+    {
+      "arquivo": "src/css/07-servico-e-vagas.css",
+      "descricao": "Páginas de serviço e de vagas, formulário de cadastro"
+    },
+    {
+      "arquivo": "src/css/08-toques-referencias.css",
+      "descricao": "Título que se revela, pontos no topo, capítulos laterais, borda serrilhada"
+    },
+    {
+      "arquivo": "src/css/09-abertura.css",
+      "descricao": "Tela de abertura (nome, carregamento, botão)"
+    },
+    {
+      "arquivo": "src/css/10-united-cena-mega.css",
+      "descricao": "Estilo United: manifesto, números, cena fixa Como funciona, marca em pontos no rodapé"
+    },
+    {
+      "arquivo": "src/css/11-united-sistema.css",
+      "descricao": "Sistema visual United em todo o site (cores, pontos, faixa de avisos, rótulos, linhas)"
+    },
+    {
+      "arquivo": "src/css/12-dashboard.css",
+      "descricao": "Dashboards da Minha área: filtros, cartões, funil, tabela, atividades, métricas"
+    },
+    {
+      "arquivo": "src/css/13-glass.css",
+      "descricao": "Sistema glassy: tokens e componentes (.glass, .glass-s, .glass-bar, .glass-st), briefing, modais, planos, vagas"
+    },
+    {
+      "arquivo": "src/css/14-marca-or.css",
+      "descricao": "Marca OR Marketing Digital: paleta preto/laranja/off-white, Sora e Inter, logotipo"
+    },
+    {
+      "arquivo": "src/css/15-abertura-or.css",
+      "descricao": "Estilos da abertura 3D da OR"
+    },
+    {
+      "arquivo": "src/css/16-hero-flutuante.css",
+      "descricao": "Primeira tela centralizada com cartões dos serviços flutuando"
+    },
+    {
+      "arquivo": "src/css/17-manifesto-cartoes.css",
+      "descricao": "Seção Manifesto em grade de cartões (4 passos) e Três opções em cartões alinhados"
+    },
+    {
+      "arquivo": "src/css/18-alinhamento.css",
+      "descricao": "Menu do topo sem quebra de linha e trilho de capítulos só em tela larga"
+    },
+    {
+      "arquivo": "src/css/19-acompanhamento.css",
+      "descricao": "Estilos das partes novas do Acompanhamento"
+    },
+    {
+      "arquivo": "src/css/20-captacao.css",
+      "descricao": "Captar clientes: busca, cards dos negócios, jornada de abordagem"
+    }
+  ],
+  "js": [
+    {
+      "arquivo": "src/js/00-three-r159.js",
+      "descricao": "Three.js r159 (biblioteca, sem alteração) para a abertura 3D"
+    },
+    {
+      "arquivo": "src/js/01-config-precos.js",
+      "descricao": "Constantes do dono (BRAND, PIN, WhatsApp...), tabela de preços (PRECOS) e faixas de verba"
+    },
+    {
+      "arquivo": "src/js/02-modulos-servicos.js",
+      "descricao": "SITE_REF/REGRAS, MODS (os 9 serviços + guia), tarefas, perguntas comuns, roteiro Descobrir o que eu preciso"
+    },
+    {
+      "arquivo": "src/js/03-armazenamento-config.js",
+      "descricao": "Helpers, armazenamento (localStorage com fallback), CFG, chaves de IA"
+    },
+    {
+      "arquivo": "src/js/04-sementes-base-ia.js",
+      "descricao": "Exemplos por ramo (EX_NOVOS, EX_SEED) e base inicial da IA (KB_SEED)"
+    },
+    {
+      "arquivo": "src/js/05-dados-leads.js",
+      "descricao": "esc(), validação e limpeza de leads/acompanhamento, getL/setL/upd, vagas, política de privacidade (versão)"
+    },
+    {
+      "arquivo": "src/js/06-seguranca-pin.js",
+      "descricao": "SHA, PBKDF2, PIN com bloqueio de tentativas"
+    },
+    {
+      "arquivo": "src/js/07-ui-base.js",
+      "descricao": "Diálogos, aviso, privacidade, trocar PIN, apagar lead, qaOf, brief(), setApp()"
+    },
+    {
+      "arquivo": "src/js/08-ia-chamadas.js",
+      "descricao": "ask() e askF(): chamadas à IA (Groq/Ollama/Anthropic), fallback, pré-aquecimento"
+    },
+    {
+      "arquivo": "src/js/09-app-navegacao-icones.js",
+      "descricao": "Estado P, nav(), render(), ícones dos serviços, logo"
+    },
+    {
+      "arquivo": "src/js/10-visual-3d-efeitos.js",
+      "descricao": "WebGL/Canvas: V 3D, orbe, pontos, capítulos laterais, abertura, cena de rolagem, rodapé em pontos, rótulos"
+    },
+    {
+      "arquivo": "src/js/10b-abertura-or.js",
+      "descricao": "Abertura 3D da OR (arquivo enviado pelo dono)"
+    },
+    {
+      "arquivo": "src/js/11-esfera-agua.js",
+      "descricao": "Esfera de água (shader) das páginas de serviço"
+    },
+    {
+      "arquivo": "src/js/12-conteudo-servicos.js",
+      "descricao": "SOBRE: textos de cada página de serviço"
+    },
+    {
+      "arquivo": "src/js/13-site-publico-base.js",
+      "descricao": "vida() (revelações), faixa de avisos, nav2(), constantes do briefing"
+    },
+    {
+      "arquivo": "src/js/14-site-publico-paginas.js",
+      "descricao": "pub() (home), svcPage() (serviço), vagasPage() (vagas)"
+    },
+    {
+      "arquivo": "src/js/15-briefing-assistente.js",
+      "descricao": "Briefing: gate, perguntas da IA, wizard, envio, agradecimento"
+    },
+    {
+      "arquivo": "src/js/16-backup-disco.js",
+      "descricao": "Backup na pasta do HD (File System Access API) e mesclagem por data"
+    },
+    {
+      "arquivo": "src/js/17-minha-area.js",
+      "descricao": "Minha área: estado, lista de leads, abas, ações, detalhe"
+    },
+    {
+      "arquivo": "src/js/18-especialistas-estrategia.js",
+      "descricao": "ESP (9 especialistas), protocolo geral/por módulo e gen() (Estratégia)"
+    },
+    {
+      "arquivo": "src/js/19-orcamento-mensagem.js",
+      "descricao": "Tabela de preços → totais, orc() (3 orçamentos), msgGen(), autoRun()"
+    },
+    {
+      "arquivo": "src/js/20-resumo-base-ia.js",
+      "descricao": "norm, pickEx, kb() (base da IA), ficha() (Resumo), esquemas de Ads/Social"
+    },
+    {
+      "arquivo": "src/js/21-execucao-kits-site.js",
+      "descricao": "Guia HTML do site, prompt do site, kits de Ads/Redes/Site, execGen()"
+    },
+    {
+      "arquivo": "src/js/22-acompanhamento.js",
+      "descricao": "Acompanhamento: tarefas, métricas, PSI, relatórios, pedidos de acesso"
+    },
+    {
+      "arquivo": "src/js/22b-dashboards.js",
+      "descricao": "Dashboards: principal da operação (dados reais, filtros, funil, tarefas, atividades) e aba Métricas por projeto; registro de atividades; indicador de salvamento"
+    },
+    {
+      "arquivo": "src/js/22e-acompanhamento-producao.js",
+      "descricao": "Acompanhamento: o que vamos fazer (escopo), produção por ciclo com IA, campanhas com exemplos, Meta Ads, imprensa, versões do código do site, mensagens prontas"
+    },
+    {
+      "arquivo": "src/js/22c-vagas.js",
+      "descricao": "Vagas na Minha área: criar, editar, publicar, pausar, encerrar, arquivar, duplicar; candidatos por vaga com etapa e nota"
+    },
+    {
+      "arquivo": "src/js/22d-rh.js",
+      "descricao": "RH local: currículo em IndexedDB, leitura de texto, análise de IA com critérios da vaga, perguntas de entrevista, comparação"
+    },
+    {
+      "arquivo": "src/js/22f-captacao.js",
+      "descricao": "Captar clientes: busca no Google (Places API) de negócios sem site, prévia do site e mensagem de abordagem com IA (só no clique), etapas até virar lead"
+    },
+    {
+      "arquivo": "src/js/23-whatsapp-ias-final.js",
+      "descricao": "WhatsApp (janela de envio), tela IAs, talentos, inicialização"
+    }
+  ]
+}

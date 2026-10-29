@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Montar site",
+      "type": "shell",
+      "command": "node scripts/montar.mjs",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Observar (remonta ao salvar)",
+      "type": "shell",
+      "command": "node scripts/montar.mjs --watch",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Verificar",
+      "type": "shell",
+      "command": "node scripts/verificar.mjs",
+      "problemMatcher": []
+    },
+    {
+      "label": "Abrir no navegador",
+      "type": "shell",
+      "command": "node scripts/abrir.mjs",
+      "problemMatcher": []
+    }
+  ]
+}

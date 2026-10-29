@@ -1,0 +1,45 @@
+/* ===== inspiração United Carriers: caixa alta em dois tons,números grandes,rótulos monoespaçados e cena fixa na rolagem ===== */
+.v-h2{text-transform:uppercase;font-size:clamp(32px,5.2vw,80px);line-height:.96;letter-spacing:-.03em;max-width:17ch}
+.v-h2 .g{color:color-mix(in srgb,currentColor 42%,transparent)}
+.v-n{font:600 .36em ui-monospace,"Cascadia Mono",Consolas,monospace;vertical-align:super;letter-spacing:0;margin-left:.45em;opacity:.7}
+.svp-h{text-transform:uppercase}
+.mnav button{text-transform:uppercase;letter-spacing:.09em;font-size:12.5px!important;font-weight:600!important}
+.v-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.v-pill{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;min-height:44px;padding:0 22px;margin-top:clamp(18px,2.4vw,28px);border:1.5px solid currentColor;border-radius:999px;font:600 12.5px var(--fb);letter-spacing:.12em;text-transform:uppercase;transition:background .2s,color .2s}
+.v-ink .v-pill:hover{background:#0B0B0B;color:#F5F5F3}
+.v-pill:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.v-mani{align-items:end}
+.v-stats{margin:clamp(24px,3.4vw,48px) 0 0;display:grid}
+.v-stats div{display:grid;grid-template-columns:minmax(0,auto) 1fr;gap:6px clamp(18px,3vw,40px);align-items:baseline;padding:clamp(14px,2vw,24px) 0;border-top:1px solid color-mix(in srgb,currentColor 24%,transparent)}
+.v-stats dt{font:800 clamp(54px,8vw,124px)/.9 var(--fd);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.v-stats dd{margin:0;font:600 12.5px/1.45 ui-monospace,"Cascadia Mono",Consolas,monospace;text-transform:uppercase;letter-spacing:.07em;opacity:.78;max-width:28ch}
+.v-rn{text-transform:uppercase;font-size:clamp(20px,2.4vw,36px)!important;letter-spacing:-.02em}
+/* cena fixa: Como funciona */
+.v-scene{position:relative;height:470vh;background:var(--bg);color:var(--fg)}
+.v-stick{position:sticky;top:68px;height:calc(100svh - 68px);display:flex;align-items:center;overflow:hidden}
+.v-scene-in{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(20px,4vw,72px);align-items:center;width:100%;height:100%;padding-top:clamp(12px,2vh,28px);padding-bottom:clamp(12px,2vh,28px)}
+.v-sc-l{display:grid;align-content:center;gap:clamp(14px,2.4vh,26px)}
+.v-sc-k{margin:0;font:600 12.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.v-sc-steps{list-style:none;margin:0;padding:0;position:relative;min-height:clamp(190px,34vh,330px)}
+.v-sc-steps li{position:absolute;left:0;top:0;right:0;opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.v-sc-steps li.on{opacity:1;transform:none}
+.v-sc-steps h3{font:800 clamp(28px,4.4vw,66px)/.98 var(--fd);text-transform:uppercase;letter-spacing:-.03em;margin:0 0 14px;max-width:13ch}
+.v-sc-steps p{margin:0;font-size:clamp(16px,1.5vw,20px);line-height:1.55;max-width:38ch}
+.v-sc-n{margin:0;display:flex;align-items:baseline;gap:4px;font:800 clamp(56px,9vw,132px)/.85 var(--fd);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.v-sc-n span{font-size:.4em;letter-spacing:0;opacity:.6}
+.v-sc-c{position:relative;width:100%;height:100%;min-height:0}
+.v-sc-c canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media(max-width:860px){.v-scene{height:430vh}.v-scene-in{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:4px}.v-sc-steps{min-height:clamp(150px,27vh,220px)}.v-sc-steps h3{font-size:clamp(24px,7vw,40px)}.v-sc-n{display:none}}
+/* sem movimento (ou sem JS): os quatro passos aparecem em lista normal */
+.v-scene.est{height:auto}
+.v-scene.est .v-stick{position:static;height:auto;display:block;overflow:visible}
+.v-scene.est .v-scene-in{display:block;height:auto;padding:clamp(64px,10vw,140px) clamp(20px,4vw,56px)}
+.v-scene.est .v-sc-steps{min-height:0;display:grid;gap:clamp(24px,3vw,44px);margin-top:20px}
+.v-scene.est .v-sc-steps li{position:static;opacity:1;transform:none}
+.v-scene.est .v-sc-c,.v-scene.est .v-sc-n{display:none}
+@media(prefers-reduced-motion:reduce){.v-sc-steps li{transition:none}}
+
+/* marca em pontos no rodapé */
+.v-mega.pts{font-size:0;line-height:0;white-space:normal;overflow:visible;cursor:none;touch-action:pan-y}
+.v-mega.pts canvas{display:block;width:100%}
+@media(pointer:coarse){.v-mega.pts{cursor:auto}}

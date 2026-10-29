@@ -1,0 +1,6 @@
+{
+  "files.eol": "\n",
+  "files.exclude": {},
+  "search.exclude": { "dist": true },
+  "editor.tabSize": 2
+}

@@ -1,0 +1,9 @@
+{
+  "_leia": "SEO do site público. 'url' é o endereço final com https e barra no fim (ex.: https://www.seudominio.com.br/). Sem 'url', o build não gera canonical, Open Graph com endereço nem sitemap.xml. 'googleVerificacao' é o código da meta tag do Google Search Console (só o conteúdo de content=\"...\"). Os textos vêm do próprio site: não invente promessas, números nem avaliações aqui.",
+  "url": "",
+  "googleVerificacao": "",
+  "titulo": "OR Marketing Digital | Marketing digital sob medida no Rio de Janeiro",
+  "descricao": "Marketing digital sob medida para pequenos negócios e criadores no Rio de Janeiro. Responda um briefing rápido e receba plano e orçamento em 3 opções no WhatsApp.",
+  "cidade": "Rio de Janeiro",
+  "estado": "RJ"
+}

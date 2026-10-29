@@ -1,0 +1,20 @@
+{
+  "name": "vyxa-site",
+  "version": "1.0.0",
+  "description": "Plataforma Vyxa Marketing Digital: site público, briefing com IA e Minha área, em um único HTML montado a partir de src/.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "montar": "node scripts/montar.mjs",
+    "montar:copiar": "node scripts/montar.mjs --copiar",
+    "observar": "node scripts/montar.mjs --watch",
+    "verificar": "node scripts/verificar.mjs",
+    "abrir": "node scripts/abrir.mjs",
+    "abrir:teste": "node scripts/abrir.mjs --teste",
+    "testar": "node scripts/testar.mjs",
+    "montar:teste": "node scripts/montar-teste.mjs"
+  }
+}

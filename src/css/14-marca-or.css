@@ -1,0 +1,21 @@
+/* Marca OR Marketing Digital: paleta #0B0B0B / #FF5A00 / #F5F5F3 / #8A8A8A, Sora (títulos) e Inter (interface).
+   As fontes não são carregadas da internet (a CSP bloqueia); entram se estiverem instaladas, senão cai na fonte do sistema. */
+:root{--fd:'Sora','Inter','Segoe UI Variable Display','Segoe UI',system-ui,sans-serif;--fb:'Inter','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;--or-preto:#0B0B0B;--or-laranja:#FF5A00;--or-offwhite:#F5F5F3;--or-cinza:#8A8A8A;--focus:#FF8A4D;--ok:#5be3b0}
+:root[data-theme=dark],.dark,body.pub{--bg:#0B0B0B;--fg:#F5F5F3;--accent:#FF5A00;--link:#FF8A4D;--g1:#FF5A0030;--g2:#FF5A001a;--g3:#FF5A0012}
+body.pub{font-family:var(--fb);-webkit-font-smoothing:antialiased}
+body.pub h1,body.pub h2,body.pub h3,.v-h1,.v-h2,.v-h3,.svp-h{font-family:var(--fd)}
+body.pub :focus-visible,.shell :focus-visible{outline:2px solid #FF8A4D;outline-offset:2px}
+.vlogo{height:30px;width:auto}
+.wmw{gap:3px}
+.wmw .wm,.wmw .wt{font:400 10px var(--fd);letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9;line-height:1.15}
+body.pub .wmw .wt{font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9}
+.v-hero-3d{display:flex;align-items:center;justify-content:center}
+.v-or-hero{width:78%;max-width:460px;height:auto;display:block;filter:drop-shadow(0 24px 60px #FF5A0033)}
+@media(prefers-reduced-motion:no-preference){.v-or-hero{animation:orflut 7s ease-in-out infinite}@keyframes orflut{50%{transform:translateY(-8px)}}}
+.in-logo{display:block;width:min(70vw,360px);height:auto;margin:0 auto 28px;filter:drop-shadow(0 20px 50px #FF5A0040)}
+@media(prefers-reduced-motion:no-preference){.in-logo{animation:orin 1s ease both}@keyframes orin{from{opacity:0;transform:translateY(10px) scale(.96)}}}
+body.pub .nav .wmw{display:none}
+body.pub .nav .vlogo{height:34px}
+@media(max-width:860px){.v-hero-3d{aspect-ratio:auto!important;justify-content:flex-start;padding:0 2px}.v-or-hero{width:70%;max-width:260px;margin:0}}
+/* Logo OR vetorial (letras do arquivo enviado), sobre fundo preto */
+.or3d{aspect-ratio:627/301;background-repeat:no-repeat;background-size:contain;background-position:center}

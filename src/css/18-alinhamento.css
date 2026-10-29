@@ -1,0 +1,28 @@
+/* Alinhamento: o menu do topo nunca quebra em duas linhas e o trilho de capítulos não encosta no conteúdo */
+.mnav button,.nav-cta,.navr .lnk,.navr button{white-space:nowrap}
+@media(max-width:1240px){
+  .menub{display:inline-flex;align-items:center}
+  .nav .mnav{display:none!important;position:absolute;left:0;right:0;top:68px;background:var(--bg);padding:8px clamp(20px,4vw,56px) 24px;margin:0!important;flex-direction:column;gap:0!important}
+  .nav.mopen .mnav{display:flex!important}
+  .nav.mopen .mnav button{width:100%;font-size:20px!important;opacity:1;min-height:56px;justify-content:flex-start}
+}
+@media(max-width:1439px){.v-cap{display:none!important}}
+
+/* listas suspensas: o menu aberto também fica escuro e legível (no Windows ele abria branco com texto claro) */
+:root{color-scheme:dark}
+select option,select optgroup{background:#1A1A1A;color:#F5F5F3}
+select option:checked{background:#FF5A00;color:#0B0B0B}
+/* fim do lead: próximo passo (cliente fechou) */
+.dfim{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;padding:18px 20px;border-radius:16px;border:1px solid rgba(255,90,0,.35);background:rgba(255,90,0,.07)}
+.dfim>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.dfim .hint{margin:0}
+
+/* retorno ao toque: o botão afunda de leve ao ser pressionado (rápido, sem atrasar o clique) */
+@media(prefers-reduced-motion:no-preference){
+  .btn,.v-btn,.nav-cta,.tab,.chip2,.itg,.dem-it{transition:transform .12s ease-out}
+  .btn:active:not(:disabled),.v-btn:active,.nav-cta:active,.tab:active,.chip2:active,.dem-it:active{transform:scale(.97)}
+  .gcard:active .gcov{transform:scale(.985)}
+}
+
+/* aviso de espera do limite da IA */
+#iaaviso{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:14px;background:#1A1A1A;border:1px solid rgba(255,90,0,.5);color:#F5F5F3;font:600 14px/1.4 var(--fb);box-shadow:0 18px 40px rgba(0,0,0,.5)}

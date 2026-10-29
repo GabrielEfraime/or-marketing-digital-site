@@ -1,0 +1,172 @@
+/* ===== Sistema glassy: tokens e componentes reutilizáveis (amplia o vidro de 05-vidro.css) =====
+   Regra: vidro nas superfícies que agrupam (cards, painéis, barras, abas, fundo do modal).
+   Campos, tabelas, preços e dados pessoais ficam sobre superfície sólida (--gl-solid) para leitura. */
+:root[data-theme=dark]{--gl-solid:rgba(20,20,20,.94);--gl-blur:18px;--gl-r:16px;--gl-t2:rgba(255,255,255,.76);--gl-ok:#7ef0c0;--gl-err:#ffb4c0;--gl-sel:rgba(255,90,0,.3);--gl-fx:inset 0 1px 0 var(--gl-hi),0 24px 48px -28px var(--gl-sh)}
+
+/* componentes: .glass (vidro), .glass-s (sólido, para ler), .glass-bar (barra de ações/filtros) */
+.glass,.glass-s,.glass-bar{border:1px solid var(--gl-bd);border-radius:var(--gl-r);box-shadow:var(--gl-fx)}
+.glass{background:var(--gl-bg);backdrop-filter:blur(var(--gl-blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(160%)}
+.glass-s{background:var(--gl-solid)}
+.glass-bar{position:sticky;top:0;z-index:5;padding:10px 14px;background:color-mix(in srgb,var(--gl-solid) 90%,transparent);backdrop-filter:blur(var(--gl-blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(160%)}
+.glass:focus-within,.glass-s:focus-within{border-color:color-mix(in srgb,var(--focus) 55%,var(--gl-bd))}
+.glass-st{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;border:1px solid var(--gl-bd);background:var(--gl-bg);font-size:12.5px;font-weight:700}
+.glass-st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.glass-st.ok{color:var(--gl-ok)}.glass-st.err{color:var(--gl-err)}
+
+/* ----- briefing público: painéis de vidro,campos sólidos ----- */
+/* luz de fundo atrás do briefing: sem ela o vidro não tem o que desfocar */
+.wzl{position:relative;isolation:isolate}
+.wzl::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(42% 46% at 80% 18%,rgba(255,90,0,.55),transparent 70%),radial-gradient(36% 42% at 10% 78%,rgba(255,138,77,.36),transparent 70%),radial-gradient(30% 30% at 56% 100%,rgba(255,90,0,.2),transparent 70%)}
+body.pub .wzl .gl{background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%),var(--gl-bg);border-color:rgba(255,255,255,.24);box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 0 0 1px rgba(255,255,255,.04),0 34px 80px -30px rgba(0,0,0,.75);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%)}
+body.pub .wzl .svc,body.pub .wzl .tip,body.pub .wzl .mods li,body.pub .wzl .rsm{background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.03)),var(--gl-bg);border-color:rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 18px 40px -24px rgba(0,0,0,.7)}
+body.pub .wzl .chip2{background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04)),var(--gl-bg);border-color:rgba(255,255,255,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.26);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+body.pub .wzl .btn.ghost{background:var(--gl-bg);border-color:rgba(255,255,255,.34);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+body.pub .wzl .ph li i{background:var(--gl-bg);border-color:rgba(255,255,255,.3)}
+body.pub .wzl .ph li.on i{background:#C24400;border-color:#FF8A4D}
+.wzl .svc,.wzl .tip,.wzl .mods li,.wzl .rsm{background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx);backdrop-filter:blur(var(--gl-blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(160%)}
+.wzl .tip{padding:16px;border-radius:var(--gl-r)}
+.wzl .gl{background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx);backdrop-filter:blur(var(--gl-blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(160%)}
+.wzl .gl textarea,.wzl .gl input{background:var(--gl-solid);border:1px solid var(--gl-bd);border-radius:12px;padding:12px 14px}
+.wzl .chip2{background:var(--gl-bg);border:1px solid var(--gl-bd);border-width:1px}
+.wzl .chip2.on,.wzl .chip2:hover{background:#C24400;border-color:#C24400;color:#fff}
+/* cantos mais macios no briefing (o estilo United zerava os raios) */
+body.pub .wzl .gl{border-radius:30px}
+body.pub .wzl .svc{border-radius:16px}
+body.pub .wzl .tip,body.pub .wzl .mods li,body.pub .wzl .rsm{border-radius:20px}
+body.pub .wzl .chip2{border-radius:16px}
+body.pub .wzl .ph li i{border-radius:10px}
+body.pub .wzl .gl textarea,body.pub .wzl .gl input{border-radius:14px}
+body.pub .wzl .seg i{border-radius:99px}
+.mods{list-style:none;margin:18px 0;padding:0;display:grid;gap:10px}
+.mods li{padding:12px 14px;border-radius:14px;display:grid;gap:6px;font-size:14.5px}
+.mods li.on{border-color:var(--focus)}
+.mods .mh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.mods .mh b{font-size:14.5px}
+.mbar{height:5px;border-radius:3px;background:var(--bd);overflow:hidden}
+.mbar i{display:block;height:100%;background:linear-gradient(90deg,#C24400,#FF8A4D)}
+.rsm{margin-top:12px;padding:12px 14px;border-radius:14px;font-size:14px}
+.rsm summary{cursor:pointer;font-weight:700;min-height:24px}
+.rsm ol{margin:8px 0 0;padding-left:18px;display:grid;gap:6px;color:var(--gl-t2)}
+
+/* ----- Minha área: navegação,dashboard e planos ----- */
+body.adm .nv.on{background:var(--gl-sel);border:1px solid var(--gl-bd);box-shadow:inset 0 1px 0 var(--gl-hi)}
+body.adm .nv:focus-visible,body.adm .tab:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.bn{border-radius:var(--gl-r);backdrop-filter:blur(var(--gl-blur)) saturate(160%);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(160%);box-shadow:var(--gl-fx)}
+.dsh-f{padding:12px 14px;border-radius:var(--gl-r);background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx);backdrop-filter:blur(var(--gl-blur));-webkit-backdrop-filter:blur(var(--gl-blur))}
+.tbw{background:var(--gl-solid);border:1px solid var(--gl-bd);border-radius:12px}
+.bmod{margin:12px 0;padding:14px 16px;border-radius:var(--gl-r);background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx)}
+.plc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin:14px 0}
+.plc>div{padding:14px 16px;border-radius:var(--gl-r);background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx);display:grid;gap:4px;align-content:start}
+.plc>div.esc{border-color:var(--focus);background:var(--gl-sel)}
+.plc h4{margin:0;font:700 15px var(--fb)}
+.plc .vl{font:700 22px/1.15 var(--fb);font-variant-numeric:tabular-nums}
+.plc small{opacity:.85;font-size:12.5px;line-height:1.4}
+.plc .tg{font:600 11.5px ui-monospace,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--focus)}
+
+/* ----- vagas e RH ----- */
+.vgf{padding:clamp(16px,3vw,26px);border-radius:var(--gl-r);background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx);backdrop-filter:blur(var(--gl-blur));-webkit-backdrop-filter:blur(var(--gl-blur))}
+.rhint{border-left:3px solid #ffd166;padding:8px 12px;border-radius:0 10px 10px 0;background:rgba(255,209,102,.1);font-size:13.5px}
+.rhr{padding:14px 16px;border-radius:var(--gl-r);background:var(--gl-solid);border:1px solid var(--gl-bd);display:grid;gap:8px}
+.rhr h4{margin:6px 0 0;font:700 13px ui-monospace,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.rhr ul{margin:0;padding-left:18px;display:grid;gap:4px}
+
+/* ----- modais: fundo desfocado,painel sólido,cabeçalho e rodapé definidos ----- */
+.modal{background:rgba(11,11,11,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.modal .mbox,body.adm .modal .mbox{background:var(--gl-solid)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1px solid var(--gl-bd);box-shadow:var(--gl-fx),0 30px 90px #000a}
+.mbox>h3:first-of-type{padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--gl-bd)}
+.modal .mbox>.row:last-child{position:sticky;bottom:0;margin-top:14px;padding:12px 0 2px;background:var(--gl-solid);border-top:1px solid var(--gl-bd)}
+
+/* ----- sem suporte, transparência reduzida e movimento reduzido ----- */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root[data-theme=dark]{--gl-bg:#1A1A1A}
+  .glass,.glass-bar,.wzl .gl,.bn,.dsh-f{background:var(--gl-solid)}}
+@media(prefers-reduced-transparency:reduce){
+  :root[data-theme=dark]{--gl-bg:#1A1A1A;--gl-solid:#141414}
+  .glass,.glass-bar,.wzl .svc,.wzl .tip,.wzl .mods li,.wzl .rsm,.wzl .gl,.bn,.dsh-f,.vgf,.modal{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .modal{background:#000c}}
+@media(prefers-reduced-motion:reduce){.glass,.bn,.mbar i{transition:none}}
+
+/* ----- cantos arredondados em todo o site e painel (o estilo United zerava os raios) ----- */
+:root{--r1:8px;--r2:14px;--r3:20px}
+.v-cta-row,.v-job,.v-empty,.v-form{border-radius:24px}
+.v-gl .v-row{border-radius:20px}
+.svc{border-radius:16px}
+.ph li i{border-radius:10px}
+.gl{border-radius:30px}
+.mnav button{border-radius:12px!important}
+.pane.fs{border-radius:0}
+
+/* celular e tablet: o menu vira uma faixa horizontal, então o grupo de IA se achata e os itens seguem em fila */
+@media(max-width:900px){.nvg{display:contents}.nvgt{display:none}.nv.sub{padding-left:inherit}}
+/* tela das IAs: nada pode passar da largura (o seletor de plataforma tem texto longo) */
+.iag,.iacard{min-width:0}
+.iacard select,.iacard input{max-width:100%;min-width:0}
+.iag{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+
+/* ===== celular e tablet: mesma experiência, só reorganizada (nada some, nada se sobrepõe) ===== */
+@media(max-width:860px){
+  /* briefing: serviço e progresso em cima, a pergunta logo depois, apoio embaixo */
+  body.pub .wzl{display:flex;flex-direction:column;gap:14px;padding-top:18px}
+  body.pub .wzl .rail{display:contents}
+  body.pub .wzl .rail>.svc{order:0;align-self:flex-start}
+  body.pub .wzl .rail>.mods{order:1;margin:0}
+  body.pub .wzl>.gl{order:2;padding:22px 18px;border-radius:24px}
+  body.pub .wzl .rail>.ph{order:3;margin:6px 0}
+  body.pub .wzl .rail>.tip{order:4}
+  body.pub .wzl .rail>.rsm{order:5;margin:0}
+  body.pub .wzl .q{font-size:clamp(26px,7.4vw,34px);margin:8px 0 20px}
+  body.pub .wzl .chip2{font-size:16px;padding:12px 16px;min-height:48px}
+  .wzl .gl textarea,.wzl .gl input{font-size:18px}
+}
+@media(max-width:600px){
+  /* botões flutuantes menores e longe do texto do rodapé */
+  .wafab{width:48px;height:48px;right:12px;bottom:12px}
+  .totop{width:40px;height:40px;right:16px;bottom:68px}
+  .foot,.v-foot{padding-bottom:96px}
+  .row{gap:8px}
+  .modal .row>.btn,.mbox .row>.btn{flex:1 1 calc(50% - 8px);justify-content:center;text-align:center}
+}
+@media(max-width:900px){
+  /* Minha área: menu em pílulas,rodapé do painel legível,sem botão em cima do texto */
+  .side>.nvs{align-items:center;padding:8px 14px 12px}
+  .side .nv{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:99px;border:1px solid transparent}
+  body.adm .mainc{padding:16px 14px 40px}
+  .diskbar .btn{display:block;width:100%;margin:0 0 8px;text-align:center}
+  .diskbar .hint{display:block}
+  .dtools{grid-template-columns:1fr 1fr}
+  .dtools button{text-align:center;display:flex;align-items:center;justify-content:center}
+  .tal label{display:block;margin:12px 0 4px}
+  .tal select,.tal textarea{width:100%}
+  .row>.btn,.row>a.btn{flex:1 1 auto;text-align:center;justify-content:center}
+  .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px}
+  .tabs .tab{flex:none}
+  .vga .btn{flex:1 1 auto}
+  .tbl th,.tbl td{padding:8px 8px}
+}
+
+/* dashboard no celular: filtros em duas colunas e indicadores em pares, para o número aparecer na primeira tela */
+@media(max-width:560px){
+  .dsh-f{grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+  .dsh-f .dsh-q{grid-column:1/-1}
+  .dsh-f label{font-size:10.5px}
+  .dsh-f select,.dsh-f input{min-height:44px;padding:0 8px;font-size:14px}
+}
+@container (max-width:520px){
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .bn-hero,.bn-w2{grid-column:1/-1}
+  .bn{padding:14px}
+  .bn-n{font-size:30px}.bn-n.big{font-size:44px}
+}
+.rhp{margin-top:16px;padding:14px;border-radius:var(--gl-r)}
+.rhq{padding:12px;display:grid;gap:6px;margin-top:8px}
+.rhq textarea{min-height:64px}
+
+/* formulário dentro de modal: campos em linha própria, largura total */
+.mbox label:not(.tg2b):not(.cons){display:block;margin:12px 0 4px;font-weight:600}
+.mbox input:not([type=checkbox]):not([type=radio]),.mbox textarea,.mbox select{display:block;width:100%;box-sizing:border-box;background:var(--gl-solid);border:1px solid var(--gl-bd);border-radius:12px;color:var(--fg);padding:10px 12px;font:inherit;min-height:44px}
+.mbox textarea{resize:vertical}
+
+/* painéis de configuração (Base da IA, IAs): rótulo acima, campo em linha própria */
+body.adm .panel>label:not(.tg2b){display:block;margin:14px 0 4px;font-weight:600}
+body.adm .panel>textarea,body.adm .panel>input:not([type=checkbox]),body.adm .panel>select{display:block;width:100%;box-sizing:border-box}
+.adm-g>*,.panel.dt{min-width:0}

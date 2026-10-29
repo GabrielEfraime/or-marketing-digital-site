@@ -1,0 +1,40 @@
+/* ===== páginas de serviço e de vagas ===== */
+.svp-top{background:#0B0B0B!important;color:#F5F5F3;min-height:clamp(420px,66vh,640px)}
+.svp-top.top::before,.svp-top.top::after{display:none!important}
+.svp-hero{padding-top:clamp(48px,7vw,96px)!important;padding-bottom:clamp(48px,6vw,80px)!important}
+.svp-h{color:#F5F5F3!important;font-family:var(--fd)!important;font-size:clamp(38px,7vw,108px)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:.98!important;max-width:14ch!important;text-wrap:balance}
+.svp-eb{color:#FF5A00!important;font-size:clamp(16px,1.7vw,20px)!important}
+.svp-dn{background:#FF5A00!important}
+.svp-grid{margin-top:clamp(40px,6vw,88px)}
+.vg-head{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between}
+.v-count{font:700 17px var(--fb);padding:12px 20px;background:color-mix(in srgb,currentColor 10%,transparent);border-radius:999px}
+.v-jobs{list-style:none;margin:clamp(32px,5vw,64px) 0 0;padding:0;display:grid;gap:12px}
+.v-job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:center;padding:clamp(22px,3vw,40px);background:color-mix(in srgb,currentColor 8%,transparent)}
+.v-job h3{font:700 clamp(22px,2.4vw,34px)/1.15 var(--fd);letter-spacing:-.025em;margin:0}
+.v-job p{margin:10px 0 0;font-size:17px;line-height:1.55;max-width:60ch}
+.v-job .jm{display:flex;gap:8px;flex-wrap:wrap}
+.v-tag{font:600 14px var(--fb);padding:6px 14px;border-radius:999px;background:color-mix(in srgb,currentColor 12%,transparent)}
+.v-job ul{margin:12px 0 0;padding-left:20px;font-size:16px;line-height:1.6}
+@media(max-width:760px){.v-job{grid-template-columns:1fr}}
+.v-empty{margin-top:clamp(32px,5vw,64px);padding:clamp(24px,3.4vw,44px);background:color-mix(in srgb,currentColor 8%,transparent)}
+.v-empty h3{font:700 clamp(22px,2.4vw,32px)/1.15 var(--fd);margin:0 0 8px}.v-empty p{margin:0;font-size:18px;line-height:1.6;max-width:56ch}
+.vg-foto{width:100%;height:100%;object-fit:cover;display:block}
+.v-form{margin-top:clamp(28px,4vw,56px);max-width:720px;padding:clamp(22px,3.4vw,44px);background:var(--gl-bg);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid var(--gl-bd);box-shadow:inset 0 1px 0 var(--gl-hi),0 24px 48px -28px var(--gl-sh)}
+.v-form label{display:block;font:600 16px var(--fb);margin:20px 0 8px}
+.v-form label:first-child{margin-top:0}
+.v-form .cons{display:flex}
+.v-form input:not([type=checkbox]),.v-form select,.v-form textarea{width:100%;box-sizing:border-box;min-height:52px;padding:12px 16px;font:17px var(--fb);color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent);border:1px solid var(--gl-bd);border-radius:12px}
+.v-form textarea{min-height:120px;resize:vertical}
+.v-form input:focus-visible,.v-form select:focus-visible,.v-form textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.v-form .plink{all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.v-form .hp{position:absolute;left:-9999px}
+@media(prefers-reduced-transparency:reduce){.v-form{backdrop-filter:none;-webkit-backdrop-filter:none}}
+.svp-h{font-size:clamp(36px,5.4vw,80px)!important}
+.top .svp-orb{opacity:.95!important;width:min(92vw,640px)!important}
+.svp-split{margin-top:clamp(24px,3vw,40px)}
+.svp-t2{font-size:clamp(30px,4.2vw,64px)!important;max-width:18ch!important}
+.svp-lt{position:sticky;top:96px}
+@media(max-width:860px){.svp-lt{position:static}}
+.svp-info{gap:clamp(28px,3.4vw,48px)!important}
+.svp-info b{font-size:clamp(21px,2vw,28px)!important}
+.svp-info span{font-size:clamp(17px,1.4vw,19px)!important;max-width:none!important}

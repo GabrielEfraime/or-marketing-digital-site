@@ -1,0 +1,27 @@
+/* Apple HIG: tipografia do sistema,alvos 44px,cantos concêntricos,easing e feedback de toque */
+body.pub{--hig-ease:cubic-bezier(.25,.1,.25,1);--hig-spring:cubic-bezier(.175,.885,.32,1.275);--hig-focus:0 0 0 4px #FF8A4D66;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',var(--fb),system-ui,sans-serif;font-size:17px;line-height:1.47}
+body.pub p,body.pub li,body.pub .sub{font-family:inherit}
+body.pub h1,body.pub h2,body.pub h3{letter-spacing:-.03em;line-height:1.1}
+body.pub .btn,body.pub .lk,body.pub .nav a,body.pub .nav button,body.pub button.sc2,body.pub .fq summary,body.pub .fq button{min-height:44px}
+body.pub .btn,body.pub .btn.ghost{border-radius:9999px;font-weight:600;transition:transform .15s var(--hig-ease),filter .2s var(--hig-ease),background .2s var(--hig-ease)}
+body.pub .btn:active,body.pub .sc2:active,body.pub .lk:active{transform:scale(.97)}
+body.pub .sc2,body.pub .lk{transition-timing-function:var(--hig-ease)}
+body.pub :focus-visible{outline:none;box-shadow:var(--hig-focus)}
+body.pub .sc2:focus-visible{outline:none;box-shadow:var(--hig-focus)}
+body.pub .sc2{border-radius:20px;border:1px solid #ffffff14}
+body.pub .tl li,body.pub .cc,body.pub .pgrid li{border-radius:20px}
+body.pub .mk-r{border-radius:12px}
+body.pub input,body.pub textarea,body.pub select{min-height:44px;border-radius:12px}
+body.pub input:focus,body.pub textarea:focus,body.pub select:focus{outline:none;box-shadow:var(--hig-focus)}
+body.pub .fq{border-bottom:1px solid #ffffff1f}
+body.pub .rv{transition-timing-function:var(--hig-ease)}
+@media(max-width:700px){body.pub{font-size:16px}body.pub .sc2{height:76px}}
+@media(prefers-contrast:more){body.pub .sc2,body.pub .fq{border-color:#ffffff66}}
+.skip{position:fixed;left:12px;top:-60px;z-index:100;background:#FF5A00;color:#0B0B0B;padding:12px 20px;border-radius:9999px;font-weight:700;text-decoration:none;transition:top .2s}
+.skip:focus{top:12px}
+body.pub .fcol button,body.pub .fcol a{min-height:44px;display:inline-flex;align-items:center}
+body.pub .nav .lnk{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
+body.pub p,body.pub .lead,body.pub .sub{max-width:68ch;text-wrap:pretty}
+body.pub h1,body.pub h2,body.pub h3{hyphens:none;text-wrap:balance}
+body.pub{font-kerning:normal;font-feature-settings:"kern" 1,"liga" 1}
+body.pub .svp-body a,body.pub .foot a{text-decoration-thickness:1px;text-underline-offset:3px}
