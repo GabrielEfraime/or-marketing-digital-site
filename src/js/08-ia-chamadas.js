@@ -32,15 +32,15 @@ const esperaAb=(ms,sig)=>new Promise((res,rej)=>{const k=setTimeout(res,ms);if(s
 async function ask(msgs,onChunk,o={}){
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
-  const oss=/gpt-oss/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
+  const oss=/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
   let url,body;
-  const viaSrv=c.kind==='openai'&&!c.key&&srvOn()&&/api\.groq\.com/.test(c.url||'');
+  const viaSrv=c.kind==='openai'&&!c.key&&srvOn()&&/api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
   if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+c.key;
     body={model:c.model,messages:msgs,stream:true,max_tokens:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048),temperature:o.temp??0.5};if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
     const L=iaLim(c.model);if(L.tpm){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
   else{url='https://api.anthropic.com/v1/messages';Object.assign(hd,{'x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
     body={model:c.model,messages:rest,stream:true,max_tokens:o.max||2048,temperature:o.temp??0.5};if(sys)body.system=sys}
-  if(!c.key&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, clique em "Usar a Groq nas duas IAs" e cole a chave da Groq. Ela fica só neste navegador.'));
+  if(!c.key&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, clique em "Usar o Gemini nas duas IAs", cole a chave do Google e clique em Salvar. Ela fica só neste navegador.'));
   let r;
   const tc=new AbortController(),lim=o.timeout||150000,tmo=setTimeout(()=>{tc.porTempo=1;tc.abort()},lim);if(o.signal){if(o.signal.aborted)tc.abort();else o.signal.addEventListener('abort',()=>tc.abort())}
   const go=()=>fetch(url,{method:'POST',signal:tc.signal,headers:hd,body:JSON.stringify(body)});

@@ -31,7 +31,7 @@ fora.length ? aviso('endereços fora da lista permitida (confira se são exemplo
 if (/fonts\.googleapis|fonts\.gstatic|cdnjs|unpkg|jsdelivr/i.test(html)) ruim('carrega fontes ou scripts de CDN (vaza IP do visitante)'); else ok('sem Google Fonts nem CDN');
 
 // 3. Segredos
-const SEGREDOS = [/gsk_[A-Za-z0-9]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za-z0-9]{32,}/, /AIza[0-9A-Za-z_-]{30,}/, /ghp_[A-Za-z0-9]{30,}/];
+const SEGREDOS = [/gsk_[A-Za-z0-9]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za-z0-9]{32,}/, /AIza[0-9A-Za-z_-]{30,}/, /ghp_[A-Za-z0-9]{30,}/, /AQ\.Ab[0-9A-Za-z_-]{30,}/];
 SEGREDOS.some((r) => r.test(html)) ? ruim('parece haver uma chave de API dentro do código') : ok('nenhuma chave de API no código');
 
 html.includes('window.OR_TESTE=1') ? ruim('o build normal está com a marca do build de TESTE') : ok('build normal sem a marca de teste');
