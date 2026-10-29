@@ -1,4 +1,4 @@
-# Vyxa Marketing Digital (plataforma com IA)
+# OR Marketing Digital (plataforma com IA)
 
 Leia primeiro: `README.md` (como rodar e editar), `docs/ARQUITETURA.md` (mapa dos arquivos), `docs/DECISOES-E-PREFERENCIAS.md` (o que o dono quer e não quer) e `docs/PENDENCIAS.md`. Especificação completa: `docs/ESPECIFICACAO-COMPLETA.md` (leia só a seção da tarefa).
 

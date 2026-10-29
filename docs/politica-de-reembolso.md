@@ -1,4 +1,4 @@
-# Política de reembolso e cancelamento — [NOME DA MARCA, ex.: Vyxa]
+# Política de reembolso e cancelamento — [NOME DA MARCA, ex.: OR Marketing Digital]
 
 > **RASCUNHO para revisão jurídica.** Preencher os campos entre [colchetes] e validar com um advogado antes de publicar.
 > Versão: [AAAA-MM] · Última atualização: [DD/MM/AAAA]

@@ -1,4 +1,4 @@
-# Termos de uso — [NOME DA MARCA, ex.: Vyxa]
+# Termos de uso — [NOME DA MARCA, ex.: OR Marketing Digital]
 
 > **RASCUNHO para revisão jurídica.** Não publicar antes de preencher os campos entre [colchetes] e validar com um advogado.
 > Versão: [AAAA-MM] · Última atualização: [DD/MM/AAAA]
