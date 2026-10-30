@@ -5,6 +5,8 @@
    Termos do Google: guardar só o necessário para o contato; fotos e avaliações do Google só na prévia, com o autor. */
 const CAP={tab:'busca',res:[],tok:'',q:null,busy:false,fazendo:'',prog:'',err:'',msg:'',sel:new Set(),id:null,filtro:{semsite:true,cel:false,boa:false,poucas:false},ord:'op',fila:null,etapa:'todas',busca:'',waAberto:null,usarGoogle:true,form:{nicho:'',cidade:'',bairro:''}};
 const CAP_NICHOS=['Barbearias','Salões de beleza','Clínicas de estética','Estúdios de tatuagem','Manicure e nail designer','Restaurantes','Pizzarias','Hamburguerias','Padarias e confeitarias','Cafeterias','Academias','Estúdios de pilates','Pet shops','Clínicas veterinárias','Dentistas','Fisioterapia','Psicólogos','Nutricionistas','Oficinas mecânicas','Lava-jato','Imobiliárias','Escritórios de advocacia','Escritórios de contabilidade','Lojas de roupa','Floriculturas','Escolas de idiomas','Autoescolas','Buffets e festas'];
+/* cidades sugeridas no menu (dá para digitar qualquer outra): Rio e região metropolitana, outras cidades do RJ, capitais e algumas das maiores cidades do país */
+const CAP_CIDADES=['Rio de Janeiro, RJ','Niterói, RJ','São Gonçalo, RJ','Duque de Caxias, RJ','Nova Iguaçu, RJ','São João de Meriti, RJ','Belford Roxo, RJ','Mesquita, RJ','Nilópolis, RJ','Queimados, RJ','Magé, RJ','Maricá, RJ','Itaboraí, RJ','Itaguaí, RJ','Seropédica, RJ','Petrópolis, RJ','Teresópolis, RJ','Nova Friburgo, RJ','Volta Redonda, RJ','Barra Mansa, RJ','Resende, RJ','Angra dos Reis, RJ','Paraty, RJ','Cabo Frio, RJ','Armação dos Búzios, RJ','Araruama, RJ','Saquarema, RJ','Rio das Ostras, RJ','Macaé, RJ','Campos dos Goytacazes, RJ','São Paulo, SP','Campinas, SP','Guarulhos, SP','Santos, SP','Ribeirão Preto, SP','Sorocaba, SP','São José dos Campos, SP','Belo Horizonte, MG','Uberlândia, MG','Juiz de Fora, MG','Vitória, ES','Salvador, BA','Recife, PE','Fortaleza, CE','Natal, RN','João Pessoa, PB','Maceió, AL','Aracaju, SE','Teresina, PI','São Luís, MA','Belém, PA','Manaus, AM','Macapá, AP','Boa Vista, RR','Porto Velho, RO','Rio Branco, AC','Palmas, TO','Brasília, DF','Goiânia, GO','Cuiabá, MT','Campo Grande, MS','Curitiba, PR','Londrina, PR','Florianópolis, SC','Joinville, SC','Porto Alegre, RS'];
 const CAP_ETAPAS=[['novo','Encontrado'],['site','Site gerado'],['contato','Contatado'],['resp','Respondeu'],['fechou','Fechou'],['nao','Sem interesse']];
 const CAP_PROX={novo:'site',site:'contato',contato:'resp',resp:'fechou'};
 const capNomeEt=k=>(CAP_ETAPAS.find(x=>x[0]===k)||['','—'])[1];
@@ -61,12 +63,14 @@ async function capBuscar(mais){
   CAP.busy=true;CAP.fazendo='busca';capPaint();
   try{
     const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':k,'X-Goog-FieldMask':CAP_CAMPOS},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});
-    const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(capErro(r.status,j));
+    const j=await r.json().catch(()=>({}));if(!r.ok){const er=new Error(capErro(r.status,j));er.st=r.status;throw er}
     const novos=(Array.isArray(j.places)?j.places:[]).filter(x=>x&&x.businessStatus!=='CLOSED_PERMANENTLY').map(capDoGoogle(q)).filter(x=>x.pid);
     CAP.res=mais?[...CAP.res,...novos.filter(n=>!CAP.res.some(x=>x.pid===n.pid))]:novos;CAP.tok=typeof j.nextPageToken==='string'?j.nextPageToken:'';CAP.q=q;CAP.fonte='google';
     const o=capLoad();o.buscas.push({em:Date.now(),q:texto,n:novos.length});capSave(o);
     if(!novos.length)CAP.msg='O Google não achou nada para "'+texto+'". Tente outro nicho ou tire o bairro.';
-  }catch(e){CAP.err=e.name==='TimeoutError'?'O Google demorou demais para responder. Tente de novo.':e.name==='TypeError'?'Sem conexão com o Google agora. Confira a internet e tente de novo.':e.message}
+  }catch(e){
+    if(!mais&&[400,401,403].includes(e.st)){CAP.busy=false;await capBuscarOSM();if(!CAP.err)CAP.msg='O Google recusou a chave, então busquei no OpenStreetMap (grátis). Para usar o Google, confira a chave ou apague-a. '+(CAP.msg||'');capPaint();return}
+    CAP.err=e.name==='TimeoutError'?'O Google demorou demais para responder. Tente de novo.':e.name==='TypeError'?'Sem conexão com o Google agora. Confira a internet e tente de novo.':e.message}
   CAP.busy=false;CAP.fazendo='';capPaint();
 }
 /* ---- busca grátis no OpenStreetMap (Overpass), usada quando não há chave do Google ----
@@ -79,14 +83,16 @@ const OSM_TAGS={'Barbearias':['["shop"="hairdresser"]["name"~"barb",i]','["shop"
  'Psicólogos':['["healthcare"="psychotherapist"]'],'Nutricionistas':['["healthcare"="nutrition_counselling"]','["healthcare"]["name"~"nutri",i]'],'Oficinas mecânicas':['["shop"="car_repair"]'],'Lava-jato':['["amenity"="car_wash"]'],
  'Imobiliárias':['["office"="estate_agent"]'],'Escritórios de advocacia':['["office"="lawyer"]'],'Escritórios de contabilidade':['["office"="accountant"]'],'Lojas de roupa':['["shop"~"clothes|boutique"]'],
  'Floriculturas':['["shop"="florist"]'],'Escolas de idiomas':['["amenity"="language_school"]'],'Autoescolas':['["amenity"="driving_school"]'],'Buffets e festas':['["amenity"="events_venue"]','["shop"="party"]']};
-const osmEsc=s=>String(s||'').replace(/["\\]/g,'').trim().slice(0,80);
+const osmEsc=s=>[...String(s||'').trim().slice(0,80)].filter(c=>!('"'+String.fromCharCode(92)+'.*+?^${}()|[]').includes(c)).join('');
+/* o mapa guarda o nome exato ("Rio de Janeiro"): ajusta as maiúsculas do que foi digitado, deixando de, da, do, dos, das e e em minúscula */
+const osmNome=s=>osmEsc(s).split(' ').filter(Boolean).map((w,i)=>i&&['de','da','do','dos','das','e'].includes(w.toLowerCase())?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
 const doOSM=q=>e=>{const t=e.tags||{},w=String(t.website||t['contact:website']||t.url||''),i0=String(t['contact:instagram']||t.instagram||'');
   const ig=(i0.match(/instagram\.com\/([A-Za-z0-9._]+)/i)||[])[1]||i0.replace(/^@/,'').replace(/[^A-Za-z0-9._]/g,'');
   const end=[[t['addr:street'],t['addr:housenumber']].filter(Boolean).join(', '),t['addr:suburb']||t['addr:neighbourhood']||'',t['addr:city']||''].filter(Boolean).join(' - ');
   return {id:'',pid:'osm:'+e.type+'/'+e.id,nome:String(t.name||''),tipo:q.nicho,nicho:q.nicho,cidade:q.cidade,end,tel:String(t.phone||t['contact:phone']||t['contact:mobile']||t['contact:whatsapp']||''),
     site:/^https?:\/\//i.test(w)?w:w&&/^[\w.-]+\.[a-z]{2,}/i.test(w)?'https://'+w:'',maps:'https://www.openstreetmap.org/'+e.type+'/'+e.id,nota:0,aval:0,ig,fonte:'osm'}};
 async function capBuscarOSM(){
-  const q={...CAP.form},cid=osmEsc(q.cidade.split(',')[0]),bai=osmEsc(q.bairro);
+  const q={...CAP.form},cid=osmNome(q.cidade.split(',')[0]),bai=osmNome(q.bairro);
   let f=OSM_TAGS[q.nicho];
   if(!f){const w=osmEsc(q.nicho).split(/\s+/).filter(x=>x.length>=4).sort((a,b)=>b.length-a.length)[0]||osmEsc(q.nicho);f=['["name"~"'+w.replace(/s$/i,'').replace(/[.*+?^${}()|[\]]/g,'')+'",i][~"^(shop|amenity|office|craft|healthcare|leisure)$"~"."]']}
   // município (admin_level 8); com bairro, cruza as duas áreas (o bairro precisa estar dentro da cidade)
@@ -248,8 +254,8 @@ function capBusca(o){
   const k=capKey(),f=CAP.form,salvos=new Set(o.L.map(p=>p.pid).filter(Boolean)),vis=capFiltra(CAP.res);
   const sel=[...CAP.sel].filter(pid=>CAP.res.some(p=>p.pid===pid)&&!salvos.has(pid));
   return `<section class="esc cap-f"><div class="cap-fr">
-   <div><label for="capn">Nicho</label><input id="capn" list="capnl" value="${esc(f.nicho)}" placeholder="Ex.: Barbearias" autocomplete="off"><datalist id="capnl">${CAP_NICHOS.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
-   <div><label for="capc">Cidade</label><input id="capc" value="${esc(f.cidade)}" placeholder="Ex.: Rio de Janeiro, RJ" autocomplete="off"></div>
+   <div><label for="capn">Nicho</label><input id="capn" value="${esc(f.nicho)}" placeholder="Escolha ou digite o nicho" autocomplete="off"></div>
+   <div><label for="capc">Cidade</label><input id="capc" value="${esc(f.cidade)}" placeholder="Escolha ou digite a cidade" autocomplete="off"></div>
    <div><label for="capb">Bairro (opcional)</label><input id="capb" value="${esc(f.bairro)}" placeholder="Ex.: Tijuca" autocomplete="off"></div>
    <div class="cap-fb"><button class="btn" data-cap="buscar" ${CAP.busy?'disabled':''}>${CAP.fazendo==='busca'?(k?'Buscando…':'Buscando no mapa (até 1 min e meio)…'):'Buscar'}</button></div></div>
    <p class="hint">${k?'A busca usa o Google (Places API), com a sua chave.':'A busca usa o OpenStreetMap: grátis e sem chave, mas com menos negócios e sem notas. Com uma chave do Google a busca fica mais completa.'}</p>
@@ -318,12 +324,31 @@ async function capFotosPaint(p){
   const F=(await arqGet('capf:'+p.id).catch(()=>null))||[];if(!box.isConnected)return;
   box.innerHTML=F.length?F.map((f,i)=>`<figure><img src="${esc(/^data:image\/(jpeg|png|webp);base64,/.test(f.d)?f.d:CAP_PH)}" alt="Foto ${i+1} de ${esc(p.nome)}"><figcaption>${f.g?'Google'+(f.autor?': '+esc(f.autor):''):'Enviada por você'}</figcaption><button type="button" class="cap-fx" data-cap="fotox:${i}" aria-label="Tirar a foto ${i+1}">×</button></figure>`).join(''):'<p class="hint">Sem fotos ainda. Envie fotos do negócio ou use as do Google ao gerar o site.</p>';
 }
+function capCombo(inp,itens){
+  if(!inp||inp.dataset.combo)return;inp.dataset.combo='1';
+  const box=document.createElement('div');box.className='capcb';box.setAttribute('role','listbox');box.hidden=true;box.id=inp.id+'_lb';
+  inp.parentNode.classList.add('capcw');inp.parentNode.appendChild(box);
+  inp.setAttribute('role','combobox');inp.setAttribute('aria-expanded','false');inp.setAttribute('aria-autocomplete','list');inp.setAttribute('aria-controls',box.id);
+  let ativo=-1,filtra=false;
+  const lista=()=>{const v=norm(inp.value);return itens.filter(x=>!filtra||!v||norm(x).includes(v))};
+  const pinta=()=>{const L=lista();box.innerHTML=L.map((x,k)=>'<div role="option" id="'+box.id+k+'" class="capop'+(k===ativo?' on':'')+'" aria-selected="'+(k===ativo)+'" data-i="'+k+'">'+esc(x)+'</div>').join('');box.hidden=!L.length;inp.setAttribute('aria-expanded',String(!box.hidden));if(ativo>=0&&box.children[ativo]){inp.setAttribute('aria-activedescendant',box.children[ativo].id);box.children[ativo].scrollIntoView({block:'nearest'})}else inp.removeAttribute('aria-activedescendant')};
+  const abre=f=>{filtra=f;ativo=-1;pinta()};
+  const fecha=()=>{box.hidden=true;ativo=-1;inp.setAttribute('aria-expanded','false')};
+  const pega=x=>{inp.value=x;fecha();inp.dispatchEvent(new Event('change'))};
+  inp.addEventListener('focus',()=>abre(false));inp.addEventListener('click',()=>{if(box.hidden)abre(false)});inp.addEventListener('input',()=>abre(true));inp.addEventListener('blur',fecha);
+  inp.addEventListener('keydown',e=>{const n=lista().length;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(box.hidden){abre(false);return}ativo=e.key==='ArrowDown'?(ativo+1)%n:(ativo<=0?n-1:ativo-1);pinta()}
+    else if(e.key==='Enter'&&!box.hidden&&ativo>=0){e.preventDefault();e.capTratado=true;pega(lista()[ativo])}
+    else if(e.key==='Escape'&&!box.hidden){e.preventDefault();e.stopPropagation();fecha()}});
+  box.addEventListener('mousedown',e=>{e.preventDefault();const o=e.target.closest('.capop');if(o)pega(lista()[+o.dataset.i])});
+}
 function capLeForm(){const v=id=>((document.getElementById(id)||{}).value||'').trim();if(document.getElementById('capn'))CAP.form={nicho:v('capn').slice(0,80),cidade:v('capc').slice(0,80),bairro:v('capb').slice(0,80)};try{localStorage.setItem('capcid',CAP.form.cidade)}catch(e){}}
 function capBind(el,p){
   el.onclick=e=>{const b=e.target.closest('[data-cap]');if(!b||b.disabled)return;const [k,...r]=b.dataset.cap.split(':');capAct(k,r.join(':'))};
   const g=id=>document.getElementById(id);
   el.querySelectorAll('[data-capsel]').forEach(x=>x.onchange=()=>{x.checked?CAP.sel.add(x.dataset.capsel):CAP.sel.delete(x.dataset.capsel);const c=x.closest('.cap-c');if(c)c.classList.toggle('sel',x.checked);capSelUi()});
-  ['capn','capc','capb'].forEach(id=>{if(g(id)){g(id).onchange=capLeForm;g(id).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();capAct('buscar')}}}});
+  capCombo(g('capn'),CAP_NICHOS);capCombo(g('capc'),CAP_CIDADES);
+  ['capn','capc','capb'].forEach(id=>{if(g(id)){g(id).onchange=capLeForm;g(id).onkeydown=e=>{if(e.key==='Enter'&&!e.capTratado){e.preventDefault();capAct('buscar')}}}});
   if(g('capkey'))g('capkey').onkeydown=e=>{if(e.key==='Enter')capAct('chave')};
   if(g('capord'))g('capord').onchange=()=>{CAP.ord=g('capord').value;capPaint()};
   if(g('capet'))g('capet').onchange=()=>{CAP.etapa=g('capet').value;CAP.sel.clear();capPaint()};
