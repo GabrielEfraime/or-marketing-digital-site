@@ -178,7 +178,7 @@ async function capSite(id){
       if(det&&!F.length&&Array.isArray(det.photos)){F=await capBaixaFotos(det.photos);if(F.length)await arqPut('capf:'+id,F)}}
     const rev=capReviews(det),oh=det&&det.regularOpeningHours,horas=oh&&Array.isArray(oh.weekdayDescriptions)?oh.weekdayDescriptions.map(x=>txtT(x,80)).slice(0,7):[];
     CAP.prog='Gerando o site…';capProg();
-    const out=clean(await askF(capPedidoSite(p,F.length,rev,horas),s=>{CAP.prog='Gerando o site… '+s.length+' caracteres';capProg()},{slot:'ia1',max:9000,temp:0.6}));
+    const out=clean(await askF(capPedidoSite(p,F.length,rev,horas),s=>{CAP.prog='Gerando o site… '+s.length+' caracteres';capProg()},{slot:'ia3',max:9000,temp:0.6}));
     const i=out.search(/<!doctype|<html/i),h0=htmlOf(out)||(i>=0?out.slice(i):'');
     if(h0.length<400||!/<body/i.test(h0))throw new Error('A IA não devolveu o HTML completo do site. Clique em "Gerar o site de novo".');
     await arqPut('cap:'+id,capMonta(h0,p,F,rev));
@@ -211,7 +211,7 @@ ${p.ig?'Instagram: @'+p.ig+'\n':''}${p.obs?'Observações do consultor: '+p.obs.
 
 Regras: no máximo 600 caracteres; sem markdown, sem asteriscos e sem listas; no máximo 1 emoji; comece cumprimentando ${p.nome}; cite 1 ou 2 fatos reais dos dados acima (só eles); diga em uma frase que a ${BRAND} montou uma prévia de site para eles${p.link?' e coloque o link sozinho numa linha':''}; não fale de preço, não prometa resultado e não crie urgência; termine com uma pergunta simples; assine como "Equipe ${BRAND}", sem nome de pessoa; a última linha, depois da assinatura, deve ser exatamente: "Se não quiser receber mensagens nossas, é só avisar." Responda só com a mensagem.`}];
   try{
-    let t=clean(await askF(msgs,x=>{CAP.prog='Escrevendo… '+x.length+' caracteres';capProg()},{slot:'ia2',max:500,temp:0.5})).replace(/\*\*?|__/g,'').replace(/^#+\s*/gm,'').trim();
+    let t=clean(await askF(msgs,x=>{CAP.prog='Escrevendo… '+x.length+' caracteres';capProg()},{slot:'ia3',max:500,temp:0.5})).replace(/\*\*?|__/g,'').replace(/^#+\s*/gm,'').trim();
     if(!t)throw new Error('A IA não devolveu a mensagem. Tente de novo.');
     if(p.link&&!t.includes(p.link))t=t.replace(/\n*(Equipe )/,()=>'\n\n'+p.link+'\n\nEquipe ');
     if(p.link&&!t.includes(p.link))t+='\n\n'+p.link;

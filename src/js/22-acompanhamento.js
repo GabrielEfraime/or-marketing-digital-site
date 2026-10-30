@@ -225,7 +225,7 @@ async function trkRel(id){
    {role:'user',content:`CLIENTE (primeiro nome): ${first}\nSERVIÇOS: ${svcName(l)}\n${ctxIA(l)}\nHOJE: ${fdate(today())} (acompanhamento iniciado em ${fdate(t.start)})\n\nNÚMEROS REGISTRADOS:\n${trkSummary(l)||'(nenhum número lançado ainda)'}\n\nFEITO NOS ÚLTIMOS 7 DIAS:\n${feitas.join('\n')||'(nada marcado)'}\n\nPRÓXIMOS PASSOS PLANEJADOS:\n${prox.join('\n')||'(nenhum)'}\n\nANOTAÇÕES RECENTES:\n${notas.join('\n')}\n\nEscreva: 1) a mensagem de WhatsApp para ${first} com o relatório da semana (até 1200 caracteres, sem markdown, no máximo 2 emojis): o que foi feito, os números em linguagem simples e o que significam, e os próximos passos. 2) Depois uma linha contendo apenas ---INTERNO--- e, em seguida, notas internas curtas para o consultor (riscos e o que ajustar).`}];
   T.busy='rel';T.msg='';T.relLive=0;trkPaint();
   try{
-    const out=await askF(msgs,x=>{T.relLive=x.length;const b=document.querySelector('[data-act=rel]');if(b)b.textContent='Gerando… '+x.length+' caracteres'},{slot:'ia2',max:1200,temp:0.3});
+    const out=await askF(msgs,x=>{T.relLive=x.length;const b=document.querySelector('[data-act=rel]');if(b)b.textContent='Gerando… '+x.length+' caracteres'},{slot:'ia1',max:1200,temp:0.3});
     const i=out.indexOf('---INTERNO---');
     trkSet(id,tt=>tt.relatorios.unshift({id:uid(),data:today(),txt:(i<0?out:out.slice(0,i)).trim(),interno:i<0?'':out.slice(i+13).trim()}));
   }catch(e){T.msg=e.message}

@@ -1,16 +1,18 @@
 // Servidor do site no Cloudflare Pages (Pages Functions). Tudo em /api/*:
 //   GET    /api/ping           consultor: confere o código do servidor
-//   POST   /api/ia             consultor: repassa o pedido para a Groq com a chave guardada aqui (o navegador não vê a chave)
+//   POST   /api/ia             consultor: repassa o pedido para a OpenAI, o Gemini ou a Groq (conforme o modelo) com a chave guardada aqui (o navegador não vê a chave)
 //   POST   /api/lead           visitante: guarda o briefing (no máximo 30 dias), com limite por IP
 //   GET    /api/leads          consultor: lista os briefings guardados
 //   DELETE /api/leads          consultor: apaga os briefings já puxados para a Minha área
 //   GET    /api/site?url=...   consultor: baixa o HTML do site atual de um cliente para a análise do "Refazer site"
-// Variáveis no Cloudflare (Settings > Variables and Secrets): GROQ_API_KEY e GEMINI_API_KEY (secretas), ADMIN_TOKEN (secreta, 32+ caracteres).
+// Variáveis no Cloudflare (Settings > Variables and Secrets): OPENAI_API_KEY, GEMINI_API_KEY e GROQ_API_KEY (secretas), ADMIN_TOKEN (secreta, 32+ caracteres).
 // Binding: LEADS (KV namespace). Sem dependências.
 
 const GROQ = 'https://api.groq.com/openai/v1/chat/completions';
+const OPENAI = 'https://api.openai.com/v1/chat/completions';
 const GEMINI = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const MODELOS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-lite-latest'];
+const MODELOS = /^(gpt-5|gpt-4[.]1|gpt-4o|o[0-9])[A-Za-z0-9.-]*$/;
+const MODELOS_OUTROS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-lite-latest'];
 const MAX_PEDIDO = 400_000, MAX_LEAD = 64_000, MAX_SITE = 1_500_000, LEAD_TTL = 30 * 86400;
 
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
@@ -41,11 +43,11 @@ async function passouLimite(env, ip, chave, max, ttl) {
 async function ia(req, env) {
   let b;
   try { b = JSON.parse(await lerTexto(req, MAX_PEDIDO)); } catch (e) { return erro(413, 'Pedido grande demais ou inválido.'); }
-  if (!b || !MODELOS.includes(b.model) || !Array.isArray(b.messages)) return erro(400, 'Modelo não permitido ou pedido sem mensagens.');
-  const gem = b.model.startsWith('gemini'), chave = gem ? env.GEMINI_API_KEY : env.GROQ_API_KEY;
-  if (!chave) return erro(500, (gem ? 'GEMINI_API_KEY' : 'GROQ_API_KEY') + ' não configurada no Cloudflare.');
-  b.max_tokens = Math.min(Math.max(1, +b.max_tokens || 2048), 16000);
-  const r = await fetch(gem ? GEMINI : GROQ, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + chave }, body: JSON.stringify(b) });
+  if (!b || !(typeof b.model === 'string' && (MODELOS.test(b.model) || MODELOS_OUTROS.includes(b.model))) || !Array.isArray(b.messages)) return erro(400, 'Modelo não permitido ou pedido sem mensagens.');
+  const alvo = b.model.startsWith('gemini') ? ['GEMINI_API_KEY', GEMINI] : MODELOS.test(b.model) ? ['OPENAI_API_KEY', OPENAI] : ['GROQ_API_KEY', GROQ], chave = env[alvo[0]];
+  if (!chave) return erro(500, alvo[0] + ' não configurada no Cloudflare.');
+  for (const k of ['max_tokens', 'max_completion_tokens']) if (k in b) b[k] = Math.min(Math.max(1, +b[k] || 2048), 16000);
+  const r = await fetch(alvo[1], { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + chave }, body: JSON.stringify(b) });
   // repassa o corpo como veio (streaming e mensagens de limite 429/413, que o site lê para esperar ou encolher)
   return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
 }

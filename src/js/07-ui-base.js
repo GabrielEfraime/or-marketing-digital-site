@@ -97,7 +97,7 @@ let lastAct=Date.now();
 ['click','keydown','pointermove'].forEach(ev=>addEventListener(ev,()=>{lastAct=Date.now()},{passive:true}));
 setInterval(()=>{if(A.auth&&Date.now()-lastAct>15*60*1000){A.auth=false;if(V==='admin')admin()}},30000);
 document.addEventListener('click',e=>{if(e.target.id==='skipl'){const m=document.querySelector('#app main');if(m){m.setAttribute('tabindex','-1');m.focus()}}});
-const cfgSafe=()=>({...CFG,pin:undefined,lembrar:undefined,ia1:{...CFG.ia1,key:''},ia2:{...CFG.ia2,key:''}});
+const cfgSafe=()=>({...semChave(),pin:undefined,lembrar:undefined});
 const wnum=n=>{let d=String(n||'').replace(/\D/g,'').replace(/^0+/,'');if(d.length===10||d.length===11)d='55'+d;return /^55\d{10,11}$/.test(d)?d:''};
 function md(t){return esc(t).replace(/```(\w*)\n([\s\S]*?)(```|$)/g,'<pre>$2</pre>').replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^#{1,2} (.*)$/gm,'<h2>$1</h2>')
  .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^\s*[-*] (.*)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>').replace(/\n(?!<)/g,'<br>')}

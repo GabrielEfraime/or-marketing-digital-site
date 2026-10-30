@@ -51,7 +51,7 @@ await t('número do WhatsApp', () => {
 // servidor do Cloudflare com KV e Groq simulados
 const { onRequest } = await import(pathToFileURL(path.join(RAIZ, 'functions', 'api', '[[rota]].js')).href);
 const kv = new Map(), TOKEN = 'x'.repeat(40);
-const env = { ADMIN_TOKEN: TOKEN, GROQ_API_KEY: 'chave-de-teste', LEADS: {
+const env = { ADMIN_TOKEN: TOKEN, GROQ_API_KEY: 'chave-de-teste', OPENAI_API_KEY: 'chave-openai', GEMINI_API_KEY: 'chave-gemini', LEADS: {
   get: async (k) => kv.get(k) ?? null, put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); },
   list: async ({ prefix }) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true }) } };
 const chama = (rota, init = {}, tok) => onRequest({ request: new Request('https://teste.pages.dev/api/' + rota, { ...init, headers: { ...(init.headers || {}), ...(tok ? { 'X-OR-Token': tok } : {}), 'CF-Connecting-IP': '1.2.3.4' } }), env, params: { rota: rota.split('?')[0].split('/') } });
@@ -77,10 +77,17 @@ await t('servidor: limite de envios por IP', async () => {
   assert.equal(ultimo.status, 429);
 });
 await t('servidor: IA usa a chave guardada e só modelos permitidos', async () => {
-  assert.equal((await chama('ia', { method: 'POST', body: JSON.stringify({ model: 'gpt-4o', messages: [] }) }, TOKEN)).status, 400);
+  assert.equal((await chama('ia', { method: 'POST', body: JSON.stringify({ model: 'modelo-nao-permitido', messages: [] }) }, TOKEN)).status, 400);
   const r = await chama('ia', { method: 'POST', body: JSON.stringify({ model: 'openai/gpt-oss-20b', messages: [{ role: 'user', content: 'oi' }], max_tokens: 999999 }) }, TOKEN);
   assert.equal(r.status, 200); assert.match(await r.text(), /ok/);
   assert.equal(groqPedido.o.headers.Authorization, 'Bearer chave-de-teste'); assert.equal(JSON.parse(groqPedido.o.body).max_tokens, 16000);
+});
+await t('servidor: cada modelo vai para a sua plataforma com a sua chave', async () => {
+  const vai = async (model, extra = {}) => { await chama('ia', { method: 'POST', body: JSON.stringify({ model, messages: [{ role: 'user', content: 'oi' }], ...extra }) }, TOKEN); return groqPedido; };
+  let p = await vai('gpt-5-mini', { max_completion_tokens: 999999 });
+  assert.match(p.u, /api.openai.com/); assert.equal(p.o.headers.Authorization, 'Bearer chave-openai'); assert.equal(JSON.parse(p.o.body).max_completion_tokens, 16000);
+  p = await vai('gemini-3.5-flash'); assert.match(p.u, /generativelanguage/); assert.equal(p.o.headers.Authorization, 'Bearer chave-gemini');
+  p = await vai('openai/gpt-oss-120b'); assert.match(p.u, /api.groq.com/); assert.equal(p.o.headers.Authorization, 'Bearer chave-de-teste');
 });
 await t('servidor: leitura de site recusa endereço local', async () => {
   assert.equal((await chama('site?url=' + encodeURIComponent('http://127.0.0.1/admin'), {}, TOKEN)).status, 400);

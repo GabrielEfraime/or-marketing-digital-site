@@ -450,7 +450,7 @@ async function perfilIA(id){
    {role:'user',content:ctxIA(l)+'\n\nDevolva o JSON com estas chaves (o valor ao lado é o que cada uma significa): {'+campos+'}'}];
   T.busy='perfil';T.pMsg='';T.relLive=0;trkPaint();
   try{
-    const out=await askF(msgs,s=>{T.relLive=s.length;const b=document.querySelector('[data-act=perfilia]');if(b)b.textContent='Organizando… '+s.length+' caracteres'},{slot:'ia2',json:true,max:1800,temp:0.2}),j=xj(out);
+    const out=await askF(msgs,s=>{T.relLive=s.length;const b=document.querySelector('[data-act=perfilia]');if(b)b.textContent='Organizando… '+s.length+' caracteres'},{slot:'ia1',json:true,max:1800,temp:0.2}),j=xj(out);
     if(!j)throw new Error('A IA não devolveu o perfil num formato legível. Tente de novo.');
     trkSet(id,t=>{const p=isObj(t.perfil)?t.perfil:perfilDoBriefing(l);PERFIL_CAMPOS.forEach(([k])=>{const v=j[k];if(typeof v==='string'&&v.trim())p[k]=v.trim().slice(0,600)});p.fonte='ia';p.em=today();t.perfil=p});
     T.pMsg='Perfil organizado. Confira os campos: o que estiver errado, corrija aqui e a IA passa a usar a versão corrigida.';T.pAbre=true;

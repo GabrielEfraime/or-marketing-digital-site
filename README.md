@@ -4,7 +4,7 @@ Plataforma em **um único arquivo HTML**, montado a partir de `src/`:
 
 1. **Site público:** abertura, home, páginas de serviço, vagas e o briefing guiado.
 2. **Minha área** (painel do consultor): leads, Captar clientes, resumo, estratégia, kits de Ads, redes e site, orçamentos, mensagem de WhatsApp, acompanhamento, Base da IA e IAs.
-3. **IA (Gemini, do Google):** só roda quando o consultor clica. No site publicado, a chave fica no servidor do Cloudflare, e nunca no navegador. A Groq continua disponível na tela IAs.
+3. **IAs (OpenAI na criação, Gemini no atendimento, Groq na captação):** só roda quando o consultor clica. No site publicado, a chave fica no servidor do Cloudflare, e nunca no navegador. A Groq continua disponível na tela IAs.
 
 Sem dependências npm. Precisa só de [Node.js 18+](https://nodejs.org).
 
@@ -15,7 +15,7 @@ npm run montar        # gera dist/ (index.html, estudio-ia.html, _headers, robot
 npm run verificar     # segurança, SEO e testes automáticos
 npm run testar        # só os testes (preços, data, WhatsApp, servidor)
 npm run abrir         # abre a plataforma em http://127.0.0.1:5173 (com a chave Gemini do .env, só local)
-npm run montar:teste  # build local com a chave do .env (Gemini ou Groq; NUNCA publicar)
+npm run montar:teste  # build local com a chave do .env (OpenAI, Gemini e Groq; NUNCA publicar)
 npm run abrir:teste   # abre o build de teste em http://127.0.0.1:5173
 ```
 
@@ -28,14 +28,14 @@ Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer
    - Build command: `node scripts/montar.mjs`
    - Build output directory: `dist`
 3. Em *Settings > Variables and Secrets*, crie os segredos (tipo **Secret**, não texto simples):
-   - `GEMINI_API_KEY`: a chave do Google AI Studio (aistudio.google.com/apikey). Gere uma **nova** antes de publicar.
-   - `GROQ_API_KEY` (opcional): só se for usar a Groq.
+   - `OPENAI_API_KEY` (IA 1, criação e acompanhamento): platform.openai.com/api-keys.
+   - `GEMINI_API_KEY` (IA 2, atendimento): aistudio.google.com/apikey. `GROQ_API_KEY` (IA 3, captação): console.groq.com/keys. Gere chaves **novas** antes de publicar.
    - `ADMIN_TOKEN`: um código aleatório com 32 caracteres ou mais. É ele que você cola em Minha área > IAs > Servidor.
 4. Em *Storage & Databases > KV*, crie um namespace (ex.: `or-leads`). No projeto Pages, em *Settings > Bindings*, ligue esse namespace com o nome **`LEADS`**.
 5. Rode o deploy de novo. Abra o endereço `*.pages.dev`, entre na Minha área, troque o PIN, cole o `ADMIN_TOKEN` em **IAs > Servidor (Cloudflare)** e clique em **Testar o servidor**.
 
 O que o servidor faz (`functions/api/[[rota]].js`):
-- `/api/ia`: chama o Gemini (ou a Groq) com a chave guardada no Cloudflare. Só aceita quem tem o código e só os modelos permitidos.
+- `/api/ia`: chama a OpenAI, o Gemini ou a Groq (conforme o modelo) com a chave guardada no Cloudflare. Só aceita quem tem o código e só os modelos permitidos.
 - `/api/lead`: recebe o briefing do visitante, com limite por IP, e guarda por até 30 dias. Na Minha área, os briefings chegam pelo botão "Buscar briefings do site" (e sozinhos ao abrir Leads) e saem do servidor depois de salvos.
 - `/api/site`: baixa o HTML do site atual do cliente para a análise do "Refazer site".
 - `dist/_headers`: cabeçalhos de segurança (CSP com `frame-ancestors 'none'`, HSTS, nosniff, Referrer-Policy e Permissions-Policy).

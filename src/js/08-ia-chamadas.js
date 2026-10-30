@@ -1,7 +1,7 @@
-const IAKIND={openai:'API compatível com OpenAI (OpenAI, Groq, OpenRouter, DeepSeek, Gemini...)',anthropic:'Claude (API da Anthropic)'};
-const IADEF={openai:{url:'https://api.openai.com/v1',model:'gpt-4o-mini'},anthropic:{url:'',model:'claude-haiku-5-5'}};
-const LABEL={ia1:'IA 1',ia2:'IA 2'};
-/* Site publicado (Cloudflare Pages): a chave da Groq fica no servidor e a Minha área chama /api/ia com o código do servidor.
+const IAKIND={openai:'API compatível com OpenAI (OpenAI, Gemini, Groq, OpenRouter, DeepSeek...)',anthropic:'Claude (API da Anthropic)'};
+const IADEF={openai:{url:OPENAI_URL,model:'gpt-5-mini'},anthropic:{url:'',model:'claude-haiku-5-5'}};
+const LABEL={ia1:'IA 1',ia2:'IA 2',ia3:'IA 3'};
+/* Site publicado (Cloudflare Pages): as chaves (OpenAI, Gemini, Groq) ficam no servidor e a Minha área chama /api/ia com o código do servidor.
    Visitante não tem o código, então não usa IA (o briefing segue com as perguntas fixas). */
 const srvTok=()=>sget('ortoken')||'';
 const srvOn=()=>location.protocol==='https:'&&!!srvTok();
@@ -32,15 +32,15 @@ const esperaAb=(ms,sig)=>new Promise((res,rej)=>{const k=setTimeout(res,ms);if(s
 async function ask(msgs,onChunk,o={}){
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
-  const oss=/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
+  const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
   let url,body;
-  const viaSrv=c.kind==='openai'&&!c.key&&srvOn()&&/api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
+  const viaSrv=c.kind==='openai'&&!c.key&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
   if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+c.key;
-    body={model:c.model,messages:msgs,stream:true,max_tokens:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048),temperature:o.temp??0.5};if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
-    const L=iaLim(c.model);if(L.tpm){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
+    body={model:c.model,messages:msgs,stream:true,[oa?'max_completion_tokens':'max_tokens']:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048)};if(!rs)body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
+    const L=iaLim(c.model);if(L.tpm&&body.max_tokens){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
   else{url='https://api.anthropic.com/v1/messages';Object.assign(hd,{'x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
     body={model:c.model,messages:rest,stream:true,max_tokens:o.max||2048,temperature:o.temp??0.5};if(sys)body.system=sys}
-  if(!c.key&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, clique em "Usar o Gemini nas duas IAs", cole a chave do Google e clique em Salvar. Ela fica só neste navegador.'));
+  if(!c.key&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, cole a chave dessa IA e clique em Salvar. Ela fica cifrada só neste navegador.'));
   let r;
   const tc=new AbortController(),lim=o.timeout||150000,tmo=setTimeout(()=>{tc.porTempo=1;tc.abort()},lim);if(o.signal){if(o.signal.aborted)tc.abort();else o.signal.addEventListener('abort',()=>tc.abort())}
   const go=()=>fetch(url,{method:'POST',signal:tc.signal,headers:hd,body:JSON.stringify(body)});
@@ -51,7 +51,7 @@ async function ask(msgs,onChunk,o={}){
   let tl='';try{tl=await r.text()}catch(e){}
   const g=limGroq(tl);if(g.limite&&(g.tipo==='tpm'||r.status===413))iaLimSet(c.model,{tpm:g.limite});
   if(body.max_tokens&&tent<3&&(r.status===413||(g.pedido&&g.limite&&g.pedido>g.limite&&g.porMinuto))){let novo=g.pedido&&g.limite?body.max_tokens-(g.pedido-g.limite)-300:(g.limite||8000)-est-200;if(novo>=body.max_tokens)novo=Math.floor(body.max_tokens*0.7);novo=Math.max(512,novo);if(novo<body.max_tokens){body.max_tokens=novo;tent++;continue}}
-  if(r.status===429&&g.porMinuto&&g.espera!=null&&g.espera<=30&&tent<3){tent++;iaAviso(nm+' ('+c.model+'): limite por minuto da Groq. Tentando de novo em '+Math.max(1,Math.ceil(g.espera))+' s…');try{await esperaAb(g.espera*1000+500,tc.signal)}catch(e){iaAviso('');clearTimeout(tmo);throw new Error(nm+' ('+c.model+'): chamada interrompida.')}iaAviso('');continue}
+  if(r.status===429&&g.porMinuto&&g.espera!=null&&g.espera<=30&&tent<3){tent++;iaAviso(nm+' ('+c.model+'): limite por minuto. Tentando de novo em '+Math.max(1,Math.ceil(g.espera))+' s…');try{await esperaAb(g.espera*1000+500,tc.signal)}catch(e){iaAviso('');clearTimeout(tmo);throw new Error(nm+' ('+c.model+'): chamada interrompida.')}iaAviso('');continue}
   iaAviso('');clearTimeout(tmo);
   throw new Error(nm+' ('+c.model+'): '+(g.porDia?'o limite do dia deste modelo acabou'+(g.espera?' (volta em '+tempoTxt(g.espera)+')':''):'limite da plataforma atingido (erro '+r.status+')'+(g.espera?', libera em '+tempoTxt(g.espera):''))+'.');
   }
@@ -68,14 +68,13 @@ async function ask(msgs,onChunk,o={}){
   clearTimeout(tmo);onChunk(txt);return clean(txt);
 }
 const sameCfg=(a,b)=>a.kind===b.kind&&a.url===b.url&&a.model===b.model;
-const rvCfg=()=>{const r=CFG.reserva||{};if(!r.model)return null;return {kind:r.kind||'openai',url:r.url||GROQ_URL,model:r.model,key:r.key||CFG.ia1.key||CFG.ia2.key||''}};
 async function askF(msgs,cb,o){
   try{return await ask(msgs,cb,o)}
   catch(e){
-    const alt=o.slot==='ia1'?'ia2':'ia1',rv=rvCfg(),erros=[e];
-    const cands=[CFG[alt],rv].filter(c=>c&&c.model&&!sameCfg(c,CFG[o.slot]));
+    const atual=CFG[o.slot||'ia1'],erros=[e];
+    const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&(c.key||srvOn())&&!sameCfg(c,atual));
     for(const c of cands){try{cb('');return await ask(msgs,cb,{...o,cfg:c})}catch(e2){erros.push(e2)}}
-    if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite da Groq agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado ou ponha outra plataforma como IA 3 na tela IAs.');
+    if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');
     throw e;
   }
 }

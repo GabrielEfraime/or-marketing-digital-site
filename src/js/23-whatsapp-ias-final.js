@@ -43,14 +43,12 @@ function iaCard(s,t,d){
   <div class="row"><button class="btn ghost" id="${s}t">Testar</button><button class="btn ghost" id="${s}f">Ver modelos disponíveis</button></div><p class="hint" id="${s}r"></p></div>`;
 }
 function iasInner(){
-  return `<h2 class="pt">IAs</h2><p class="hint">A <b>IA 1</b> cria plano, roteiros e sites. A <b>IA 2</b> atende: perguntas ao vivo, resumo, orçamentos e mensagem. A <b>IA 3</b> (reserva) também roda na nuvem e entra sozinha se as outras falharem ou baterem no limite. Na Groq cada modelo tem o seu limite, então três modelos diferentes dão três vezes mais folga.</p>
-  <div class="row" style="margin-top:12px"><button class="btn" id="gm">Usar o Gemini nas duas IAs</button><button class="btn ghost" id="gq">Usar a Groq nas duas IAs</button></div><p class="hint" id="gqr"></p>
-  <div class="iag">${iaCard('ia1','IA 1 · Criação','Plano, roteiros e sites.')}${iaCard('ia2','IA 2 · Atendimento','Perguntas, resumo, orçamentos e mensagem.')}</div>
-  <div class="panel"><h3>IA 3 (reserva, na nuvem)</h3><p class="hint">Entra sozinha quando a IA 1 e a IA 2 falham ou batem no limite. Usa a mesma chave da IA 1 (Groq). Deixe vazio para desligar. Padrão: qwen/qwen3.8-27b.</p>
-  <label for="rsv">Modelo da IA 3</label><input id="rsv" value="${esc((CFG.reserva||{}).model||'')}"><div class="row"><button class="btn ghost" id="rst">Testar a IA 3</button></div><p class="hint" id="rsr"></p>${Object.keys(IA_LIM).length?'<h4>Limites que a Groq informou</h4><ul class="cx">'+Object.entries(IA_LIM).map(([m,v])=>'<li><b>'+esc(m)+'</b>: '+(v.tpm?int(v.tpm)+' tokens por minuto':'limite não informado')+' <span class="hint">(aviso de '+esc(new Date(v.em||0).toLocaleString('pt-BR'))+')</span></li>').join('')+'</ul><p class="hint">O site encolhe os pedidos para caber nesses limites. Para limites maiores, o plano pago da Groq (Developer) cobra por uso: confira o preço atual em console.groq.com.</p>':''}</div>
-  <div class="panel"><h3>Servidor (Cloudflare)</h3><p class="hint">No site publicado, a chave da Groq fica guardada no servidor, não no navegador. Cole aqui o código do servidor (o ADMIN_TOKEN que você criou no Cloudflare) para a Minha área usar a IA e puxar os briefings dos visitantes.${location.protocol==='https:'?'':' Aberto no computador, este arquivo não usa o servidor: as IAs usam a chave colada acima.'}</p>
+  return `<h2 class="pt">IAs</h2><p class="hint">Cada IA tem uma função. A <b>IA 1 (OpenAI)</b> cria plano, roteiros e sites e faz o acompanhamento. A <b>IA 2 (Gemini)</b> atende: perguntas do briefing, resumo, orçamentos e mensagem ao cliente. A <b>IA 3 (Groq)</b> cuida da captação de clientes. Se uma falhar ou bater no limite, o site tenta as outras.</p>
+  <div class="iag">${iaCard('ia1','IA 1 · Criação e acompanhamento (OpenAI)','Plano, roteiros, sites, tarefas, métricas e relatórios.')}${iaCard('ia2','IA 2 · Atendimento (Gemini)','Perguntas do briefing, resumo, orçamentos e mensagem ao cliente.')}${iaCard('ia3','IA 3 · Captação de clientes (Groq)','Busca de clientes, site de prévia e mensagem de abordagem.')}</div>
+  <div class="panel">${Object.keys(IA_LIM).length?'<h4>Limites que a Groq informou</h4><ul class="cx">'+Object.entries(IA_LIM).map(([m,v])=>'<li><b>'+esc(m)+'</b>: '+(v.tpm?int(v.tpm)+' tokens por minuto':'limite não informado')+' <span class="hint">(aviso de '+esc(new Date(v.em||0).toLocaleString('pt-BR'))+')</span></li>').join('')+'</ul><p class="hint">O site encolhe os pedidos para caber nesses limites. Para limites maiores, o plano pago da Groq (Developer) cobra por uso: confira o preço atual em console.groq.com.</p>':''}</div>
+  <div class="panel"><h3>Servidor (Cloudflare)</h3><p class="hint">No site publicado, as chaves da OpenAI, do Gemini e da Groq ficam guardadas no servidor, não no navegador. Cole aqui o código do servidor (o ADMIN_TOKEN que você criou no Cloudflare) para a Minha área usar a IA e puxar os briefings dos visitantes.${location.protocol==='https:'?'':' Aberto no computador, este arquivo não usa o servidor: as IAs usam a chave colada acima.'}</p>
   <label for="srvt">Código do servidor</label><input id="srvt" type="password" autocomplete="off" spellcheck="false" placeholder="${srvTok()?'Código salvo (cole outro para trocar)':'Cole o código aqui'}"><div class="row"><button class="btn ghost" id="srvs">Salvar código</button>${srvTok()?'<button class="btn ghost" id="srvx">Apagar código</button>':''}<button class="btn ghost" id="srvp">Testar o servidor</button></div><p class="hint" id="srvr" role="status"></p></div>
-  <label class="tg2b"><input type="checkbox" id="lemb" ${CFG.lembrar===false?'':'checked'}> Lembrar as chaves neste computador</label><p class="hint">As chaves ficam só neste navegador, separadas das configurações, e não entram em backup nem em exportação. Desmarcado, elas valem só até fechar a aba.</p>
+  <label class="tg2b"><input type="checkbox" id="lemb" ${CFG.lembrar===false?'':'checked'}> Lembrar as chaves neste computador</label><p class="hint">As chaves ficam cifradas (AES-GCM) só neste navegador, separadas das configurações, e não entram em backup nem em exportação. Desmarcado, elas valem só até fechar a aba.</p>
   <div class="row"><button class="btn" id="iasave">Salvar</button><button class="btn ghost" id="iaclr">Apagar as chaves</button></div><p class="hint" id="iam"></p>`;
 }
 let talQ='';
@@ -68,7 +66,7 @@ function bindIas(){
   const test=async(c,r)=>{const t0=Date.now();r.textContent='Testando…';
     try{const out=await ask([{role:'user',content:'Responda só com a palavra: ok'}],()=>{},{cfg:c,max:30});r.textContent='Respondeu em '+((Date.now()-t0)/1000).toFixed(1)+'s ('+(out||'sem texto').slice(0,30)+').'}
     catch(e){r.textContent=e.message}};
-  for(const s of ['ia1','ia2']){
+  for(const s of IAS){
     $('#'+s+'k').onchange=e=>{const d=IADEF[e.target.value];$('#'+s+'u').value=d.url;$('#'+s+'m').value=d.model};
     $('#'+s+'t').onclick=()=>test(rd(s),$('#'+s+'r'));
     $('#'+s+'f').onclick=async()=>{const c=rd(s),r=$('#'+s+'r');
@@ -78,14 +76,12 @@ function bindIas(){
         else r.textContent='Esta plataforma não lista modelos.';
       }catch(e){r.textContent='Não consegui listar. Confira a chave, o endereço e a internet.'}};
   }
-  $('#gm').onclick=()=>{for(const s of ['ia1','ia2']){$('#'+s+'k').value='openai';$('#'+s+'u').value=GEMINI_URL;$('#'+s+'m').value=GEMINI_M[s]}if($('#rsv'))$('#rsv').value=GEMINI_M.reserva;
-    $('#gqr').textContent='Gemini aplicado nas duas IAs e na IA 3. Cole a chave do Google na IA 1 e na IA 2, clique em Salvar e depois em Testar.'};
-  $('#gq').onclick=()=>{for(const s of ['ia1','ia2']){$('#'+s+'k').value='openai';$('#'+s+'u').value='https://api.groq.com/openai/v1';$('#'+s+'m').value=s==='ia1'?'openai/gpt-oss-120b':'openai/gpt-oss-20b'}if($('#rsv')&&!$('#rsv').value.trim())$('#rsv').value='qwen/qwen3.8-27b';
-    $('#gqr').textContent='Groq aplicada nas duas IAs. Clique em Salvar e depois em Testar (use "Ver modelos disponíveis" para confirmar o nome do modelo).'};
-  $('#rst').onclick=()=>{const m=$('#rsv').value.trim();if(!m){$('#rsr').textContent='Digite o nome do modelo da IA 3.';return}test({kind:'openai',url:(CFG.reserva&&CFG.reserva.url)||GEMINI_URL,model:m,key:($('#ia1c')&&$('#ia1c').value.trim())||CFG.ia1.key||CFG.ia2.key||''},$('#rsr'))};
-  $('#iaclr').onclick=()=>{CFG.ia1.key='';CFG.ia2.key='';saveCfg();try{sessionStorage.removeItem('ikeys')}catch(e){}$('#iam').textContent='Chaves apagadas deste navegador.';document.querySelectorAll('#ia1c,#ia2c').forEach(i=>{i.value='';i.placeholder='Cole a chave aqui'})};
-  $('#iasave').onclick=()=>{Object.assign(CFG,{ia1:rd('ia1'),ia2:rd('ia2'),reserva:{kind:'openai',url:(/groq/i.test($('#rsv').value)||/gpt-oss|qwen/i.test($('#rsv').value))?GROQ_URL:GEMINI_URL,model:$('#rsv').value.trim(),key:''},lembrar:$('#lemb').checked,t:Date.now()});
-    saveCfg();diskSaveSoon();$('#iam').textContent='Salvo.'};
+  $('#iaclr').onclick=()=>{IAS.forEach(s=>{CFG[s].key=''});saveCfg();keysSave(true);$('#iam').textContent='Chaves apagadas deste navegador.';document.querySelectorAll('#ia1c,#ia2c,#ia3c').forEach(i=>{i.value='';i.placeholder='Cole a chave aqui'})};
+  $('#iasave').onclick=async()=>{Object.assign(CFG,{ia1:rd('ia1'),ia2:rd('ia2'),ia3:rd('ia3'),lembrar:$('#lemb').checked,t:Date.now()});
+    sset('cfg2',JSON.stringify(semChave()));diskSaveSoon();$('#iam').textContent='Salvando…';
+    const r=await keysSave(true),n=IAS.filter(s=>CFG[s].key).length;
+    $('#iam').textContent=!n?'Salvo. Nenhuma chave foi colada ainda.':r==='ok'?'Salvo. '+n+' chave(s) cifrada(s) neste navegador. Clique em Testar em cada IA.':r==='aba'?'Salvo, mas as chaves valem só até fechar esta aba'+(CFG.lembrar===false?' (você desmarcou "Lembrar as chaves").':': este navegador não deixou guardar com cifra (janela anônima ou armazenamento bloqueado).'):'Salvei a configuração, mas NÃO consegui guardar as chaves. Abra o site pelo endereço normal (não em janela anônima) e tente de novo.';
+    document.querySelectorAll('#ia1c,#ia2c,#ia3c').forEach(i=>{i.value='';const s=i.id.slice(0,3);i.placeholder=CFG[s].key?'Chave salva (deixe vazio para manter)':'Cole a chave aqui'})};
   const sr=$('#srvr');
   $('#srvs').onclick=()=>{const v=$('#srvt').value.trim();if(v.length<20){sr.textContent='O código do servidor tem pelo menos 20 caracteres. Copie de novo do Cloudflare.';return}sset('ortoken',v);$('#srvt').value='';sr.textContent='Código salvo neste navegador.'};
   if($('#srvx'))$('#srvx').onclick=()=>{try{localStorage.removeItem('ortoken')}catch(e){}delete MEM.ortoken;sr.textContent='Código apagado deste navegador.'};
@@ -97,3 +93,4 @@ function bindIas(){
 if(!document.title)document.title=CFG.brand;
 render();
 diskInit();
+keysLoad().then(()=>{if(IAS.some(s=>CFG[s].key)&&A.auth&&A.view==='ias')admin()});

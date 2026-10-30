@@ -4,7 +4,7 @@ Leia primeiro: `README.md` (como rodar e editar), `docs/ARQUITETURA.md` (mapa do
 
 ## Como trabalhar
 - **Edite `src/`, nunca `dist/`.** Depois: `npm run montar` e `npm run verificar` (inclui `npm run testar`). O resultado é um arquivo único, `dist/estudio-ia.html` (e `dist/index.html` para a hospedagem). Abra com `npm run abrir` (servidor local em 127.0.0.1), não por duplo clique.
-- Servidor: `functions/api/[[rota]].js` (Cloudflare Pages Functions): `/api/ia` (Groq com a chave no servidor), `/api/lead`, `/api/leads`, `/api/site`. Sem dependências; testado em `scripts/testar.mjs`.
+- Servidor: `functions/api/[[rota]].js` (Cloudflare Pages Functions): `/api/ia` (OpenAI, Gemini ou Groq com a chave no servidor), `/api/lead`, `/api/leads`, `/api/site`. Sem dependências; testado em `scripts/testar.mjs`.
 - Sem dependências npm. Node 18+.
 - JavaScript em **um único escopo global**, concatenado na ordem de `src/ordem.json`. Não repita nomes entre arquivos. Arquivo novo: inclua em `ordem.json`.
 - No CSS, o que vem depois vence. Há muitos `!important` herdados; procure o uso de uma classe antes de apagar regra.
@@ -14,7 +14,7 @@ Leia primeiro: `README.md` (como rodar e editar), `docs/ARQUITETURA.md` (mapa do
 ## Regras fixas
 - Interface, erros e textos: **português do Brasil**.
 - Não inventar funcionalidade, preço, número, depoimento ou resultado. O que faltar: perguntar, ou "a confirmar" nos textos gerados.
-- **Segredos**: nunca chave de API no código nem no repositório. No Cloudflare: `GROQ_API_KEY` e `ADMIN_TOKEN` como segredos. A chave Groq antiga vazou: tratar como revogada.
+- **Segredos**: nunca chave de API no código nem no repositório. No Cloudflare: `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY` e `ADMIN_TOKEN` como segredos. A chave Groq antiga vazou: tratar como revogada.
 - **IA só no clique**: nada chama IA ao abrir o site ou a Minha área.
 - Texto de usuário na tela sempre por `esc()`. Sem `innerHTML` com texto cru.
 - Acessibilidade: foco visível, contraste, `aria-*` em diálogos e abas, `prefers-reduced-motion` desliga animações, alvos de toque ≥ 44px.

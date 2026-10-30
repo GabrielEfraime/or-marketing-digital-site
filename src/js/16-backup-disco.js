@@ -14,7 +14,7 @@ function merge(remote){
 }
 async function diskLoad(){
   const c=await rfile(DISK.dir,'config.json');
-  if(c)try{const o=JSON.parse(c);if((o.t||0)>(CFG.t||0)){const k1=(CFG.ia1||{}).key,k2=(CFG.ia2||{}).key,ph=CFG.pinh;Object.assign(CFG,o);CFG.ia1={...CFG.ia1,key:k1||''};CFG.ia2={...CFG.ia2,key:k2||''};if(ph){CFG.pinh=ph;delete CFG.pin}saveCfg()}}catch(e){}
+  if(c)try{const o=JSON.parse(c);if((o.t||0)>(CFG.t||0)){const ks=IAS.map(s=>(CFG[s]||{}).key),ph=CFG.pinh;Object.assign(CFG,o);IAS.forEach((s,i)=>{CFG[s]={...IA0(s),...CFG[s],key:ks[i]||""}});delete CFG.reserva;if(ph){CFG.pinh=ph;delete CFG.pin}saveCfg()}}catch(e){}
   const t=await rfile(DISK.dir,'leads.json');
   if(t)try{const o=JSON.parse(t);merge(o.leads||o)}catch(e){}
   const pr=await rfile(DISK.dir,'prospects.json');
