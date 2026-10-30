@@ -38,7 +38,8 @@ function vida(){
 }
 const ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const WM=`<span class="wmw"><span class="wm">marketing</span><span class="wt">digital</span></span>`;
-const ADMV=()=>location.protocol==='file:'||location.hash==='#/admin';
+/* o link da Minha área fica escondido do visitante: aparece com #/admin no endereço (e passa a aparecer neste navegador depois da primeira vez) */
+const ADMV=()=>{if(location.protocol==='file:')return true;if(location.hash==='#/admin'){sset('adm','1');return true}return sget('adm')==='1'};
 const TICK=['Briefing em poucos minutos','3 opções de orçamento','Revisado por uma pessoa da equipe','Resposta pelo WhatsApp','Rio de Janeiro'];
 const tick=()=>'<div class="v-tick" aria-hidden="true"><div class="v-tick-t">'+[0,1].map(()=>TICK.map(t=>'<span>'+t+'</span><i>\u2022</i>').join('')).join('')+'</div></div>';
 const nav2=home=>`${tick()}<header class="nav"><div class="navi"><button class="brandb" data-home="1" aria-label="Início">${logo}${WM}</button>${home?`<nav class="mnav" id="mnav" aria-label="Principal">${home===1?'<button data-scroll="oferta">Serviços</button><button data-scroll="como">Como funciona</button><button data-scroll="sobre">Quem somos</button><button data-scroll="duvidas">Dúvidas</button><button data-scroll="contato">Contato</button>':'<button data-home="1">Início</button>'}<button data-vagas="1"${home===2?' class="cur" aria-current="page"':''}>Vagas</button></nav>`:''}<span class="navr">${home===1?'<button type="button" class="nav-cta" data-brief="1">Solicitar orçamento</button>':''}${home?'<button type="button" class="menub" data-menu aria-expanded="false" aria-controls="mnav">Menu</button>':''}${ADMV()?'<button class="lnk" data-nav="admin">Minha área</button>':''}</span></div></header>`;

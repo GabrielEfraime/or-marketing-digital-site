@@ -126,4 +126,5 @@ function bindIas(){
 if(!document.title)document.title=CFG.brand;
 render();
 diskInit();
+addEventListener('hashchange',()=>{if(location.hash==='#/admin'&&V!=='admin')render()});
 keysLoad().then(()=>{if(IAS.some(s=>CFG[s].key)&&A.auth&&A.view==='ias')admin()});
