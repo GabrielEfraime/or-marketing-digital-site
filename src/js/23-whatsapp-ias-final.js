@@ -31,6 +31,39 @@ function waOpen(id){
   q('#wa_m').focus();
 }
 
+/* Orçamento por e-mail: abre o programa de e-mail (mailto) ou o Gmail já na conta da empresa, com a mensagem pronta. Quem aperta enviar é o consultor: o site não manda e-mail sozinho. */
+function emOpen(id){
+  const l=getL().find(x=>x.id===id);if(!l)return;
+  const old=document.getElementById('emm');if(old)old.remove();
+  const NL=String.fromCharCode(10),ult=(l.envios||[]).filter(x=>x.via==='email').slice(-1)[0],ass=NL+NL+'Gabriel Efraime'+NL+CFG.brand+(PRIV_EMAIL?' · '+PRIV_EMAIL:'');
+  const m=dlg('Enviar orçamento por e-mail',`<h3>Enviar orçamento por e-mail</h3><p class="hint">Revise o texto. O e-mail abre pronto e você só aperta enviar.${PRIV_EMAIL?' No Gmail, ele abre na conta '+esc(PRIV_EMAIL)+' (precisa estar conectada neste navegador).':''}${ult?' <b>Já enviado por e-mail em '+esc(ult.quando)+'.</b>':''}</p>
+  <label for="em_t">Para: ${esc(l.nome)}</label><input id="em_t" type="email" value="${esc(l.email||'')}" placeholder="e-mail do cliente" autocomplete="off">
+  <label for="em_s">Assunto</label><input id="em_s" value="${esc('Orçamento | '+CFG.brand)}">
+  <label for="em_m">Mensagem</label><textarea id="em_m" style="min-height:260px">${esc((l.msg||'')+ass)}</textarea><p class="hint" id="em_i"></p>
+  <label class="tg2b"><input type="checkbox" id="em_k" checked> Marcar como enviado ao abrir o e-mail</label>
+  <div class="row"><button class="btn" id="em_a">Abrir no app de e-mail</button><button class="btn ghost" id="em_g">Abrir no Gmail</button><button class="btn ghost" id="em_c">Copiar texto</button><button class="btn ghost" id="em_x">Fechar</button></div><p class="hint" id="em_s2" role="status"></p>`,{id:'emm'});
+  const q=s=>m.querySelector(s),close=()=>m.tenta();
+  m.sujo=()=>q('#em_m').value!==((l.msg||'')+ass)||q('#em_t').value!==(l.email||'');
+  const info=()=>{const n=encodeURIComponent(q('#em_m').value).length;q('#em_i').textContent=q('#em_m').value.length+' caracteres'+(n>1800?' · texto longo: alguns programas de e-mail cortam. Se cortar, use "Abrir no Gmail" ou "Copiar texto".':'')};
+  q('#em_m').oninput=info;info();q('#em_x').onclick=close;
+  q('#em_c').onclick=()=>{navigator.clipboard.writeText(q('#em_m').value).then(()=>{q('#em_s2').textContent='Texto copiado.'},()=>{q('#em_s2').textContent='O navegador não deixou copiar. Selecione o texto e copie com Ctrl+C.'})};
+  const go=via=>{
+    const to=q('#em_t').value.trim(),su=q('#em_s').value.trim(),corpo=q('#em_m').value;
+    if(!corpo.trim()){q('#em_s2').textContent='A mensagem está vazia. Gere o orçamento primeiro.';return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)){q('#em_s2').textContent='Confira o e-mail do cliente.';q('#em_t').focus();return}
+    const enc=encodeURIComponent;
+    if(via==='gmail')window.open('https://mail.google.com/mail/?authuser='+enc(PRIV_EMAIL)+'&view=cm&fs=1&to='+enc(to)+'&su='+enc(su)+'&body='+enc(corpo),'_blank','noopener,noreferrer');
+    else{const a=document.createElement('a');a.href='mailto:'+enc(to)+'?subject='+enc(su)+'&body='+enc(corpo);document.body.appendChild(a);a.click();a.remove()}
+    const cur=getL().find(x=>x.id===id),envios=(cur.envios||[]).slice();
+    if(q('#em_k').checked)envios.push({em:new Date().toISOString(),quando:new Date().toLocaleString('pt-BR'),via:'email'});
+    upd(id,{email:to,envios});
+    q('#em_s2').textContent=q('#em_k').checked?'E-mail aberto e orçamento marcado como enviado. Confira e aperte enviar lá.':'E-mail aberto. Confira e aperte enviar lá.';
+    paintList();paintDet();
+  };
+  q('#em_a').onclick=()=>go('app');q('#em_g').onclick=()=>go('gmail');
+  q('#em_t').focus();
+}
+
 const urlAtual=l=>((qaOf(l).find(x=>/endereço do site atual/i.test(x.q))||{}).a||'').trim();
 
 function iaCard(s,t,d){

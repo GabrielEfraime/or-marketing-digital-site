@@ -70,6 +70,6 @@ const dl=(name,txt,type)=>{const a=document.createElement('a');a.href=URL.create
 
 
 const RETENCAO_MESES=12;
-const PRIV_EMAIL='';
+const PRIV_EMAIL='contato@ormarketingdigital.com';
 const VAGAS=[];
 const PRIV_VERSAO='2026-10';
