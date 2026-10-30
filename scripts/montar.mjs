@@ -82,6 +82,8 @@ function executar() {
   gravar(html, path.join(RAIZ, 'dist', 'estudio-ia.html'));
   // hospedagem (Cloudflare Pages): a página como index.html e os cabeçalhos de segurança que a meta tag não consegue dar
   gravar(html, path.join(RAIZ, 'dist', 'index.html'));
+  // GitHub Pages (Deploy from a branch > main > /root) serve este index.html da raiz do repositório; ele vai commitado
+  gravar(html, path.join(RAIZ, 'index.html'));
   const csp = (html.match(/Content-Security-Policy" content="([^"]+)"/) || [])[1];
   gravar('/*\n  Content-Security-Policy: ' + csp + "; frame-ancestors 'none'\n  X-Frame-Options: DENY\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Strict-Transport-Security: max-age=31536000; includeSubDomains\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()\n  Cross-Origin-Opener-Policy: same-origin\n/api/*\n  Cache-Control: no-store\n", path.join(RAIZ, 'dist', '_headers'));
   // arquivos que só o Google lê; vão para a raiz da hospedagem junto com o site
