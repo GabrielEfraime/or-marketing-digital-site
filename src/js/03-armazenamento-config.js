@@ -6,8 +6,8 @@ const MEM={};let STORE_OK=true;
 const sget=k=>{if(k in MEM)return MEM[k];try{return localStorage.getItem(k)}catch(e){STORE_OK=false;return null}};
 const sset=(k,v)=>{try{localStorage.setItem(k,v);delete MEM[k]}catch(e){STORE_OK=false;MEM[k]=v}};
 const GROQ_URL='https://api.groq.com/openai/v1',GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/openai',OPENAI_URL='https://api.openai.com/v1',IAS=['ia1','ia2','ia3'];
-/* IA 1 = OpenAI (criação e acompanhamento), IA 2 = Gemini (briefing, resumo, orçamento e mensagem ao cliente), IA 3 = Groq (captação de clientes). */
-const IA_DEF={ia1:{url:OPENAI_URL,model:'gpt-5-mini'},ia2:{url:GEMINI_URL,model:'gemini-3.5-flash'},ia3:{url:GROQ_URL,model:'openai/gpt-oss-120b'}},IA0=s=>({kind:'openai',...IA_DEF[s],key:''});
+/* Funções: IA 1 = criação e acompanhamento, IA 2 = briefing, resumo, orçamento e mensagem ao cliente, IA 3 = captação. Por ora as três rodam no Gemini (modelos diferentes, cada um com o seu limite); trocar para OpenAI ou Groq é só mudar a plataforma na tela IAs. */
+const IA_DEF={ia1:{url:GEMINI_URL,model:'gemini-3.5-flash'},ia2:{url:GEMINI_URL,model:'gemini-3.5-flash-lite'},ia3:{url:GEMINI_URL,model:'gemini-flash-lite-latest'}},IA0=s=>({kind:'openai',...IA_DEF[s],key:''});
 const theme=()=>document.documentElement.dataset.theme==='light'?'light':'dark';
 const setTheme=()=>{document.documentElement.dataset.theme='dark'};
 setTheme();
@@ -43,10 +43,11 @@ async function keysSave(forcar){
 async function keysLoad(forcar){
   try{
     const k=await kcKey(false),blob=sget('ikeys2')||await idbGet('ikeys2');
-    if(k&&blob){const b=JSON.parse(blob),o=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:kunb64(b.iv)},k,kunb64(b.c))));IAS.forEach(s=>{if(o[s]&&(forcar||!CFG[s].key))CFG[s].key=String(o[s])})}
+    if(k&&blob){const b=JSON.parse(blob),o=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:kunb64(b.iv)},k,kunb64(b.c))));IAS.forEach(s=>{if(o[s]&&!(CFG.skipKeys||[]).includes(s)&&(forcar||!CFG[s].key))CFG[s].key=String(o[s])})}
   }catch(e){}
   KEYS_LAST=JSON.stringify(Object.fromEntries(IAS.filter(s=>CFG[s].key).map(s=>[s,CFG[s].key])));
   KEYS_READY=true;
+  if(CFG.skipKeys){delete CFG.skipKeys;saveCfg();await keysSave(true)} // migração: as chaves antigas da IA 1 e da IA 3 (OpenAI, Groq) não servem no Gemini
   if(IAS.some(s=>CFG[s].key)&&(sget('ikeys')||MEM.ikeys))await keysSave(true); // formato antigo: cifra e apaga o texto puro
 }
 const loadKeys=()=>{let k=null;try{k=sessionStorage.getItem('ikeys')}catch(e){}k=k||sget('ikeys')||MEM.ikeys;try{k=JSON.parse(k||'[]')}catch(e){k=[]}IAS.forEach((s,i)=>{if(k[i])CFG[s].key=String(k[i])})};
@@ -64,9 +65,7 @@ addEventListener('storage',e=>{try{
 }catch(x){}});
 /* Todo o site roda no Gemini: quem estava na Groq migra uma vez (a chave da Groq não serve no Google, então sai). */
 
-/* Três IAs com papéis fixos (OpenAI, Gemini, Groq). Configurações antigas migram uma vez: a chave do Google vai para a IA 2, a da Groq para a IA 3, e a IA 1 (OpenAI) começa sem chave. */
-if(CFG.seededTres!=='1'){const u=(c,r)=>r.test((c&&c.url)||''),oa=/api[.]openai[.]com/,g=/googleapis[.]com/,q=/groq[.]com/,v=[CFG.ia1,CFG.ia2,CFG.ia3,CFG.reserva].filter(Boolean),pega=r=>(v.find(c=>u(c,r)&&c.key)||{}).key||'';
-  CFG.ia1=u(CFG.ia1,oa)?CFG.ia1:{...IA0('ia1'),key:pega(oa)};
-  CFG.ia2=u(CFG.ia2,g)?{...CFG.ia2,key:pega(g)}:{...IA0('ia2'),key:pega(g)};
-  CFG.ia3=u(CFG.ia3,q)?{...CFG.ia3,key:pega(q)}:{...IA0('ia3'),key:pega(q)};
-  delete CFG.reserva;['seededNuvem','seededIA3','seededGemini','seededGemini2'].forEach(x=>delete CFG[x]);CFG.seededTres='1';CFG.t=Date.now();saveCfg()}
+/* Por ora as três IAs rodam no Gemini: configurações antigas (OpenAI, Groq ou a IA reserva) migram uma vez. A chave do Google é a única que continua valendo; as outras saem. */
+if(CFG.seededGem!=='1'){const gk=([CFG.ia1,CFG.ia2,CFG.ia3].filter(c=>c&&/googleapis[.]com/.test(c.url||'')&&c.key)[0]||{}).key||'';
+  IAS.forEach(s=>{CFG[s]={...IA0(s),key:s==='ia2'?gk:''}});
+  delete CFG.reserva;['seededNuvem','seededIA3','seededGemini','seededGemini2','seededTres'].forEach(x=>delete CFG[x]);CFG.seededGem='1';CFG.skipKeys=['ia1','ia3'];CFG.t=Date.now();saveCfg()}

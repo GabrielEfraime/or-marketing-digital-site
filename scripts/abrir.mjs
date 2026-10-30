@@ -26,7 +26,7 @@ function comChave(html, k) {
   const K=${JSON.stringify(k)};
   if(localStorage.getItem('ikeys2'))return;
   let a=[];try{a=JSON.parse(localStorage.getItem('ikeys')||'[]')}catch(e){}
-  const n=[0,1,2].map(i=>a[i]||K[i]);
+  const n=[0,1,2].map(i=>a[i]||K[1]);
   if(n.some(Boolean))localStorage.setItem('ikeys',JSON.stringify(n));
 }catch(e){}})();
 `;

@@ -5,6 +5,8 @@ const LABEL={ia1:'IA 1',ia2:'IA 2',ia3:'IA 3'};
    Visitante não tem o código, então não usa IA (o briefing segue com as perguntas fixas). */
 const srvTok=()=>sget('ortoken')||'';
 const srvOn=()=>location.protocol==='https:'&&!!srvTok();
+/* três IAs na mesma plataforma dividem a chave: quem está sem chave usa a de outra IA com o mesmo endereço */
+const keyDe=c=>c.key||(IAS.map(s=>CFG[s]).find(x=>x.url===c.url&&x.key)||{}).key||'';
 const sameIA=()=>{const a=CFG.ia1,b=CFG.ia2;return a.kind===b.kind&&a.url===b.url};
 /* Núcleo da IA (SHARED CORE do dono): vai na frente de TODA chamada à IA do site. As instruções da tarefa vêm depois e somam a ele. */
 const IA_NUCLEO=()=>['# SHARED CORE','','## Identity','You are the AI core of '+(CFG.brand||'OR Marketing Digital')+', a Brazilian digital marketing agency. On this platform you always operate in PIPELINE MODE: every request comes from the agency\'s internal platform and asks for one task (briefing questions, briefing summary, client profile, strategy, execution kits, content pieces, budget message, client follow-up, recruiting support). The operator (the agency team) reviews everything before anything reaches a client.','',
@@ -34,13 +36,13 @@ async function ask(msgs,onChunk,o={}){
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
   const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
   let url,body;
-  const viaSrv=c.kind==='openai'&&!c.key&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
-  if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+c.key;
+  const chave=keyDe(c),viaSrv=c.kind==='openai'&&!chave&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
+  if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+chave;
     body={model:c.model,messages:msgs,stream:true,[oa?'max_completion_tokens':'max_tokens']:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048)};if(!rs)body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
     const L=iaLim(c.model);if(L.tpm&&body.max_tokens){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
-  else{url='https://api.anthropic.com/v1/messages';Object.assign(hd,{'x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
+  else{url='https://api.anthropic.com/v1/messages';Object.assign(hd,{'x-api-key':chave,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
     body={model:c.model,messages:rest,stream:true,max_tokens:o.max||2048,temperature:o.temp??0.5};if(sys)body.system=sys}
-  if(!c.key&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, cole a chave dessa IA e clique em Salvar. Ela fica cifrada só neste navegador.'));
+  if(!chave&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, cole a chave dessa IA e clique em Salvar. Ela fica cifrada só neste navegador.'));
   let r;
   const tc=new AbortController(),lim=o.timeout||150000,tmo=setTimeout(()=>{tc.porTempo=1;tc.abort()},lim);if(o.signal){if(o.signal.aborted)tc.abort();else o.signal.addEventListener('abort',()=>tc.abort())}
   const go=()=>fetch(url,{method:'POST',signal:tc.signal,headers:hd,body:JSON.stringify(body)});

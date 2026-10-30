@@ -9,8 +9,8 @@ import { montar } from './montar.mjs';
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const env = fs.existsSync(path.join(RAIZ, '.env')) ? fs.readFileSync(path.join(RAIZ, '.env'), 'utf8') : '';
 const pega = (n) => ((env.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim();
-const K = [pega('OPENAI_API_KEY'), pega('GEMINI_API_KEY'), pega('GROQ_API_KEY')];
-if (!K.some(Boolean)) { console.error('ERRO: coloque OPENAI_API_KEY, GEMINI_API_KEY e/ou GROQ_API_KEY no arquivo .env'); process.exit(1); }
+const K = [pega('GEMINI_API_KEY'), pega('GEMINI_API_KEY'), pega('GEMINI_API_KEY')];
+if (!K.some(Boolean)) { console.error('ERRO: coloque GEMINI_API_KEY no arquivo .env'); process.exit(1); }
 // opcional: chave da Places API do Google para a tela Captar clientes
 const gplaces = pega('GOOGLE_PLACES_KEY');
 
