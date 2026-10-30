@@ -121,7 +121,7 @@ if(CFG.seededKb!=='1'){const k=CFG.kb=CFG.kb||{sobre:'',regras:'',exemplos:'',li
 /* Marca OR, fase 3: troca os nomes antigos (Básico/Médio/Max, Vyxa) também no que já estava salvo neste navegador
    e aplica as regras novas de orçamento e WhatsApp. A versão anterior fica guardada em CFG.kbAntigo2. */
 const KB_RENOMEIA=s=>String(s||'').replace(/^Básico:/gm,'Essencial:').replace(/^Médio:/gm,'Crescimento:').replace(/^Max:/gm,'Completo:')
-  .replace(/\bBásico\b/g,'Essencial').replace(/\bMédio\b/g,'Crescimento').replace(/(?<!Performance )\bMax\b/g,'Completo').replace(/\bVyxa\b/gi,'OR')
+  .replace(/\bBásico\b/g,'Essencial').replace(/\bMédio\b/g,'Crescimento').replace(/\bMax\b/g,(m,i,s)=>s.slice(Math.max(0,i-12),i)==='Performance '?m:'Completo').replace(/\bVyxa\b/gi,'OR')
   .replace('[o mais indicado para este cliente]','[entregas a mais que justificam a diferença]').replace('[o mais completo]','[para uma necessidade mais ampla]');
 if(CFG.seededBrand!=='3'){const k=CFG.kb=CFG.kb||{sobre:'',regras:'',exemplos:'',licoes:[]};
   CFG.kbAntigo2={sobre:k.sobre||'',regras:k.regras||'',exemplos:k.exemplos||'',licoes:(k.licoes||[]).map(x=>({...x})),em:new Date().toLocaleDateString('sv-SE')};

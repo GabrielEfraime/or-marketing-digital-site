@@ -35,6 +35,8 @@ const SEGREDOS = [/gsk_[A-Za-z0-9]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za
 SEGREDOS.some((r) => r.test(html)) ? ruim('parece haver uma chave de API dentro do código') : ok('nenhuma chave de API no código');
 
 html.includes('window.OR_TESTE=1') ? ruim('o build normal está com a marca do build de TESTE') : ok('build normal sem a marca de teste');
+// 3b. Celulares: regex com lookbehind derruba o script inteiro no Safari do iPhone antes do iOS 16.4 (a página não abre)
+/\(\?<[=!]/.test(html) ? ruim('regex com lookbehind (?<= ou (?<!): o Safari de iPhone antigo não abre a página') : ok('sem regex com lookbehind (abre em iPhone antigo)');
 for (const p of ['dist/estudio-ia-TESTE.html', 'docs/estudio-ia-TESTE.html']) if (fs.existsSync(path.join(RAIZ, p))) ruim('build de TESTE (com chave) dentro de ' + p);
 
 // 4. Sem restos de depuração e sem avaliação dinâmica de código
