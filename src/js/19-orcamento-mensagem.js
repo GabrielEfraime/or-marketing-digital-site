@@ -127,16 +127,15 @@ async function msgGen(id,corr){
   try{const r=await chamarOrc(msgs,C,'msg');upd(id,{msg:r.msg,orcAviso:r.prob.slice(0,6)})}catch(e){A.err=e.message}
   J.orc.on=false;paintList();paintDet();
 }
-/* A IA só roda quando o consultor clica (nada é gerado sozinho ao abrir o site ou a Minha área). */
+/* A IA só roda quando o consultor clica (nada é gerado sozinho ao abrir o site ou a Minha área). Aqui: resumo e orçamento. Estratégia e execução são geradas no Acompanhamento. */
 async function gerarTudo(id){
   if(anyBusy()||!A.auth)return;
   const l=getL().find(x=>x.id===id);if(!l)return;
   A.tab='orc';A.fs=false;A.err='';
   if(!l.ficha){await ficha(id);if(A.err)return}
   const x=getL().find(y=>y.id===id)||l,faz=[];
-  if(!x.orc)faz.push(()=>orc(id));if(!x.entrega)faz.push(()=>gen(id));
-  if(sameIA()){for(const f of faz){await f();if(A.err)return}}else await Promise.all(faz.map(f=>f()));
-  if(!A.err)await execAll(id,true);
+  if(!x.orc)faz.push(()=>orc(id));
+  for(const f of faz){await f();if(A.err)return}
 }
 addEventListener('storage',e=>{if(e.key==='leads2'&&V==='admin'&&A.auth&&(!A.view||A.view==='trk'||A.view==='dash')){paintList();if(A.view==='dash')pintaDash()}});
 setInterval(()=>{if(V==='admin'&&A.auth&&(!A.view||A.view==='trk'||A.view==='dash')&&sig()!==A.sig){paintList();if(A.view==='dash')pintaDash()}},3000);

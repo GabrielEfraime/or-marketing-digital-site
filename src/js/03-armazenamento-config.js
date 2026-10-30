@@ -54,7 +54,7 @@ const loadKeys=()=>{let k=null;try{k=sessionStorage.getItem('ikeys')}catch(e){}k
 try{Object.assign(CFG,JSON.parse(sget('cfg2')||'{}'));IAS.forEach(s=>{CFG[s]={...IA0(s),...CFG[s]}});loadKeys()}catch(e){}
 if(!CFG.whats)CFG.whats=MY_WHATS;
 if(CFG.pinh)delete CFG.pin;
-if(CFG.seededPr!=='v2'){if(CFG.precos&&!/MARCADOR-TABELA-V2/.test(CFG.precos)&&!/^EXEMPLOS:/.test(CFG.precos))CFG.precosAntigos=CFG.precos;CFG.precos=PRECOS;CFG.seededPr='v2';CFG.t=Date.now();saveCfg()}
+if(CFG.seededPr!=='v3'){if(CFG.precos&&!/MARCADOR-TABELA-V3/.test(CFG.precos)&&!/^EXEMPLOS:/.test(CFG.precos))CFG.precosAntigos=CFG.precos;CFG.precos=PRECOS;CFG.seededPr='v3';CFG.t=Date.now();saveCfg()}
 /* A IA roda na nuvem (Groq), sem nenhum computador ligado: configurações antigas com Ollama migram uma vez. */
 
 

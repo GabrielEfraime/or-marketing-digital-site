@@ -150,9 +150,9 @@ function trkList(){
   ${L.length?`<div class="tcards">${L.map(l=>{const t=l.track,n=nextDue(t);return `<button class="tc" data-ti="${esc(l.id)}"><b>${esc(l.nome)}</b><span class="hint">${svcIc(l)} ${esc(svcName(l))}</span><div class="pb"><i style="width:${prog(t)}%"></i></div><span class="hint">${prog(t)}% concluído · ${n?(n<today()?'<span class="late">atrasada: ':'próxima tarefa: ')+fdate(n)+(n<today()?'</span>':''):'tudo em dia'}</span><span class="hint">${esc([t.pacote,t.valor].filter(Boolean).join(' · '))}</span>${(t.frentes||[]).length?`<span class="hint">Mês ${cicAtual(t)} do contrato: ${(t.pecas||[]).filter(p=>p.per==='c'+cicAtual(t)).length} de ${(t.frentes||[]).filter(f=>f.por!=='projeto').reduce((s,f)=>s+alvo(f),0)} peças</span>`:''}</button>`}).join('')}</div>`:'<div class="panel hint">Nenhum cliente em execução ainda.</div>'}`}
 function trkDetail(l){
   const t=l.track,pend=t.tarefas.filter(x=>!x.done).length;
-  const tabs=[['geral','Visão geral'],['escopo','O que vamos fazer'],['prod','Produção'],['camp','Campanhas'+(t.campanhas&&t.campanhas.length?' ('+t.campanhas.length+')':'')],['met','Métricas'],...Object.keys(t.canais).filter(k=>CH[k]).map(k=>[k,CH[k]]),['tarefas','Tarefas'+(pend?' ('+pend+')':'')],['diario','Diário'],['rel','Relatórios'+(t.relatorios.length?' ✓':'')]];
+  const tabs=[['geral','Visão geral'],['escopo','O que vamos fazer'],['estr','Estratégia'+(l.entrega?' ✓':'')],['exec','Execução'+((l.xads||l.xsoc||(l.xsite&&l.xsite.html))?' ✓':'')],['prod','Produção'],['camp','Campanhas'+(t.campanhas&&t.campanhas.length?' ('+t.campanhas.length+')':'')],['met','Métricas'],...Object.keys(t.canais).filter(k=>CH[k]).map(k=>[k,CH[k]]),['tarefas','Tarefas'+(pend?' ('+pend+')':'')],['diario','Diário'],['rel','Relatórios'+(t.relatorios.length?' ✓':'')]];
   if(!tabs.some(x=>x[0]===T.tab))T.tab='geral';
-  const body={geral:tabGeral,escopo:tabEscopo,prod:tabProd,camp:tabCamp,met:tabMetricas,ads:tabAds,meta:tabMeta,social:tabSocial,site:tabSite,press:tabPress,tarefas:tabTarefas,diario:tabDiario,rel:tabRel}[T.tab](l);
+  const body={geral:tabGeral,escopo:tabEscopo,estr:l=>detMini(l,'plano'),exec:l=>detMini(l,'exec'),prod:tabProd,camp:tabCamp,met:tabMetricas,ads:tabAds,meta:tabMeta,social:tabSocial,site:tabSite,press:tabPress,tarefas:tabTarefas,diario:tabDiario,rel:tabRel}[T.tab](l);
   return `<div class="row" style="margin:0 0 6px"><button class="btn ghost" data-back="1">← Todos os clientes</button><a class="btn ghost" href="https://wa.me/${wnum(l.whats)}" target="_blank" rel="noopener noreferrer">WhatsApp do cliente</a></div>
   <h2 class="pt">${esc(l.nome)} <span class="chip aplicado">em execução</span></h2><p class="hint">${svcIc(l)} ${esc(svcName(l))} · ${esc(l.whats)}</p>
   <div class="tabs" role="tablist">${tabs.map(([k,n])=>`<button class="tab ${T.tab===k?'on':''}" data-tt="${k}" role="tab" aria-selected="${T.tab===k}">${n}</button>`).join('')}</div><div class="panel">${body}</div>`;
@@ -169,7 +169,8 @@ function trkBind(){
   el.querySelectorAll('[data-ti]').forEach(b=>b.onclick=()=>{T.id=b.dataset.ti;T.tab='geral';T.area=null;T.peca=null;T.cic=null;T.msg='';trkPaint()});
   el.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{T.id=null;T.msg='';trkPaint()});
   const mp=document.getElementById('mper');if(mp)mp.onchange=()=>{T.mper=+mp.value;trkPaint()};
-  el.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{T.tab=b.dataset.tt;T.msg='';T.info='';trkPaint()});
+  el.querySelectorAll('[data-tt]').forEach(b=>b.onclick=()=>{T.tab=b.dataset.tt;T.msg='';T.info='';A.err='';A.fs=false;trkPaint()});
+  if(id&&(T.tab==='estr'||T.tab==='exec')){const lk=trkL(id);if(lk){A.sel=id;A.tab=T.tab==='estr'?'plano':'exec';bind(lk)}}
   el.querySelectorAll('[data-f]').forEach(i=>i.onchange=()=>{trkSet(id,t=>setPath(t,i.dataset.f,i.value));if(i.dataset.f==='start'||/situacao|pacote|pgto/.test(i.dataset.f))trkPaint()});
   el.querySelectorAll('[data-act]').forEach(b=>{const ev=b.type==='checkbox'?'onchange':'onclick';b[ev]=()=>trkAct(b.dataset.act,b)});
   el.querySelectorAll('[data-rel]').forEach(a=>a.onchange=()=>trkSet(id,t=>{const r=t.relatorios.find(x=>x.id===a.dataset.rel);if(r)r.txt=a.value}));

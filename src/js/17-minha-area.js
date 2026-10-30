@@ -70,6 +70,7 @@ function paintList(){
   ls.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{A.sel=b.dataset.i;A.edit=false;A.err='';A.fs=false;paintList();paintDet()});
 }
 function paintDet(){
+  if(A.view==='trk'){trkPaint();return}
   const el=document.getElementById('det');if(!el)return;
   const l=getL().find(x=>x.id===A.sel);
   el.innerHTML=l?detail(l):'<div class="panel hint">Escolha um lead na lista.</div>';if(l)bind(l);
@@ -100,17 +101,23 @@ function actions(l,h){
   const dp=J.plano.on?'disabled':'',dq=J.orc.on?'disabled':'',done=l.entrega&&!J.plano.on;
   if(A.tab==='plano')return `<div class="row" style="margin-top:12px"><button class="btn" id="gen" ${dp}>${l.entrega?'Gerar de novo':'Gerar plano com IA'}</button>${done?`<button class="btn ghost" id="ed">${A.edit?'Ver':'Editar'}</button><button class="btn ghost" id="cp">Copiar</button>${h?`<button class="btn ghost" id="sb">${A.sub==='prev'?'Ver código':'Ver preview'}</button><button class="btn ghost" id="dh">Baixar site</button>`:''}<button class="btn ghost" id="fs">Ler em tela cheia</button>`:''}</div>`;
   if(A.tab==='orc')return `<div class="row" style="margin-top:12px"><button class="btn" id="orc" ${dq}>${l.orc?'Gerar orçamentos de novo':'Gerar 3 orçamentos + mensagem'}</button><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
-  if(A.tab==='ficha')return `<div class="row" style="margin-top:12px"><button class="btn" id="ficgo" ${dq}>${l.ficha?'Gerar de novo':'Gerar resumo'}</button>${l.ficha?`<button class="btn ok" id="redo" ${dq}>Refazer orçamentos e plano com este resumo</button>`:''}</div>`;
+  if(A.tab==='ficha')return `<div class="row" style="margin-top:12px"><button class="btn" id="ficgo" ${dq}>${l.ficha?'Gerar de novo':'Gerar resumo'}</button>${l.ficha?`<button class="btn ok" id="redo" ${dq}>Refazer orçamentos com este resumo</button>`:''}</div>`;
   if(A.tab==='exec')return `<div class="row" style="margin-top:12px"><button class="btn" id="exall" ${J.ex.on?'disabled':''}>Gerar tudo da execução</button><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
   if(A.tab==='msg')return `<div class="row" style="margin-top:12px">${l.msg&&!J.orc.on?`<button class="btn wa" id="wm">${WAI} Enviar no WhatsApp</button>`+'<button class="btn ghost" id="em">Enviar por e-mail</button><button class="btn ghost" id="cm">Copiar mensagem</button><button class="btn ghost" id="fs">Ler em tela cheia</button>':''}<button class="btn ${l.msg?'ghost':''}" id="orc" ${dq}>${l.msg?'Gerar de novo':'Gerar orçamentos + mensagem'}</button></div>`;
   return `<div class="row" style="margin-top:12px"><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
 }
+/* Estratégia e execução: geradas no Acompanhamento (depois que o cliente fecha), com os mesmos botões e o mesmo painel de leitura do lead. */
+function detMini(l,tab){
+  A.sel=l.id;A.tab=tab;const o=parseOrc(l.orc||''),h=isSite(l)?htmlOf(l.entrega):'';
+  return `<div class="stat" id="stat">${esc(statLine())}</div>${A.err?`<div class="err">${esc(A.err)}</div>`:''}${actions(l,h)}<div class="pane ${A.fs?'fs':''}" id="pane">${paneHtml(l,o,h)}</div>${A.fs?'<button class="btn fsx" id="fsx">Fechar leitura (Esc)</button>':''}${covWarn(l)}${fixRow(l)}`;
+}
 function detail(l){
   const o=parseOrc(l.orc||''),h=isSite(l)?htmlOf(l.entrega):'';
-  const tabs=[['brief','Briefing'],['ficha','Resumo'+(l.ficha?' ✓':'')],['plano','Estratégia'+(l.entrega?' ✓':'')],['exec','Execução'+((l.xads||l.xsoc||(l.xsite&&l.xsite.html))?' ✓':'')],['orc','Orçamentos'+(l.orc?' ✓':'')],['msg','Mensagem'+(l.msg?' ✓':'')]];
+  const tabs=[['brief','Briefing'],['ficha','Resumo'+(l.ficha?' ✓':'')],['orc','Orçamentos'+(l.orc?' ✓':'')],['msg','Mensagem'+(l.msg?' ✓':'')]];
+  if(!tabs.some(([k])=>k===A.tab))A.tab='orc';
   return `<div class="panel dt"><div class="dthead"><div><h3>${esc(l.nome)} <span class="chip ${l.status}">${stl(l.status)}</span></h3>
   <p class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.whats)}${(l.envios||[]).length?' · <b>orçamento enviado '+(l.envios.slice(-1)[0].via==='email'?'por e-mail':'no WhatsApp')+' em '+esc(l.envios.slice(-1)[0].quando)+'</b>':''} ${l.email?'· '+esc(l.email):''}</p>${planosCards(l)}${briefPainel(l)}${l.guia?'<p class="hint"><b>Veio do roteiro "ainda não sei o que preciso".</b> Os serviços foram sugeridos pelo app; confirme com o cliente antes de enviar o orçamento.</p>':''}</div>
-  <div class="row" style="margin:0">${(!l.orc||!l.entrega)&&l.status!=='recusado'?`<button class="btn hl" id="gall" ${anyBusy()?'disabled':''}>${l.orc||l.entrega||l.ficha?'Gerar o que falta com a IA':'Gerar tudo com a IA'}</button>`:''}${l.msg?`<button class="btn wa" id="wsend">${WAI} Enviar orçamento no WhatsApp</button><button class="btn ghost" id="emsend">Enviar por e-mail</button>`:''}${(l.entrega||l.orc)&&!['aprovado','aplicado','recusado'].includes(l.status)?'<button class="btn ok" id="ap">Aprovar</button><button class="btn ghost" id="rec">Marcar como recusado</button>':''}${l.status==='recusado'?'<button class="btn ghost" id="reab">Reabrir</button>':''}<button class="btn ghost" id="lgx">Exportar dados (LGPD)</button><button class="btn ghost" id="lgd">Apagar cliente</button></div></div>
+  <div class="row" style="margin:0">${!l.orc&&l.status!=='recusado'?`<button class="btn hl" id="gall" ${anyBusy()?'disabled':''}>${l.ficha?'Gerar o orçamento com a IA':'Gerar resumo e orçamento com a IA'}</button>`:''}${l.msg?`<button class="btn wa" id="wsend">${WAI} Enviar orçamento no WhatsApp</button><button class="btn ghost" id="emsend">Enviar por e-mail</button>`:''}${(l.entrega||l.orc)&&!['aprovado','aplicado','recusado'].includes(l.status)?'<button class="btn ok" id="ap">Aprovar</button><button class="btn ghost" id="rec">Marcar como recusado</button>':''}${l.status==='recusado'?'<button class="btn ghost" id="reab">Reabrir</button>':''}<button class="btn ghost" id="lgx">Exportar dados (LGPD)</button><button class="btn ghost" id="lgd">Apagar cliente</button></div></div>
   <div class="tabs" role="tablist">${tabs.map(([k,t])=>`<button class="tab ${A.tab===k?'on':''}" data-t="${k}" role="tab" aria-selected="${A.tab===k}">${t}</button>`).join('')}</div>
   <p class="hint plsel"><label>Plano escolhido pelo cliente <select id="plsel"><option value="">ainda não escolheu</option>${Object.entries(PLANO_NOME).map(([k,t])=>`<option value="${k}" ${l.plano===k?'selected':''}>${t}</option>`).join('')}</select></label>${l.planoEm?' · registrado em '+esc(dHora(Date.parse(l.planoEm)||Date.now())):''}</p>
   <div class="stat" id="stat">${esc(statLine())}</div>
@@ -126,7 +133,7 @@ function bind(l){
   if(g('fic'))g('fic').onchange=()=>upd(l.id,{ficha:g('fic').value.trim(),fichaOk:true});
   if(g('ficgo'))g('ficgo').onclick=()=>ficha(l.id);
   if(g('gall'))g('gall').onclick=()=>gerarTudo(l.id);
-  if(g('redo'))g('redo').onclick=async()=>{await orc(l.id);if(!A.err)await gen(l.id)};
+  if(g('redo'))g('redo').onclick=()=>orc(l.id);
   if(g('fixgo'))g('fixgo').onclick=()=>{const v=g('fixt').value.trim();if(!v)return g('fixt').focus();
     CFG.kb=CFG.kb||{};const L=CFG.kb.licoes=CFG.kb.licoes||[];L.push({k:A.tab,txt:v,...(g('fixk').checked?{}:{cli:l.nome})});if(L.length>100)L.shift();CFG.t=Date.now();saveCfg();diskSaveSoon();
     ({ficha:()=>ficha(l.id,v),plano:()=>gen(l.id,v),exec:()=>execGen(l.id,g('fixw').value,v),orc:()=>orc(l.id,v),msg:()=>msgGen(l.id,v)})[A.tab]()};
