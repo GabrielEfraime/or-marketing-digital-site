@@ -48,7 +48,8 @@ const capBRL=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'
 
 /* ---- busca no Google (Places API New, Text Search) ---- */
 const capErro=(st,j)=>{const m=String(j&&j.error&&j.error.message||'');
-  if(st===400&&/API key/i.test(m))return 'A chave do Google não é válida. Confira em console.cloud.google.com, em APIs e serviços > Credenciais, ou apague a chave para buscar no OpenStreetMap (grátis).';
+  if(st===400&&/API key/i.test(m))return 'A chave do Google não é válida. Confira em console.cloud.google.com, em APIs e serviços > Credenciais.';
+  if(st===401)return 'O Google não aceitou esse tipo de chave. A chave do Gemini (Google AI Studio) não serve para buscar negócios: crie uma chave de API no Google Cloud (APIs e serviços > Credenciais) e ative a "Places API (New)".';
   if(st===403)return 'O Google recusou a chave (erro 403). Ative a "Places API (New)" no projeto, confira se a chave pode usar essa API e se o faturamento está ligado.';
   if(st===429)return 'O limite de buscas do Google acabou por agora (erro 429). Espere um pouco ou aumente a cota no Google Cloud.';
   return 'O Google respondeu com erro '+st+(m?': '+m.slice(0,200):'')+'.'};
@@ -57,7 +58,7 @@ const capDoGoogle=q=>x=>{const site=String(x.websiteUri||''),h=capHost(site);
     end:String(x.formattedAddress||''),tel:String(x.nationalPhoneNumber||x.internationalPhoneNumber||''),site:/^https?:\/\//i.test(site)?site:'',maps:/^https:\/\//.test(x.googleMapsUri||'')?x.googleMapsUri:'',
     nota:+x.rating||0,aval:+x.userRatingCount||0,ig:h==='instagram.com'?((site.match(/instagram\.com\/([A-Za-z0-9._]+)/i)||[])[1]||''):''}};
 async function capBuscar(mais){
-  const k=capKey();if(!k)return mais?null:capBuscarOSM();
+  const k=capKey();if(!k){if(mais)return null;CAP.err='Para buscar no Google, cole a chave da Places API em "Chave do Google" (o passo a passo está logo abaixo).';CAP.kopen=true;return capPaint()}
   const q=mais&&CAP.q?CAP.q:{...CAP.form},texto=q.nicho+' em '+(q.bairro?q.bairro+', ':'')+q.cidade;
   const body={textQuery:texto,languageCode:'pt-BR',regionCode:'BR',pageSize:20};if(mais)body.pageToken=CAP.tok;
   CAP.busy=true;CAP.fazendo='busca';capPaint();
@@ -69,7 +70,7 @@ async function capBuscar(mais){
     const o=capLoad();o.buscas.push({em:Date.now(),q:texto,n:novos.length});capSave(o);
     if(!novos.length)CAP.msg='O Google não achou nada para "'+texto+'". Tente outro nicho ou tire o bairro.';
   }catch(e){
-    if(!mais&&[400,401,403].includes(e.st)){CAP.busy=false;await capBuscarOSM();if(!CAP.err)CAP.msg='O Google recusou a chave, então busquei no OpenStreetMap (grátis). Para usar o Google, confira a chave ou apague-a. '+(CAP.msg||'');capPaint();return}
+    if([400,401,403].includes(e.st))CAP.kopen=true;
     CAP.err=e.name==='TimeoutError'?'O Google demorou demais para responder. Tente de novo.':e.name==='TypeError'?'Sem conexão com o Google agora. Confira a internet e tente de novo.':e.message}
   CAP.busy=false;CAP.fazendo='';capPaint();
 }
@@ -258,11 +259,11 @@ function capBusca(o){
    <div><label for="capc">Cidade</label><input id="capc" value="${esc(f.cidade)}" placeholder="Escolha ou digite a cidade" autocomplete="off"></div>
    <div><label for="capb">Bairro (opcional)</label><input id="capb" value="${esc(f.bairro)}" placeholder="Ex.: Tijuca" autocomplete="off"></div>
    <div class="cap-fb"><button class="btn" data-cap="buscar" ${CAP.busy?'disabled':''}>${CAP.fazendo==='busca'?(k?'Buscando…':'Buscando no mapa (até 1 min e meio)…'):'Buscar'}</button></div></div>
-   <p class="hint">${k?'A busca usa o Google (Places API), com a sua chave.':'A busca usa o OpenStreetMap: grátis e sem chave, mas com menos negócios e sem notas. Com uma chave do Google a busca fica mais completa.'}</p>
-   <details class="cap-kd"><summary>Chave do Google (opcional): ${k?'ligada':'sem chave'}</summary>
-    <p class="hint">Com a chave, a busca usa a Places API (New) do Google, e a chave fica só neste navegador. Cada página de até 20 resultados conta como uma consulta; o Google dá uma cota grátis por mês e cobra o que passar (confira em console.cloud.google.com, em Faturamento). Restrinja a chave só à Places API e ponha um limite de gasto.</p>
-    <div class="row"><input id="capkey" type="password" autocomplete="off" placeholder="${k?'Chave salva (cole outra para trocar)':'Cole a chave aqui'}" aria-label="Chave da Places API"><button class="btn ghost" data-cap="chave">Salvar chave</button>${k?'<button class="btn ghost" data-cap="semchave">Apagar chave</button>':''}</div></details>
-   <p class="hint">Achou um negócio no Instagram ou na rua? <button type="button" class="cap-lnk" data-cap="manual">Adicione à mão</button> e use o resto do fluxo.</p></section>
+   <p class="hint">${k?'A busca usa o Google (Places API), com a sua chave: negócios atuais, com nota e avaliações.':'Para buscar no Google, cole a chave da Places API abaixo.'}</p>
+   <details class="cap-kd" ${!k||CAP.kopen?'open':''}><summary>Chave do Google: ${k?'ligada':'falta colar'}</summary>
+    <ol class="hint cap-pp"><li>Em console.cloud.google.com, crie ou escolha um projeto.</li><li>Ligue o faturamento do projeto (o Google exige um cartão e dá uma cota grátis por mês; confira os valores atuais em Faturamento).</li><li>Em APIs e serviços > Biblioteca, procure <b>Places API (New)</b> e clique em Ativar.</li><li>Em APIs e serviços > Credenciais, clique em Criar credenciais > Chave de API. Restrinja a chave à Places API (New) e ponha um limite de gasto com alerta.</li><li>Cole a chave aqui e clique em Salvar e testar. A chave do Gemini (AI Studio) não serve.</li></ol>
+    <div class="row"><input id="capkey" type="password" autocomplete="off" placeholder="${k?'Chave salva (cole outra para trocar)':'Cole a chave aqui'}" aria-label="Chave da Places API"><button class="btn ghost" data-cap="chave" ${CAP.busy?'disabled':''}>Salvar e testar</button>${k?'<button class="btn ghost" data-cap="semchave">Apagar chave</button>':''}</div></details>
+   <p class="hint">Achou um negócio no Instagram ou na rua? <button type="button" class="cap-lnk" data-cap="manual">Adicione à mão</button> e use o resto do fluxo. Sem chave do Google? <button type="button" class="cap-lnk" data-cap="buscarosm">Buscar no OpenStreetMap</button> (mapa de voluntários: poucos negócios e dados antigos).</p></section>
   ${CAP.res.length?`<div class="cap-rh"><p><b>${CAP.res.length}</b> encontrados · <b>${CAP.res.filter(p=>capSinal(p).semSite).length}</b> sem site${vis.length!==CAP.res.length?' · mostrando '+vis.length:''}</p>
    <div class="cap-chips" role="group" aria-label="Filtros">${CAP_FILTROS.filter(([k2])=>CAP.fonte!=='osm'||['semsite','cel'].includes(k2)).map(([k2,t])=>`<button class="cap-chip ${CAP.filtro[k2]?'on':''}" aria-pressed="${!!CAP.filtro[k2]}" data-cap="filtro:${k2}">${esc(t)}</button>`).join('')}</div>
    <label class="cap-ord">Ordenar <select id="capord">${[['op','Oportunidade'],['nota','Melhor nota'],['aval','Mais avaliações']].map(([k2,t])=>`<option value="${k2}" ${CAP.ord===k2?'selected':''}>${t}</option>`).join('')}</select></label></div>
@@ -342,6 +343,17 @@ function capCombo(inp,itens){
     else if(e.key==='Escape'&&!box.hidden){e.preventDefault();e.stopPropagation();fecha()}});
   box.addEventListener('mousedown',e=>{e.preventDefault();const o=e.target.closest('.capop');if(o)pega(lista()[+o.dataset.i])});
 }
+/* testa a chave com uma busca mínima antes de salvar: o erro do Google diz o que falta (API desligada, faturamento, tipo de chave) */
+async function capTestaChave(v){
+  CAP.busy=true;CAP.err='';CAP.msg='Testando a chave no Google…';capPaint();
+  try{
+    const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':v,'X-Goog-FieldMask':'places.id'},body:JSON.stringify({textQuery:'cafeteria no Rio de Janeiro',languageCode:'pt-BR',pageSize:1}),signal:AbortSignal.timeout(20000)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){CAP.msg='';CAP.err=capErro(r.status,j);CAP.kopen=true}
+    else{capKeySet(v);CAP.kopen=false;CAP.msg='Chave funcionando e salva neste navegador. Agora é só buscar.'}
+  }catch(e){CAP.msg='';CAP.err=e.name==='TimeoutError'?'O Google demorou demais para responder. Tente de novo.':'Sem conexão com o Google agora. Confira a internet e tente de novo.'}
+  CAP.busy=false;capPaint();
+}
 function capLeForm(){const v=id=>((document.getElementById(id)||{}).value||'').trim();if(document.getElementById('capn'))CAP.form={nicho:v('capn').slice(0,80),cidade:v('capc').slice(0,80),bairro:v('capb').slice(0,80)};try{localStorage.setItem('capcid',CAP.form.cidade)}catch(e){}}
 function capBind(el,p){
   el.onclick=e=>{const b=e.target.closest('[data-cap]');if(!b||b.disabled)return;const [k,...r]=b.dataset.cap.split(':');capAct(k,r.join(':'))};
@@ -390,9 +402,10 @@ function capManual(){
 async function capAct(k,a){
   CAP.err='';CAP.msg='';const g=id=>document.getElementById(id);
   if(k==='tab'){CAP.tab=a==='meus'?'meus':'busca';CAP.sel.clear();return capPaint()}
+  if(k==='buscarosm'){if(CAP.busy)return;capLeForm();if(!CAP.form.nicho||!CAP.form.cidade){CAP.err='Escolha o nicho e a cidade.';return capPaint()}CAP.sel.clear();return capBuscarOSM()}
   if(k==='buscar'){if(CAP.busy)return;capLeForm();if(!CAP.form.nicho||!CAP.form.cidade){CAP.err='Escolha o nicho e a cidade.';capPaint();return (g(CAP.form.nicho?'capc':'capn')||{focus(){}}).focus()}CAP.sel.clear();return capBuscar(false)}
   if(k==='mais')return capBuscar(true);
-  if(k==='chave'){const v=((g('capkey')||{}).value||'').trim();if(!v){CAP.err='Cole a chave antes de salvar.';return capPaint()}if(!/^[\w-]{20,200}$/.test(v)){CAP.err='Essa chave não parece uma chave do Google. Copie de novo do Google Cloud.';return capPaint()}capKeySet(v);CAP.msg='Chave salva neste navegador.';return capPaint()}
+  if(k==='chave'){const v=((g('capkey')||{}).value||'').trim();if(!v){CAP.err='Cole a chave antes de salvar.';return capPaint()}if(!/^[\w.-]{20,200}$/.test(v)){CAP.err='Essa chave não parece uma chave do Google. Copie de novo do Google Cloud.';return capPaint()}return capTestaChave(v)}
   if(k==='semchave'){capKeySet('');CAP.msg='Chave apagada deste navegador.';return capPaint()}
   if(k==='filtro'){if(CAP.filtro[a]!==undefined)CAP.filtro[a]=!CAP.filtro[a];return capPaint()}
   if(k==='salvar'||k==='salvarsel'){const n=capSalvar(k==='salvar'?[a]:[...CAP.sel]);CAP.sel.clear();CAP.msg=n?n+' salvo(s) em Meus prospects.':'Nada novo para salvar.';return capPaint()}
