@@ -53,7 +53,8 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Manifesto em 4 cartões (Toggl como referência) e Três opções em 3 cartões do mesmo tamanho. Nenhum pacote aparece como "recomendado" na animação do Como funciona.
 - OR em pontos do rodapé: faixa de luz que atravessa a marca sozinha e afastamento dos pontos em volta do mouse (o dono achou que estava parado demais).
 - Menu do topo vira "Menu" abaixo de 1240 px para não quebrar em duas linhas; trilho de capítulos só a partir de 1440 px.
-- Acima de 1240 px o menu fica no centro exato da barra, com a logo à esquerda e "Solicitar orçamento" à direita (pedido do dono em 31/10/2026; antes ele colava na logo).
+- Barra do topo na largura toda (sem o limite de 1320 px): logo junto da borda esquerda e "Solicitar orçamento" junto da direita, a 56 px das bordas em tela larga. Acima de 1240 px o menu fica no meio do espaço entre os dois, com a mesma folga dos dois lados (pedidos do dono em 31/10/2026).
+- Primeira tela: "Solicitar orçamento" centralizado sob o título, com "Ver como funciona" logo abaixo (31/10/2026).
 - "Talentos" saiu do menu da Minha área e virou a aba "Banco de dados" dentro de Vagas.
 - Base da IA: exemplos e regras com os nomes Essencial/Crescimento/Completo e as regras novas de orçamento e WhatsApp. A migração atualiza também o que já estava salvo no navegador e guarda a versão anterior (botão "Ver a versão anterior").
 - Troca de provedor de IA: só depois que tudo estiver rodando (pedido do dono).

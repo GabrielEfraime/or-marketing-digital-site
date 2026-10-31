@@ -5,6 +5,8 @@
 .v-hc .v-h1{max-width:12ch;margin-inline:auto}
 .v-hc .v-lead{margin-inline:auto;max-width:44ch}
 .v-hc .v-act{justify-content:center}
+/* botão principal no centro, alinhado ao título; "Ver como funciona" logo abaixo */
+.v-hc .v-act{flex-direction:column;align-items:center;gap:12px}
 .v-hc .v-tiles{position:static;margin-top:clamp(20px,3vw,36px);justify-content:center}
 .v-fl{list-style:none;margin:0;padding:0;position:absolute;inset:0;z-index:1;pointer-events:none}
 .v-fl li{position:absolute;left:var(--x);top:var(--y);pointer-events:auto}
