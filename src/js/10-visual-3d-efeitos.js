@@ -170,6 +170,8 @@ function cenaStart(){
     fit();const dark=document.documentElement.dataset.theme!=='light',K=dark?'244,245,251':'11,11,11',L=dark?'255,90,0':'69,39,214',u=Math.min(W,H)/100;
     const col=(c,a)=>'rgba('+c+','+a.toFixed(3)+')';
     x.clearRect(0,0,W,H);
+    /* o desenho é um quadrado: fica no centro da área (antes ficava preso no canto de cima à esquerda) */
+    x.save();x.translate((W-100*u)/2,(H-100*u)/2);
     /* grade de pontos ao fundo */
     x.fillStyle=col(K,.1);for(let i=6;i<100;i+=6)for(let j=6;j<100;j+=6){x.beginPath();x.arc(i*u,j*u,.35*u,0,6.2832);x.fill()}
     const win=i=>{const fi=i===0?1:ss(i*.25-.05,i*.25+.02,p),fo=i===3?1:1-ss((i+1)*.25-.02,(i+1)*.25+.05,p);return fi*fo};
@@ -191,7 +193,7 @@ function cenaStart(){
     /* 3. orçamento: três colunas (nenhuma é recomendada por padrão) */
     a=win(2);s=cl((p-.5)/.25,0,1);
     if(a>.01){tx('ORÇAMENTO',8,8,2.6,.7*a);const hs=[38,58,78],nm=['ESSENCIAL','CRESCIMENTO','COMPLETO'];
-      for(let k=0;k<3;k++){const t=ss(k*.14,k*.14+.5,s),w=20*u,px=(21+k*26)*u,h=hs[k]*u*t,py=84*u-h;
+      for(let k=0;k<3;k++){const t=ss(k*.14,k*.14+.5,s),w=20*u,px=(14+k*26)*u,h=hs[k]*u*t,py=84*u-h;
         box(px,py,w,Math.max(h,1),2*u);x.fillStyle=k===1?col(L,.92*a):col(K,.12*a);x.fill();if(k!==1){x.strokeStyle=col(K,.45*a);x.lineWidth=D;x.stroke()}
         tx(nm[k],px/u+10,90,2.3,.8*a,K,'center')}}
     /* 4. WhatsApp: conversa */
@@ -202,6 +204,7 @@ function cenaStart(){
       box(42*u,38*u,26*u,12*u,2.4*u);x.fillStyle=col(L,.9*a*t2);x.fill();x.fillStyle=col(dark?'11,11,11':'255,255,255',.7*a*t2);box(45*u,41.5*u,19*u,1.6*u,.8*u);x.fill();box(45*u,45*u,12*u,1.6*u,.8*u);x.fill();
       box(32*u,56*u,26*u,12*u,2.4*u);x.fillStyle=col(K,.13*a*t3);x.fill();x.fillStyle=col(K,.55*a*t3);box(35*u,59.5*u,17*u,1.6*u,.8*u);x.fill();
       tx('EXEMPLO ILUSTRATIVO',50,96,2,.65*a,K,'center')}
+    x.restore();
   };
   const frame=()=>{raf=0;const r=sec.getBoundingClientRect(),st=sec.querySelector('.v-stick'),tot=Math.max(1,sec.offsetHeight-st.offsetHeight),p=cl((68-r.top)/tot,0,1);
     const i=Math.min(3,Math.floor(p*4));lis.forEach((li,k)=>li.classList.toggle('on',k===i));

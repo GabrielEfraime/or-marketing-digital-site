@@ -14,6 +14,37 @@
   .nav .mnav{margin:0 auto!important}
 }
 
+/* caixa de concordância (briefing e vagas): caixa de 22 px ao lado do texto, na altura da primeira linha; o rótulo inteiro continua clicável */
+html .cons{display:flex!important;align-items:flex-start;gap:12px}
+html input[type=checkbox],html input[type=radio]{min-height:0}
+html .cons input[type=checkbox]{flex:none;width:22px!important;height:22px!important;margin:1px 0 0!important;padding:0}
+
+/* seção Manifesto: o rótulo "(01)" fica no centro, como o título e o texto */
+.v-mfs .v-lab{text-align:center;max-width:none}
+
+/* cartões e listas lado a lado: título, texto e lista de cada um começam na mesma altura que os do vizinho */
+@supports (grid-template-rows:subgrid){
+  .v-mc{display:grid;grid-row:span 5;grid-template-rows:subgrid;row-gap:14px}
+  .v-four li{grid-row:span 2;grid-template-rows:subgrid;row-gap:6px}
+  @media(min-width:861px){
+    #briefing .v-2col{row-gap:clamp(22px,2.6vw,34px)}
+    #briefing .v-2col>div{display:grid;grid-row:span 5;grid-template-rows:subgrid}
+    #briefing .v-2col>div>ol,#briefing .v-2col>div>ul{grid-row:span 4;grid-template-rows:subgrid;margin-top:0}
+    #briefing .v-2col li{align-content:start}
+  }
+}
+
+/* Minha área: o botão de contorno fica da mesma altura do botão cheio (a borda de 2 px entra no lugar do espaçamento) */
+body.adm .btn.ghost{padding-top:10px;padding-bottom:10px}
+/* campo e botão na mesma linha, com a mesma altura */
+body.adm .row:has(>input:not([type=checkbox]):not([type=radio])){align-items:stretch}
+/* tela estreita: a lista de leads fica acima do detalhe e não gruda no topo (antes passava por cima do detalhe ao rolar) */
+@media(max-width:1000px){.list{position:static;max-height:min(50vh,420px)}}
+/* IAs: a descrição ocupa sempre duas linhas, para os campos das colunas ficarem na mesma altura */
+.iacard>p.hint:first-of-type{min-height:2lh}
+/* orçamento do lead: os três pacotes lado a lado sempre que couberem */
+.plc{grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr))}
+
 /* listas suspensas: o menu aberto também fica escuro e legível (no Windows ele abria branco com texto claro) */
 :root{color-scheme:dark}
 select option,select optgroup{background:#1A1A1A;color:#F5F5F3}

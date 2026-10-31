@@ -12,7 +12,7 @@ Dados que temos: nome, WhatsApp, e-mail (opcional), respostas do briefing, orça
 | Navegador do notebook (`localStorage`, leads e configurações) | Notebook perdido/roubado, malware, uso por terceiros |
 | Pasta de backup no HD (`leads.json`, `historico/`, `clientes/`) | Pasta copiada, nuvem sincronizada sem proteção, HD perdido |
 | Chaves das IAs (Groq e outras) | Chave vazada ou compartilhada, uso indevido |
-| Serviços de IA e Google Fonts | Incidente no fornecedor |
+| Serviços de IA | Incidente no fornecedor |
 | WhatsApp / e-mail | Mensagem enviada para a pessoa errada, conta invadida |
 | Contas dos clientes (Google Ads, redes) | Acesso concedido sem revogação, conta do consultor invadida |
 

@@ -71,7 +71,7 @@
     },
     {
       "arquivo": "src/css/18-alinhamento.css",
-      "descricao": "Menu do topo sem quebra de linha e trilho de capítulos só em tela larga"
+      "descricao": "Alinhamentos: menu do topo, caixa de concordância, cartões e listas lado a lado (subgrid), botões e lista de leads da Minha área"
     },
     {
       "arquivo": "src/css/19-acompanhamento.css",

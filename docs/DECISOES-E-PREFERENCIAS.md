@@ -55,6 +55,18 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Menu do topo vira "Menu" abaixo de 1240 px para não quebrar em duas linhas; trilho de capítulos só a partir de 1440 px.
 - Barra do topo na largura toda (sem o limite de 1320 px): logo junto da borda esquerda e "Solicitar orçamento" junto da direita, a 56 px das bordas em tela larga. Acima de 1240 px o menu fica no meio do espaço entre os dois, com a mesma folga dos dois lados (pedidos do dono em 31/10/2026).
 - Primeira tela: "Solicitar orçamento" centralizado sob o título, com "Ver como funciona" logo abaixo (31/10/2026).
+- Revisão de alinhamento (31/10/2026, pedido do dono: "tem muita coisa desalinhada"):
+  - Caixa de concordância (briefing e vagas): caixa de 22 px ao lado da primeira linha do texto.
+  - Primeira tela: acima de 1240 px, os cartões flutuantes ficam presos nas laterais e nunca entram na coluna do meio (antes batiam no título e nas pílulas). Até 1240 px eles viram uma faixa centrada abaixo do texto. O 9º cartão fica centralizado.
+  - "Como funciona": o desenho fica no centro do canvas, e as três barras do orçamento ficam no meio.
+  - Cartões e listas lado a lado usam `subgrid`, para cada parte começar na mesma altura que a do vizinho: os 4 cartões do Manifesto, a lista "Atendimento próximo…" e as listas "Como é o briefing" e "O que você recebe". O rótulo "(01) Manifesto" fica centrado, como o título.
+  - Minha área:
+    - botão de contorno com a mesma altura do botão cheio;
+    - campo e botão na mesma linha, com a mesma altura;
+    - em tela estreita, a lista de leads não gruda mais no topo (antes passava por cima do detalhe);
+    - descrição das IAs com duas linhas fixas, para os campos das colunas alinharem;
+    - os três pacotes do orçamento ficam lado a lado sempre que couberem.
+  - Regras em `src/css/18-alinhamento.css` e `16-hero-flutuante.css`.
 - "Talentos" saiu do menu da Minha área e virou a aba "Banco de dados" dentro de Vagas.
 - Base da IA: exemplos e regras com os nomes Essencial/Crescimento/Completo e as regras novas de orçamento e WhatsApp. A migração atualiza também o que já estava salvo no navegador e guarda a versão anterior (botão "Ver a versão anterior").
 - Troca de provedor de IA: só depois que tudo estiver rodando (pedido do dono).
