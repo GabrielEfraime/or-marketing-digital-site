@@ -148,7 +148,7 @@ function introStart(){
   if(INTRO_FEITA||document.getElementById('or-intro')||location.hash==='#/admin')return;
   INTRO_FEITA=true;
   const o=document.createElement('div');o.id='or-intro';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Abertura OR Marketing Digital');
-  o.innerHTML='<canvas id="or-canvas"></canvas><img class="fallback" src="'+VMARK+'" alt="OR Marketing Digital"><div class="or-line l1"></div><div class="or-line l2"></div><button class="or-skip" id="or-skip" type="button">Pular</button><div class="or-copy"><div class="or-tag">Estratégia · Criatividade · Resultados</div><div class="or-sub"><b>Mais que marketing.</b> É crescimento real.</div><div class="or-actions"><button class="or-btn" id="or-enter" type="button">Entrar</button></div></div>';
+  o.innerHTML='<canvas id="or-canvas"></canvas><img class="fallback" src="'+VMARK+'" alt="OR Marketing Digital"><div class="or-line l1"></div><div class="or-line l2"></div><div class="or-copy"><div class="or-tag">Estratégia · Criatividade · Resultados</div><div class="or-sub"><b>Mais que marketing.</b> É crescimento real.</div><div class="or-actions"><button class="or-btn" id="or-enter" type="button">Entrar</button></div></div>';
   document.body.appendChild(o);
   app.inert=true;document.documentElement.style.overflow='hidden';
   window.addEventListener('or-intro-done',()=>{app.inert=false;document.documentElement.style.overflow='';window.scrollTo(0,0);

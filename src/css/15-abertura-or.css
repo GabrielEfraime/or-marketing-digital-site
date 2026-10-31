@@ -22,5 +22,3 @@
 #or-intro.txt .or-actions{opacity:1}
 .or-btn{font:inherit;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--off);background:transparent;border:1px solid rgba(247,245,241,.35);border-radius:999px;padding:12px 28px;cursor:pointer;transition:all .25s}
 .or-btn:hover,.or-btn:focus-visible{border-color:var(--orange);background:var(--orange);color:#0B0B0B;outline:none}
-.or-skip{position:absolute;top:18px;right:20px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--grey);background:none;border:0;cursor:pointer;padding:8px}
-.or-skip:hover{color:var(--off)}

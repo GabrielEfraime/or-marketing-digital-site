@@ -22,7 +22,6 @@ function finish(){
   window.dispatchEvent(new CustomEvent('or-intro-done'));
   setTimeout(function(){cancelAnimationFrame(raf);try{renderer.dispose()}catch(e){}; if(CONFIG.redirect)location.href=CONFIG.redirect;},950);
 }
-document.getElementById('or-skip').onclick=finish;
 document.getElementById('or-enter').onclick=finish;
 addEventListener('keydown',function(e){if(e.key==='Escape'||e.key==='Enter')finish()});
 

@@ -7,6 +7,13 @@
   .nav.mopen .mnav button{width:100%;font-size:20px!important;opacity:1;min-height:56px;justify-content:flex-start}
 }
 @media(max-width:1439px){.v-cap{display:none!important}}
+/* tela larga: menu no centro exato da barra, logo à esquerda e botões à direita (cada um na sua coluna, para a barra sem menu também ficar certa) */
+@media(min-width:1241px){
+  .nav .navi{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:24px}
+  .nav .navi>.brandb{grid-column:1;justify-self:start}
+  .nav .mnav{grid-column:2;justify-self:center;margin:0!important}
+  .nav .navr{grid-column:3;justify-self:end}
+}
 
 /* listas suspensas: o menu aberto também fica escuro e legível (no Windows ele abria branco com texto claro) */
 :root{color-scheme:dark}

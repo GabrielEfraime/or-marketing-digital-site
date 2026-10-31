@@ -80,6 +80,10 @@
     {
       "arquivo": "src/css/20-captacao.css",
       "descricao": "Captar clientes: busca, cards dos negócios, jornada de abordagem"
+    },
+    {
+      "arquivo": "src/css/21-vidro-barras-botoes.css",
+      "descricao": "Vidro só em barras, botões e menus; cartões, painéis e janelas sólidos (vence as camadas de vidro anteriores)"
     }
   ],
   "js": [

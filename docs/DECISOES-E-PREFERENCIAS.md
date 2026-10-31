@@ -19,8 +19,8 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - **V 3D** da marca (WebGL) no topo da home e de vagas: gira sozinho, sem reagir ao mouse.
 - **Orbe do AI-Driven** gira sozinha (sem reagir ao mouse).
 - **Rodapé em pontos** reage ao cursor (essa interação ele pediu).
-- **Vidro (glass)** no site e na Minha área, com fallback sólido (`prefers-reduced-transparency`).
-- A **abertura** (uma vez por visita; Esc ou "Pular" entram direto).
+- **Vidro (glass) só em barras, botões e menus** (31/10/2026): barra do topo e menu aberto, capítulos laterais, botões e opções, menu lateral, abas e barras de filtro da Minha área. Cartões, painéis, janelas e o briefing são sólidos (`#151515`). Fica em `src/css/21-vidro-barras-botoes.css`, com fallback sólido (`prefers-reduced-transparency` e navegador sem `backdrop-filter`). O dono pediu `expo-glass-effect`, mas ele só funciona em app Expo/React Native no iOS; no site o vidro é CSS.
+- A **abertura** (uma vez por visita; "Entrar", Esc ou Enter entram direto; fecha sozinha em 7,5 s). Sem botão "Pular" (o dono pediu para tirar em 31/10/2026).
 - "Como funciona" como **cena fixa** em canvas com contador de 0 a 100%.
 
 ## O que o dono NÃO gostou (não repetir)
@@ -35,7 +35,7 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Mensagens e orçamentos sempre passam pela revisão do consultor.
 
 ## Minha área
-- Glass em painéis, menu lateral, cartões de estatística e janelas.
+- Vidro só no menu lateral, nas abas, nas barras de filtro e nos botões; painéis, cartões de estatística e janelas são sólidos (31/10/2026).
 - O link "Minha área" aparece só no arquivo local (`file://`) ou em `#/admin`; some no site publicado.
 
 ## Sites gerados para clientes
@@ -53,6 +53,7 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Manifesto em 4 cartões (Toggl como referência) e Três opções em 3 cartões do mesmo tamanho. Nenhum pacote aparece como "recomendado" na animação do Como funciona.
 - OR em pontos do rodapé: faixa de luz que atravessa a marca sozinha e afastamento dos pontos em volta do mouse (o dono achou que estava parado demais).
 - Menu do topo vira "Menu" abaixo de 1240 px para não quebrar em duas linhas; trilho de capítulos só a partir de 1440 px.
+- Acima de 1240 px o menu fica no centro exato da barra, com a logo à esquerda e "Solicitar orçamento" à direita (pedido do dono em 31/10/2026; antes ele colava na logo).
 - "Talentos" saiu do menu da Minha área e virou a aba "Banco de dados" dentro de Vagas.
 - Base da IA: exemplos e regras com os nomes Essencial/Crescimento/Completo e as regras novas de orçamento e WhatsApp. A migração atualiza também o que já estava salvo no navegador e guarda a versão anterior (botão "Ver a versão anterior").
 - Troca de provedor de IA: só depois que tudo estiver rodando (pedido do dono).
