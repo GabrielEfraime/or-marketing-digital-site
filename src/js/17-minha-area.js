@@ -64,7 +64,7 @@ function paintList(){
   const L=getL(),c=s=>L.filter(l=>l.status===s).length,vis=A.filter==='todos'?L:L.filter(l=>l.status===A.filter);
   A.sig=sig();
   const st=document.getElementById('sts');
-  if(st)st.innerHTML=`<div class="stats">${[['novo','novos','--c:#ffd166'],['pronto','prontos para revisar','--c:#ff8a4d'],['aprovado','aprovados','--c:#ff9a66'],['aplicado','em execução','--c:#12805c']].map(([k,t,s])=>`<div class="sc" style="${s}"><b>${c(k)}</b><span>${t}</span></div>`).join('')}</div>`;
+  if(st)st.innerHTML=`<div class="stats">${[['novo','novos','--c:#ffd166'],['pronto','prontos para revisar','--c:#C6AC8E'],['aprovado','aprovados','--c:#C6AC8E'],['aplicado','em execução','--c:#12805c']].map(([k,t,s])=>`<div class="sc" style="${s}"><b>${c(k)}</b><span>${t}</span></div>`).join('')}</div>`;
   const ls=document.getElementById('lst');if(!ls)return;
   ls.innerHTML=vis.length?vis.map(l=>`<button class="it ${l.status} ${l.id===A.sel?'on':''}" data-i="${esc(l.id)}"><b>${esc(l.nome)}</b><span class="chip ${l.status}">${stl(l.status)}</span>${(l.envios||[]).length?'<span class="wsent" title="Orçamento enviado no WhatsApp">'+WAI+'enviado</span>':''}<br><span class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.data)}</span></button>`).join(''):'<p class="hint">Nenhum lead aqui ainda. Abra o site público em outra aba e faça um briefing.</p>';
   ls.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{A.sel=b.dataset.i;A.edit=false;A.err='';A.fs=false;paintList();paintDet()});

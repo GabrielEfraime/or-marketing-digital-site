@@ -3,13 +3,13 @@
 .v-h1{animation:vrev 1.5s cubic-bezier(.2,.7,.2,1) both}
 .v-dots{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:block}
 .v-hero{position:relative}
-.v-cap{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:25;display:none;flex-direction:column;gap:2px;padding:10px 8px;border-radius:999px;background:rgba(11,11,11,.74);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.v-cap{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:25;display:none;flex-direction:column;gap:2px;padding:10px 8px;border-radius:999px;background:rgba(10,9,8,.74);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
 @media(min-width:1100px){.v-cap{display:flex}}
 .v-cap button{all:unset;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;width:26px;height:26px}
-.v-cap i{display:block;width:8px;height:8px;border-radius:99px;background:#F5F5F3;opacity:.5;transition:height .25s ease,opacity .25s ease,background .25s ease}
-.v-cap button[aria-current] i{height:20px;opacity:1;background:#FF5A00}
+.v-cap i{display:block;width:8px;height:8px;border-radius:99px;background:#EAE0D5;opacity:.5;transition:height .25s ease,opacity .25s ease,background .25s ease}
+.v-cap button[aria-current] i{height:20px;opacity:1;background:#C6AC8E}
 .v-cap button:hover i{opacity:1}
-.v-cap span{position:absolute;right:calc(100% + 12px);white-space:nowrap;padding:6px 12px;border-radius:999px;background:#0B0B0B;color:#F5F5F3;font:600 13px var(--fb);opacity:0;pointer-events:none;transform:translateX(6px);transition:opacity .2s,transform .2s}
+.v-cap span{position:absolute;right:calc(100% + 12px);white-space:nowrap;padding:6px 12px;border-radius:999px;background:#0A0908;color:#EAE0D5;font:600 13px var(--fb);opacity:0;pointer-events:none;transform:translateX(6px);transition:opacity .2s,transform .2s}
 .v-cap button:hover span,.v-cap button:focus-visible span{opacity:1;transform:none}
 .v-cap button:focus-visible{outline:3px solid var(--focus);outline-offset:1px;border-radius:99px}
 #opcoes{position:relative}

@@ -1,10 +1,10 @@
 /* ===== páginas de serviço e de vagas ===== */
-.svp-top{background:#0B0B0B!important;color:#F5F5F3;min-height:clamp(420px,66vh,640px)}
+.svp-top{background:#0A0908!important;color:#EAE0D5;min-height:clamp(420px,66vh,640px)}
 .svp-top.top::before,.svp-top.top::after{display:none!important}
 .svp-hero{padding-top:clamp(48px,7vw,96px)!important;padding-bottom:clamp(48px,6vw,80px)!important}
-.svp-h{color:#F5F5F3!important;font-family:var(--fd)!important;font-size:clamp(38px,7vw,108px)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:.98!important;max-width:14ch!important;text-wrap:balance}
-.svp-eb{color:#FF5A00!important;font-size:clamp(16px,1.7vw,20px)!important}
-.svp-dn{background:#FF5A00!important}
+.svp-h{color:#EAE0D5!important;font-family:var(--fd)!important;font-size:clamp(38px,7vw,108px)!important;font-weight:800!important;letter-spacing:-.045em!important;line-height:.98!important;max-width:14ch!important;text-wrap:balance}
+.svp-eb{color:#C6AC8E!important;font-size:clamp(16px,1.7vw,20px)!important}
+.svp-dn{background:#C6AC8E!important}
 .svp-grid{margin-top:clamp(40px,6vw,88px)}
 .vg-head{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between}
 .v-count{font:700 17px var(--fb);padding:12px 20px;background:color-mix(in srgb,currentColor 10%,transparent);border-radius:999px}

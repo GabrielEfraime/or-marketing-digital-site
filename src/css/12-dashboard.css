@@ -7,10 +7,10 @@
 .dsh-h{margin:18px 0 10px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
 .fn{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .fn li{display:grid;grid-template-columns:minmax(120px,1.1fr) 2fr 3ch;gap:12px;align-items:center;font-size:14px}
-.fn i{display:block;height:12px;border-radius:99px;background:linear-gradient(90deg,#C24400,#FF8A4D);min-width:0}
+.fn i{display:block;height:12px;border-radius:99px;background:linear-gradient(90deg,#5E503F,#C6AC8E);min-width:0}
 .fn b{text-align:right;font-variant-numeric:tabular-nums}
 .gdia{width:100%;height:auto;display:block;color:var(--fg)}
-.gdia rect{fill:#FF8A4D}
+.gdia rect{fill:#C6AC8E}
 .gdia .gt{font:10px ui-monospace,Consolas,monospace;fill:currentColor;opacity:.6}
 .psv,.tkl,.act,.intg{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .psv li,.tkl li{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
@@ -63,7 +63,7 @@
 .bn-hero{grid-column:span 2;grid-row:span 2}
 .bn-w2{grid-column:span 2}
 .bn-t{font:600 11.5px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
-.bn-n{font:700 38px/1.05 var(--fb);font-variant-numeric:tabular-nums;border-left:3px solid var(--c,#C24400);padding-left:10px}
+.bn-n{font:700 38px/1.05 var(--fb);font-variant-numeric:tabular-nums;border-left:3px solid var(--c,#5E503F);padding-left:10px}
 .bn-n.big{font-size:56px}
 .bn-s{font-size:13px;opacity:.8;line-height:1.4}
 .gbn rect{transition:fill .15s}

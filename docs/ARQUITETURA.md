@@ -12,7 +12,8 @@ Um **único escopo global de JavaScript**, sem módulos e sem build de verdade: 
 
 | # | Arquivo | Responsabilidade |
 |---|---|---|
-| 01 | `config-precos` | Constantes do dono (`BRAND`, `ADMIN_PIN`, `MY_WHATS`, `RESPONSAVEL`, `FOTO`), tabela de preços `PRECOS`, `FAIXA_VERBA` |
+| 01 | `config-precos` | Constantes do dono (`BRAND`, `ADMIN_PIN`, `MY_WHATS`, `RESPONSAVEL`, `FOTO`), o monograma OR (`VMARK`), tabela de preços `PRECOS`, `FAIXA_VERBA` |
+| 01b | `marca-or` | Identidade Earthen Luxe: `SLOGAN` e o desenho da abertura (`ABERTURA_SVG`, a assinatura animada do kit) |
 | 02 | `modulos-servicos` | `MODS`: os serviços (nome, cor, perguntas do briefing, tarefa, escopo), `SITE_REF`/`SITE_REGRAS`, roteiro "Descobrir o que eu preciso" |
 | 03 | `armazenamento-config` | `$`, `sget/sset` (localStorage com fallback em memória), `CFG`, `saveCfg`, `loadKeys` |
 | 04 | `sementes-base-ia` | Exemplos por ramo (`EX_NOVOS`, `EX_SEED`) e base inicial da IA (`KB_SEED`) |
@@ -22,6 +23,7 @@ Um **único escopo global de JavaScript**, sem módulos e sem build de verdade: 
 | 08 | `ia-chamadas` | `ask()` (streaming), `askF()` (cai na outra IA e na reserva), `warm()` |
 | 09 | `app-navegacao-icones` | Estado `P`, `nav()`, `render()`, ícones, logo |
 | 10 | `visual-3d-efeitos` | Canvas/WebGL: `vMarkStart`, `orbStart`, `dotsStart`, `capitulos`, `introStart`, `cenaStart`, `megaStart`, `rotulos`, `pilhaStart` (serviços em pilha), `marcaFundo` (símbolo OR nas dúvidas) |
+| 10b | `abertura-or` | `orAberturaRodar()`: abertura com a assinatura animada (CSS em `15-abertura-or.css`), sem bibliotecas |
 | 11 | `esfera-agua` | `aifStart()`: esfera de água (shader) |
 | 12 | `conteudo-servicos` | `SOBRE`: textos de cada página de serviço; `VITRINE`: os 6 serviços do site público (lista, cartões da primeira tela, SEO), cada um ligado a um ou mais módulos de `MODS` |
 | 13 | `site-publico-base` | `vida()`, `tick()`, `nav2()` (menu), constantes do briefing |
@@ -86,6 +88,11 @@ Backup em pasta no HD e exportar/importar JSON mesclam por `id`, vencendo o maio
 ## CSS
 
 Cascata em camadas: o que vem depois vence. `01-base-e-minha-area.css` tem os tokens (`:root`) e o painel; `04` a `11` formam o visual atual do site público (blocos de cor chapada, vidro, estilo United). Quando um arquivo antigo e um novo definem a mesma regra, o novo vence pela ordem, e vários usam `!important`. Antes de apagar uma regra antiga, procure se alguma classe dela ainda é usada.
+
+**Identidade (Earthen Luxe, 02/11/2026):**
+- `00-fontes.css` declara Sora e Inter. Os arquivos ficam em `src/fontes/`, com a licença OFL, e o `montar.mjs` os embute como `data:`. A CSP tem `font-src data:`.
+- `23-identidade-earthen.css` vem por último. Nele ficam as cores da marca (`--or-obsidiana`, `--or-ardosia`, `--or-marfim`, `--or-areia`, `--or-terra`), a assinatura OR | MARKETING DIGITAL, o slogan e as seções claras em marfim.
+- Para trocar de logo, mude `VMARK` (01) e `ABERTURA_SVG` (01b).
 
 ## Como acrescentar…
 

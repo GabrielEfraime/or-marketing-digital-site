@@ -205,3 +205,31 @@ O dono pediu efeitos do site da Digi e deixou a escolha comigo. O código é nos
 **O que ficou de fora:**
 - vídeo no topo e ilustrações 3D, porque dependem de arquivos de terceiros e pesam;
 - logos de clientes e números grandes, porque não há dados reais.
+
+## Identidade nova: Earthen Luxe (02/11/2026)
+
+O dono mandou o kit `OR_Identidade_Completa_Earthen_Luxe_FINAL`, que traz logos, paleta, fontes, favicon, animação e manual. O laranja saiu do site todo.
+
+**Paleta e uso** (manual, página 3):
+
+| Cor | Código | Onde |
+|---|---|---|
+| Obsidiana | `#0A0908` | fundos |
+| Azul ardósia | `#22333B` | blocos secundários (os cartões da pilha de serviços) e a profundidade do fundo |
+| Marfim quente | `#EAE0D5` | texto no escuro e seções claras (dúvidas) |
+| Areia natural | `#C6AC8E` | botões, destaques, linhas e a faixa do topo |
+| Terra profunda | `#5E503F` | apoio e destaques sobre o marfim |
+
+- A seção que era clara e laranja ficou em areia.
+- As cores dos sites gerados para clientes (`21-execucao-kits-site.js`) não mudaram.
+
+**Marca:**
+- No topo e no rodapé fica a assinatura OR + divisor em areia + MARKETING DIGITAL, como manda o manual.
+- O monograma sozinho aparece no favicon (ícone obsidiana do kit), no "OR" gigante de pontos do rodapé e na textura das dúvidas.
+- O logo do kit foi reconstruído em SVG. O LEIA-ME pede para validar a geometria com o designer antes de tratá-lo como definitivo.
+
+**Fontes:** Sora nos títulos e Inter nos textos (licença OFL), embutidas no site. O dono autorizou baixar as duas (pacotes `@fontsource-variable`, conjunto latino).
+
+**Abertura:** a 3D saiu, por escolha do dono. Entrou a animação do kit: o contorno do OR se desenha em areia e depois aparece a assinatura. O site ficou cerca de 550 KB menor sem o Three.js.
+
+**Slogan:** "Estratégia. Criatividade. Resultado." aparece no rodapé e na abertura.

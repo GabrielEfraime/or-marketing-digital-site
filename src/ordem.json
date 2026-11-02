@@ -2,6 +2,10 @@
   "molde": "src/index.molde.html",
   "css": [
     {
+      "arquivo": "src/css/00-fontes.css",
+      "descricao": "Fontes Sora e Inter (src/fontes/, embutidas pelo build)"
+    },
+    {
       "arquivo": "src/css/01-base-e-minha-area.css",
       "descricao": "Base: variáveis (tokens), reset, tipografia, navegação, home antiga, briefing (assistente), Minha área, acompanhamento"
     },
@@ -88,16 +92,20 @@
     {
       "arquivo": "src/css/22-pilha-servicos.css",
       "descricao": "Serviços em pilha ao rolar e o símbolo OR como textura nas dúvidas (referência: digi.ag)"
+    },
+    {
+      "arquivo": "src/css/23-identidade-earthen.css",
+      "descricao": "Identidade Earthen Luxe: assinatura OR | MARKETING DIGITAL, slogan, seções claras em marfim, cartões em ardósia (vence as camadas anteriores)"
     }
   ],
   "js": [
     {
-      "arquivo": "src/js/00-three-r159.js",
-      "descricao": "Three.js r159 (biblioteca, sem alteração) para a abertura 3D"
-    },
-    {
       "arquivo": "src/js/01-config-precos.js",
       "descricao": "Constantes do dono (BRAND, PIN, WhatsApp...), tabela de preços (PRECOS) e faixas de verba"
+    },
+    {
+      "arquivo": "src/js/01b-marca-or.js",
+      "descricao": "Marca Earthen Luxe: SLOGAN e o desenho da abertura (ABERTURA_SVG)"
     },
     {
       "arquivo": "src/js/02-modulos-servicos.js",
@@ -137,7 +145,7 @@
     },
     {
       "arquivo": "src/js/10b-abertura-or.js",
-      "descricao": "Abertura 3D da OR (arquivo enviado pelo dono)"
+      "descricao": "Abertura: a assinatura animada do kit Earthen Luxe (o contorno do OR se desenha e a marca aparece)"
     },
     {
       "arquivo": "src/js/11-esfera-agua.js",

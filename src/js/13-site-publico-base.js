@@ -37,7 +37,8 @@ function vida(){
     const i=[...el.parentElement.children].indexOf(el);el.classList.add('rv');el.style.transitionDelay=Math.min(i,8)*70+'ms';io.observe(el)});
 }
 const ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-const WM=`<span class="wmw"><span class="wm">marketing</span><span class="wt">digital</span></span>`;
+/* assinatura do manual: OR + divisor + MARKETING DIGITAL (o divisor é a borda de .wmw) */
+const WM=`<span class="wmw"><span class="wm">Marketing digital</span></span>`;
 /* o link da Minha área fica escondido do visitante: aparece com #/admin no endereço (e passa a aparecer neste navegador depois da primeira vez) */
 const ADMV=()=>{if(location.protocol==='file:')return true;if(location.hash==='#/admin'){sset('adm','1');return true}return sget('adm')==='1'};
 const TICK=['Briefing em poucos minutos','3 opções de orçamento','Revisado por uma pessoa da equipe','Resposta pelo WhatsApp','Rio de Janeiro'];

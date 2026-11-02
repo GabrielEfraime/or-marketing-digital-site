@@ -32,12 +32,12 @@ void main(){
  vec2 u=N.xy*.9+rd.xy*1.2+vec2(h0*1.5,0.);
  float k=fbm(vec3(u*1.1,t*.8));
  float ph=k*8.+u.x*2.2-u.y*1.6+T*.06;
- vec3 c1=vec3(1.,.35,0.),c2=vec3(.76,.27,0.),c3=vec3(.96,.94,.9),c4=vec3(1.,.6,.2);
+ vec3 c1=vec3(.776,.675,.557),c2=vec3(.369,.314,.247),c3=vec3(.918,.878,.835),c4=vec3(.133,.2,.231);
  float w1=.5+.5*sin(ph),w2=.5+.5*sin(ph+1.6),w3=.5+.5*sin(ph+3.2),w4=.5+.5*sin(ph+4.8);
  vec3 col=(c1*w1+c2*w2+c3*w3+c4*w4)/(w1+w2+w3+w4);
  float l=1.-abs(sin(h0*16.+T*.35));
- col+=pow(l,14.)*vec3(1.,.9,.8)*.4;
- col=mix(col*1.1,vec3(1.,.75,.5),fr*.3);
+ col+=pow(l,14.)*vec3(.918,.878,.835)*.4;
+ col=mix(col*1.1,vec3(.776,.675,.557),fr*.3);
  vec3 L=normalize(vec3(-.5,.65,.7));
  float sp=pow(max(dot(Nb,normalize(L+V)),0.),260.);
  float sp2=pow(max(dot(Nb,normalize(vec3(.6,-.55,.6)+V)),0.),120.);

@@ -47,10 +47,10 @@ body.adm .row:has(>input:not([type=checkbox]):not([type=radio])){align-items:str
 
 /* listas suspensas: o menu aberto também fica escuro e legível (no Windows ele abria branco com texto claro) */
 :root{color-scheme:dark}
-select option,select optgroup{background:#1A1A1A;color:#F5F5F3}
-select option:checked{background:#FF5A00;color:#0B0B0B}
+select option,select optgroup{background:#1A1A1A;color:#EAE0D5}
+select option:checked{background:#C6AC8E;color:#0A0908}
 /* fim do lead: próximo passo (cliente fechou) */
-.dfim{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;padding:18px 20px;border-radius:16px;border:1px solid rgba(255,90,0,.35);background:rgba(255,90,0,.07)}
+.dfim{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;padding:18px 20px;border-radius:16px;border:1px solid rgba(198,172,142,.35);background:rgba(198,172,142,.07)}
 .dfim>div{display:flex;flex-direction:column;gap:4px;min-width:0}
 .dfim .hint{margin:0}
 
@@ -62,4 +62,4 @@ select option:checked{background:#FF5A00;color:#0B0B0B}
 }
 
 /* aviso de espera do limite da IA */
-#iaaviso{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:14px;background:#1A1A1A;border:1px solid rgba(255,90,0,.5);color:#F5F5F3;font:600 14px/1.4 var(--fb);box-shadow:0 18px 40px rgba(0,0,0,.5)}
+#iaaviso{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9999;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:14px;background:#1A1A1A;border:1px solid rgba(198,172,142,.5);color:#EAE0D5;font:600 14px/1.4 var(--fb);box-shadow:0 18px 40px rgba(0,0,0,.5)}

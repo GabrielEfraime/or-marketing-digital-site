@@ -58,7 +58,9 @@ export function seo() {
 
 export function montar() {
   const ordem = JSON.parse(ler('src/ordem.json'));
-  const css = ordem.css.map((p) => ler(p.arquivo)).join('\n');
+  // fontes de src/fontes/ entram embutidas (data:), porque a CSP não deixa carregar fonte de fora
+  const css = ordem.css.map((p) => ler(p.arquivo)).join('\n').replace(/url\("\.\.\/fontes\/([\w.-]+\.woff2)"\)/g,
+    (_, f) => 'url("data:font/woff2;base64,' + fs.readFileSync(path.join(RAIZ, 'src/fontes', f)).toString('base64') + '")');
   const js = ordem.js.map((p) => ler(p.arquivo)).join('\n');
   const molde = ler(ordem.molde);
   if (!molde.includes('{{CSS}}') || !molde.includes('{{JS}}')) throw new Error('O molde precisa ter {{CSS}} e {{JS}}.');

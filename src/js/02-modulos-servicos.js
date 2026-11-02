@@ -12,7 +12,7 @@ const SITE_SKILLS=`HABILIDADES DE DESIGN (valem em todo site; a direção de des
 2) DIREÇÃO DE ARTE (anti-genérico): a ideia do site sai do próprio negócio (o nome e o que ele quer dizer, a rua e o bairro, os materiais, as cores, os rituais, o que ele produz). Teste do concorrente: se a ideia servir para o vizinho do mesmo ramo, ela é genérica, troque. Primeira tela com um h1 que diz o que é, para quem e onde, uma frase de apoio logo abaixo e um único botão principal. Títulos com no máximo 2 linhas (por volta de 32 caracteres). Cada seção com título próprio e conteúdo completo (seção magra perde). Margens iguais dos dois lados, sem metade da tela vazia. Tipografia com 2 ou 3 tamanhos bem diferentes e no máximo 2 fontes. Proibido: rótulo pequeno acima do título, selos e pílulas, numeração 01/02/03, linhas finas e caixas com contorno de 1 px, gradientes, sombra em elemento parado, brilho, vidro, emoji, fileira de cards iguais com ícone em cima, caixa alta pequena com letras espaçadas, palavra de destaque estilizada no título, fonte monoespaçada fora de código. No lugar disso: escala, cor chapada, a foto real do negócio ou um desenho em SVG feito do próprio negócio. Uma coisa interativa útil feita do conteúdo real (por exemplo, "aberto agora?" pelos horários, ou escolher o serviço e falar no WhatsApp com ele já escrito), que funcione no celular e não atrapalhe a leitura. Movimento: as partes de cada seção entram uma depois da outra (60 a 90 ms), subindo 16 a 32 px com opacidade; só transform e opacity; nada fica escondido se o script falhar.
 3) TEXTOS (UX writing): claro, curto, consistente (o mesmo nome para a mesma coisa), útil e humano, em português do Brasil natural. Botões começam com verbo e dizem o resultado ("Agendar pelo WhatsApp", "Ver o cardápio"; nunca "Enviar", "Clique aqui" ou "Saiba mais" soltos). Erro diz o que aconteceu e como resolver. Sem jargão, sem exagero e sem promessa de resultado.`;
 const MODS={
-ads:{c:'#F5F5F3',name:'Anúncios no Google (Google Ads)',desc:'Aparecer no Google para quem já está procurando o que você vende.',
+ads:{c:'#EAE0D5',name:'Anúncios no Google (Google Ads)',desc:'Aparecer no Google para quem já está procurando o que você vende.',
  sys:'Você é um gestor de tráfego sênior de Google Ads no Brasil, focado em retorno para pequenas e médias empresas. Responda em português do Brasil, em Markdown, com números e ações concretas.',
  foco:'anúncios no Google (pesquisa, rede de display, Performance Max, remarketing)',
  qs:[['negocio','Qual é o seu negócio?','Ex: clínica de estética, loja de tênis, escritório de advocacia',0,'neg|empres|trabalh|vend'],
@@ -128,7 +128,7 @@ brand:{c:'#FF9E6B',name:'Criação de branding',desc:'Logo, cores e jeito de apa
  ['conc','Quem são os concorrentes e como é a aparência deles?','Cite 2 ou 3',0,'concorr|aparên|visual|cite'],
  ['ent','O que você precisa receber no final?',['Só logo e cores','Logo, cores e manual de marca','Modelos para redes sociais','Cartão e papelaria'],1,'receber|entreg|precisa|final|manual']],
  task:'Monte uma direção de identidade visual para este cliente: 1) leitura da marca (essência, tom de voz, diferenciais, públicos), usando só o briefing; 2) 3 conceitos de logo descritos em palavras (símbolo, tipografia, ideia); 3) paleta de cores com códigos HEX, uso e contraste de acessibilidade; 4) sugestão de tipografias (com opções gratuitas); 5) aplicações prioritárias; 6) o que entra no mini manual de marca; 7) checklist de registro (INPI e domínio) a conferir. Não copie marcas existentes. Fale só de identidade visual.'},
-site:{c:'#FF5A00',name:'Site novo',desc:'Um site feito sob medida, rápido e pensado para gerar contatos.',
+site:{c:'#C6AC8E',name:'Site novo',desc:'Um site feito sob medida, rápido e pensado para gerar contatos.',
  sys:'Você é designer e desenvolvedor front-end de elite. Cria sites com identidade visual própria, nunca genéricos. Escreva textos reais em português do Brasil, sem lorem ipsum.',
  foco:'criação de site novo',
  qs:[['nome','Qual o nome do negócio ou da pessoa?','Como aparece no topo do site',0,'nome|neg|pessoa'],
@@ -232,7 +232,7 @@ const DIRQ=[
  ['monet','O canal já é monetizado?',['Sim, já monetiza','Ainda não, mas quero chegar lá','Não é o meu foco'],0,'',canalExiste],
  ['rede','Em quais redes você está ou quer atuar?',['Instagram','TikTok','Kwai','Facebook','LinkedIn','YouTube'],1,'',ehCri],
  ['seg','Quantos seguidores você tem hoje (somando as suas redes)?',['Menos de 1.000','De 1.000 a 10.000','De 10.000 a 100.000','Mais de 100.000','Ainda vou começar'],0,'',ehCri]];
-MODS.guia={c:'#FF5A00',oculto:true,name:'Descobrir o que eu preciso',desc:'Responda algumas perguntas e indicamos os serviços certos para o seu caso.',
+MODS.guia={c:'#C6AC8E',oculto:true,name:'Descobrir o que eu preciso',desc:'Responda algumas perguntas e indicamos os serviços certos para o seu caso.',
  sys:'Você é estrategista de marketing digital para pequenos negócios e criadores no Brasil. Responda em português do Brasil, em Markdown.',
  foco:'descobrir quais serviços de marketing digital o cliente precisa',
  qs:[['tipo','Para quem é o trabalho?',['Para uma empresa ou negócio','Para um perfil de criador de conteúdo (Instagram, TikTok)','Ainda não sei'],0,'quem|trabalho|para'],

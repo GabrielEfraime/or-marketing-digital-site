@@ -1,0 +1,5 @@
+/* Fontes da identidade Earthen Luxe (02/11/2026): Sora nos títulos e Inter nos textos.
+   Arquivos em src/fontes/ (licença OFL, ao lado). O build troca o url() pelo arquivo embutido (data:),
+   porque a CSP não deixa carregar fonte de fora. Só o conjunto latino, que cobre o português. */
+@font-face{font-family:'Sora';font-style:normal;font-weight:100 800;font-display:swap;src:url("../fontes/sora-latin-wght.woff2") format("woff2")}
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url("../fontes/inter-latin-wght.woff2") format("woff2")}

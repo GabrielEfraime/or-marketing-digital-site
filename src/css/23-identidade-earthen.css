@@ -1,0 +1,21 @@
+/* ===== Identidade Earthen Luxe (kit de 02/11/2026) =====
+   Obsidiana #0A0908 (fundos), azul ardósia #22333B (profundidade e blocos secundários), marfim quente #EAE0D5
+   (fundos claros e texto no escuro), areia natural #C6AC8E (acento, linhas e detalhes), terra profunda #5E503F (apoio).
+   As cores antigas (laranja) foram trocadas nos arquivos; aqui ficam os ajustes que vencem as camadas anteriores. */
+:root{--or-obsidiana:#0A0908;--or-ardosia:#22333B;--or-marfim:#EAE0D5;--or-areia:#C6AC8E;--or-terra:#5E503F;--vc-solid:#13110F}
+/* fundo do site: profundidade em ardósia e terra, como os arcos da prancha */
+body.pub{--g1:#22333B99;--g2:#5E503F55;--g3:#22333B66}
+
+/* assinatura do topo e do rodapé: OR + divisor em areia + MARKETING DIGITAL (manual, página 2) */
+body.pub .nav .wmw,.wmw{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;align-self:center;gap:3px;margin-left:2px;padding-left:14px;min-height:34px;border-left:1.5px solid var(--or-areia)}
+.wmw .wm,body.pub .wmw .wm{font:500 10.5px/1 var(--fb);letter-spacing:.34em;text-transform:uppercase;color:var(--fg);opacity:1;margin:0}
+@media(max-width:359px){body.pub .nav .wmw{display:none}}
+.v-slogan{margin:14px 0 0!important;font:500 11.5px/1.5 var(--fb);letter-spacing:.3em;text-transform:uppercase;color:var(--or-areia)!important;opacity:1!important}
+
+/* seções claras: marfim com texto obsidiana */
+.v-ink{background-color:var(--or-marfim)!important;color:var(--or-obsidiana)}
+.v-ink :focus-visible,.v-lime :focus-visible{outline-color:var(--or-obsidiana)!important}
+.step b{color:var(--or-areia)}
+
+/* serviços em pilha: cartões em ardósia (blocos secundários) */
+.v-pcin{background:var(--or-ardosia);border-color:rgba(234,224,213,.14)}

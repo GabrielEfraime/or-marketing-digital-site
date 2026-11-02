@@ -6,7 +6,7 @@
 .mnav button{text-transform:uppercase;letter-spacing:.09em;font-size:12.5px!important;font-weight:600!important}
 .v-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .v-pill{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;min-height:44px;padding:0 22px;margin-top:clamp(18px,2.4vw,28px);border:1.5px solid currentColor;border-radius:999px;font:600 12.5px var(--fb);letter-spacing:.12em;text-transform:uppercase;transition:background .2s,color .2s}
-.v-ink .v-pill:hover{background:#0B0B0B;color:#F5F5F3}
+.v-ink .v-pill:hover{background:#0A0908;color:#EAE0D5}
 .v-pill:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .v-mani{align-items:end}
 .v-stats{margin:clamp(24px,3.4vw,48px) 0 0;display:grid}

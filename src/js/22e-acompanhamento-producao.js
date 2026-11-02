@@ -539,7 +539,7 @@ async function pecaBriefing(id,pid){
 function tabMeta(l){const c=l.track.canais.meta,s=metaSum(c.rows);
   return `${iaPainel(l,'meta')}
   <div class="cgrid"><section class="esc"><h4>Resultados</h4><div class="kpis">${kpi('Valor usado',brl(s.cus))}${kpi('Impressões',int(s.imp))}${kpi('Alcance (soma)',int(s.alc))}${kpi('Cliques no link',int(s.cli))}${kpi('Resultados',int(s.res))}${kpi('CTR',s.ctr.toFixed(2)+'%')}${kpi('CPM',brl(s.cpm))}${kpi('Custo por resultado',s.res?brl(s.cpr):'—')}</div>
-  <div class="chs"><div><span class="hint">Valor usado por dia</span>${bars(c.rows,'custo','#FF5A00')}</div><div><span class="hint">Resultados por dia</span>${bars(c.rows,'res','#F5F5F3')}</div></div>
+  <div class="chs"><div><span class="hint">Valor usado por dia</span>${bars(c.rows,'custo','#C6AC8E')}</div><div><span class="hint">Resultados por dia</span>${bars(c.rows,'res','#EAE0D5')}</div></div>
   ${T.msg?`<p class="hint">${esc(T.msg)}</p>`:''}
   <details class="it2-c dlanc" ${c.rows.length?'':'open'}><summary>Lançar números ou importar relatório</summary><div class="fr">${inp('mr_data','Data','date',today())}${inp('mr_imp','Impressões','number')}${inp('mr_alc','Alcance','number')}${inp('mr_cli','Cliques no link','number')}${inp('mr_res','Resultados','number')}${inp('mr_cus','Valor usado (R$)')}<div><button class="btn" data-act="metaadd">Adicionar</button></div></div>
   <div class="row" style="margin-top:8px"><label class="btn ghost" style="margin:0;cursor:pointer">Importar relatório CSV do Gerenciador de Anúncios<input type="file" id="metacsv" accept=".csv,.txt" hidden></label></div></details>
