@@ -16,28 +16,25 @@
 .v-fc:hover{border-color:#FF5A00;transform:translate(calc(var(--mx,0)*var(--z)*1px),calc(var(--my,0)*var(--z)*1px)) rotate(0deg) scale(1.06)}
 .v-fi{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#FF5A0026;color:#FF8A4D}
 .v-fi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.v-fl li:nth-child(1){--x:3%;--y:11%;--r:-7deg;--z:14}
-.v-fl li:nth-child(2){--x:15%;--y:34%;--r:5deg;--z:26}
-.v-fl li:nth-child(3){--x:3%;--y:58%;--r:-4deg;--z:18}
-.v-fl li:nth-child(4){--x:15%;--y:80%;--r:7deg;--z:30}
-.v-fl li:nth-child(5){--x:77%;--y:9%;--r:6deg;--z:16}
-.v-fl li:nth-child(6){--x:73%;--y:32%;--r:-6deg;--z:28}
-.v-fl li:nth-child(7){--x:78%;--y:57%;--r:4deg;--z:20}
-.v-fl li:nth-child(8){--x:72%;--y:79%;--r:-8deg;--z:32}
-.v-fl li:nth-child(9){--x:44%;--y:91%;--r:-3deg;--z:12}
+/* 6 serviços (02/11/2026): 3 de cada lado */
+.v-fl li:nth-child(1){--x:3%;--y:14%;--r:-7deg;--z:14}
+.v-fl li:nth-child(2){--x:15%;--y:44%;--r:5deg;--z:26}
+.v-fl li:nth-child(3){--x:4%;--y:74%;--r:-4deg;--z:18}
+.v-fl li:nth-child(4){--x:77%;--y:12%;--r:6deg;--z:16}
+.v-fl li:nth-child(5){--x:73%;--y:42%;--r:-6deg;--z:28}
+.v-fl li:nth-child(6){--x:78%;--y:72%;--r:4deg;--z:20}
 @media(prefers-reduced-motion:no-preference){.v-fl li{animation:vflt 7s ease-in-out infinite;animation-delay:calc(var(--z)*-.3s)}@keyframes vflt{50%{translate:0 -10px}}}
 /* tela larga: os cartões ficam presos nas laterais e nunca entram na coluna do meio (título, texto e pílulas têm até 700 px);
-   os da direita contam a distância pela borda direita; o 9º fica centralizado embaixo */
-.v-fl li:nth-child(5){--xr:5%}.v-fl li:nth-child(6){--xr:16%}.v-fl li:nth-child(7){--xr:5%}.v-fl li:nth-child(8){--xr:16%}
+   os da direita contam a distância pela borda direita; o de baixo fica longe do botão do WhatsApp */
+.v-fl li:nth-child(4){--xr:14%}.v-fl li:nth-child(5){--xr:4%}.v-fl li:nth-child(6){--xr:15%}
 @media(min-width:1241px){
-  .v-fl li:nth-child(-n+4){left:clamp(12px,var(--x),calc(50% - 610px))}
-  .v-fl li:nth-child(n+5):nth-child(-n+8){left:auto;right:clamp(12px,var(--xr),calc(50% - 610px))}
-  .v-fl li:nth-child(9){left:0;right:0;width:max-content;margin-inline:auto}
+  .v-fl li:nth-child(-n+3){left:clamp(12px,var(--x),calc(50% - 610px))}
+  .v-fl li:nth-child(n+4){left:auto;right:clamp(12px,var(--xr),calc(50% - 610px))}
 }
 /* até 1240 px não há espaço dos lados: os cartões viram uma faixa organizada abaixo do texto */
 @media(max-width:1240px){
   .v-fl{position:static;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px;padding:0 16px}
-  .v-fl li,.v-fl li:nth-child(n+5){position:static;display:block;animation:none}
+  .v-fl li,.v-fl li:nth-child(n+4){position:static;display:block;animation:none}
   .v-fc{transform:none!important;max-width:none}
   .v-hc{display:block;overflow:clip}.v-hc .v-hero-in{padding-inline:0}.v-fl li{width:auto}
 }

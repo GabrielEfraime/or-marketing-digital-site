@@ -4,9 +4,11 @@
 - [ ] **Revogar a chave antiga da Groq** (foi compartilhada em conversa) e gerar outra em console.groq.com/keys. Colar a nova em *Minha área > IAs*.
 - [ ] Preencher `RESPONSAVEL` em `src/js/01-config-precos.js`; `PRIV_EMAIL` e `VAGAS` (quando houver vagas) em `src/js/05-dados-leads.js`.
 - [ ] Conferir se o número `MY_WHATS` pode ficar público (ele aparece no botão de WhatsApp do site).
+- [ ] Passar os **pacotes e preços de Marketing digital (plano) e de Assessoria** (nome, entrada, mensalidade e o que inclui em Essencial, Crescimento e Completo). Até lá, o orçamento mostra "a confirmar" (02/11/2026).
+- [ ] Revisar os textos novos das páginas de Marketing digital, Assessoria, Tráfego pago e Criação de sites (`SOBRE` e `VITRINE` em `src/js/12-conteudo-servicos.js`).
 - [ ] Revisar a **tabela de preços** (`PRECOS`) e os rascunhos jurídicos (`docs/termos-de-uso.md`, `politica-de-reembolso.md`, `plano-de-incidente.md`): são rascunhos, precisam de validação.
 - [ ] Criptografar o disco (BitLocker) do notebook: os backups guardam dados pessoais em texto puro.
-- [ ] Decidir hospedagem, banco, login do painel e domínio (Fase 2).
+- [ ] Decidir hospedagem, banco, login do painel e domínio (Fase 2). Banco, login e armazenamento: Supabase, decidido em 02/11/2026; ver `docs/PLANO-SUPABASE.md`. Entram os dois donos, com acesso total. Falta decidir o domínio.
 
 ## Não foi verificado
 - Importar a planilha de Google Ads no **Google Ads Editor** de verdade (colunas podem precisar de mapeamento).
@@ -18,7 +20,7 @@
 
 ## Dá para programar
 - **Testes automáticos** (Playwright): abrir sem erro de JS, briefing digitável, envio cria lead, PIN, geração na ordem Resumo → Orçamento → Estratégia, WhatsApp `wa.me/55…`, backup mescla por `t`, armazenamento bloqueado (lista completa na seção 9 de `ESPECIFICACAO-COMPLETA.md`).
-- **Fase 2**: site público estático; API com limite de uso, proxy de IA e chaves só no servidor; painel em endereço separado com login real e 2FA; banco (SQLite/Postgres/Supabase/D1); LGPD (consentimento, canal de exclusão, retenção).
+- **Fase 2**: site público estático; API com limite de uso, proxy de IA e chaves só no servidor; login real e 2FA na própria Minha área, no mesmo site e sem painel separado (decisão de 02/11/2026); banco (SQLite/Postgres/Supabase/D1); LGPD (consentimento, canal de exclusão, retenção).
 - **Envio de leads** do site público para o painel (hoje o lead fica no navegador de quem preencheu; `LEAD_WEBHOOK` está desligado).
 - **WhatsApp Business API** (envio automático com modelos aprovados).
 - **Google Ads API / Meta Graph API** com autorização do cliente (hoje: CSV e lançamento manual).

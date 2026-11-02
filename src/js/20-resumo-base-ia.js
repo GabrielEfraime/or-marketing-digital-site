@@ -18,6 +18,7 @@ function kb(kinds,l){
 const STRICT={ads:/google ads|performance max/gi,meta:/meta ads|pixel da meta/gi,social:/calend[aá]rio de posts|\breels\b/gi,youtube:/youtube|thumbnails?/gi,local:/google meu neg[oó]cio|seo local/gi,press:/assessoria de imprensa|\brelease\b|jornalistas?/gi,brand:/logotipo|manual de marca|paleta de cores/gi,site:/landing page|hospedagem|wordpress/gi};
 function offWarn(l,txt){
   const sv=svcs(l),ans=norm(qaOf(l).map(x=>x.a).join(' ')+' '+(l.ficha||'')),hits=[];
+  if(sv.includes('mkt')||sv.includes('assess'))return hits;
   for(const m of Object.keys(STRICT)){
     if(sv.includes(m)||(m==='site'&&sv.includes('resite')))continue;
     const f=[...txt.matchAll(STRICT[m])].map(x=>x[0].toLowerCase()).filter(w=>!ans.includes(norm(w)));

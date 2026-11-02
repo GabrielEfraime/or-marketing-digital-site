@@ -22,7 +22,7 @@ const SOBRE={
  "social": {
   "t": "Aparecer com constância, sem perder o seu jeito.",
   "i": "Postar quando dá tempo não constrói audiência. Um plano simples, com ideias prontas e um calendário, ajuda você a manter as redes vivas e a ser lembrado.",
-  "o": "É o planejamento do que publicar nas redes sociais: ideias de posts e vídeos, roteiros, legendas e um calendário de postagens pensado para o seu público e para o seu objetivo.",
+  "o": "É o cuidado das suas redes sociais: ideias de posts e vídeos, roteiros, legendas e um calendário de postagens pensado para o seu público e para o seu objetivo. Conforme o pacote, também respondemos aos comentários e cuidamos da comunidade.",
   "q": "Você não tem tempo ou ideias para manter as redes em dia. Ou publica sem saber o que funciona. Ou quer que o perfil passe mais confiança para quem chega até ele.",
   "c": "Entendemos o seu público e o tom da sua marca, definimos os temas principais e montamos um calendário com formatos, ganchos e chamadas para ação. Entregamos roteiros e legendas prontos e, com o tempo, ajustamos o plano com base no que o seu público mais curte e assiste.",
   "d": "Usamos IA para gerar ideias, rascunhos de roteiro e variações de legenda em menos tempo. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
@@ -90,3 +90,54 @@ const SOBRE={
   "p": "quem tem uma novidade, um lançamento ou uma história para contar."
  }
 };
+/* Serviços da vitrine (02/11/2026). Tráfego pago junta Google Ads e Meta Ads; Criação de sites junta site novo e refazer site.
+   YouTube, Google Meu Negócio e imprensa saíram do site (vão para outra frente), mas os leads antigos continuam funcionando. */
+Object.assign(SOBRE,{
+ "trafego": {
+  "t": "Anúncios para quem tem chance de virar cliente.",
+  "i": "No Google, o seu anúncio aparece para quem já está procurando o que você vende. No Instagram e no Facebook, ele chega a quem ainda não te conhece, mas tem o perfil do seu cliente. Usamos um, o outro ou os dois, conforme o seu caso e a sua verba.",
+  "o": "Tráfego pago são os anúncios que você paga para aparecer: no topo da busca do Google (Google Ads) e no Instagram e no Facebook (Meta Ads). Você escolhe quanto quer investir por mês e acompanha quantas pessoas viram, clicaram e entraram em contato.",
+  "q": "Você quer receber contatos de quem já procura o que você faz. Ou quer divulgar uma oferta, um lançamento ou o seu serviço para mais gente. Ou já anunciou ou impulsionou publicações e não sabe se o dinheiro foi bem usado.",
+  "c": "Começamos entendendo o seu negócio, a sua região e a verba disponível. Definimos onde anunciar, escolhemos as palavras e os públicos, criamos os anúncios e configuramos o acompanhamento de contatos. Ao longo do mês ajustamos as campanhas, tiramos o que não funciona, reforçamos o que traz resultado e explicamos tudo em um relatório simples.",
+  "d": "Usamos IA para pesquisar palavras, gerar variações de texto e imagem e analisar os dados com mais rapidez. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
+  "e": "Mais clareza sobre quanto você investe e quantos contatos recebe. O resultado em vendas depende de oferta, preço, verba e concorrência, por isso não prometemos números: prometemos acompanhamento transparente.",
+  "p": "quem quer mais contatos de gente com chance de virar cliente."
+ },
+ "sites": {
+  "t": "Um site que explica o seu negócio e leva à conversa.",
+  "i": "Um bom site é rápido no celular, fácil de entender e deixa claro como falar com você. Criamos o seu do zero ou refazemos o que você já tem, mantendo o que funciona.",
+  "o": "É um site feito sob medida para o seu negócio, com páginas e textos pensados para o seu cliente, botão de WhatsApp, formulário de contato e visual alinhado à sua marca. Se você já tem site, renovamos o visual, os textos e a estrutura.",
+  "q": "Você ainda não tem site ou depende só das redes. Ou precisa de uma página para os anúncios levarem as pessoas. Ou o seu site atual está lento, antigo ou difícil de usar no celular.",
+  "c": "Definimos a estrutura e os textos, desenhamos o visual, construímos o site e testamos no celular e no computador. Se você já tem site, começamos analisando o atual e combinando o que deve ser mantido. Orientamos a publicação e o que precisa ser enviado, como logo, fotos e informações.",
+  "d": "Usamos IA para acelerar rascunhos de texto e código e para revisar detalhes técnicos. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
+  "e": "Um site claro, rápido e com caminhos de contato bem visíveis. Quantos contatos ele gera depende da divulgação e do seu mercado, então não prometemos números.",
+  "p": "quem ainda não tem site ou precisa de um site melhor."
+ },
+ "mkt": {
+  "t": "Saber o que fazer antes de investir.",
+  "i": "Muita gente posta, anuncia e tenta de tudo sem saber o que traz cliente. Um plano mostra por onde começar, o que deixar para depois e onde vale colocar o seu dinheiro.",
+  "o": "É um plano de marketing digital feito para o seu negócio: quem é o seu cliente, o que dizer para ele, em quais canais aparecer, o que fazer em cada mês e como saber se está funcionando.",
+  "q": "Você não sabe por onde começar. Ou já faz várias coisas e não sabe o que dá resultado. Ou vai lançar um produto ou abrir um negócio e quer começar com um caminho claro.",
+  "c": "Partimos do que você contou no briefing para entender o momento do negócio. Depois montamos o plano com público, mensagem, canais em ordem de prioridade, ações mês a mês e os números para acompanhar, de acordo com a verba e o tempo que você tem. Você pode colocar o plano em prática sozinho, com a sua equipe ou com a gente.",
+  "d": "Usamos IA para organizar as informações do briefing e comparar caminhos com mais rapidez. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
+  "e": "Um plano claro, com prioridades e próximos passos. O resultado depende de como o plano é colocado em prática e do seu mercado, por isso não prometemos números.",
+  "p": "quem não sabe por onde começar ou quer organizar o que já faz."
+ },
+ "assess": {
+  "t": "Alguém olhando o seu marketing com você, todo mês.",
+  "i": "Cuidar do marketing sozinho cansa e tira o foco. Na assessoria, fazemos reuniões com você, olhamos juntos o que aconteceu e decidimos o que fazer em seguida.",
+  "o": "É um acompanhamento mensal de marketing digital, com reuniões. Analisamos os resultados, definimos as prioridades e orientamos quem cuida do marketing no dia a dia: você, a sua equipe ou outro fornecedor.",
+  "q": "Você ou a sua equipe já fazem o marketing, mas falta direção. Ou você faz muita coisa e não sabe o que dá resultado. Ou quer ter com quem decidir os próximos passos antes de investir.",
+  "c": "Começamos com um diagnóstico do que você já faz e definimos as prioridades. Nas reuniões, olhamos os números, revisamos o que foi feito e combinamos os próximos passos.",
+  "d": "Usamos IA para organizar os dados e preparar as reuniões com mais rapidez. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
+  "e": "Prioridades claras e decisões tomadas com base no que está acontecendo. O resultado depende de quem coloca em prática e do seu mercado, por isso não prometemos números.",
+  "p": "quem já faz marketing, mas precisa de direção."
+ }
+});
+const VITRINE=[
+ {k:'mkt',name:'Marketing digital',mods:['mkt'],desc:'Um plano feito para o seu negócio: o que fazer, em que ordem e onde investir.'},
+ {k:'assess',name:'Assessoria',mods:['assess'],desc:'Acompanhamento todo mês, com reuniões, para analisar os resultados e decidir os próximos passos.'},
+ {k:'trafego',name:'Tráfego pago',mods:['ads','meta'],desc:'Anúncios no Google, no Instagram e no Facebook para quem tem chance de virar cliente.'},
+ {k:'sites',name:'Criação de sites',mods:['site','resite'],desc:'Um site novo ou o seu site refeito, rápido e pensado para gerar contatos.'},
+ {k:'brand',name:'Criação de branding',mods:['brand'],desc:'Logo, cores e jeito de aparecer, para o seu negócio ter cara própria.'},
+ {k:'social',name:'Gestão de redes sociais',mods:['social'],desc:'Planejamento, conteúdo e cuidado do perfil no Instagram, TikTok e outras redes.'}];

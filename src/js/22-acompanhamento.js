@@ -10,7 +10,7 @@ const num=v=>{let s=String(v??'').replace(/[^\d,.\-]/g,'');if(!s)return 0;
 const brl=n=>'R$ '+(Number(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const int=n=>(Math.round(Number(n)||0)).toLocaleString('pt-BR');
 const T={id:null,tab:'geral',msg:'',busy:'',relLive:0};
-const CH={ads:'Google Ads',meta:'Meta Ads',social:'Redes sociais',site:'Site',press:'Imprensa'};
+const CH={ads:'Google Ads',meta:'Meta Ads',social:'Redes sociais',site:'Site',press:'Imprensa',mkt:'Plano de marketing',assess:'Assessoria'};
 const prog=t=>{const n=t.tarefas.length,d=t.tarefas.filter(x=>x.done).length;return n?Math.round(d/n*100):0};
 const nextDue=t=>t.tarefas.filter(x=>!x.done).map(x=>x.due).sort()[0]||'';
 const setPath=(o,p,v)=>{const k=p.split('.');let c=o;for(let i=0;i<k.length-1;i++)c=c[k[i]]=c[k[i]]||{};c[k[k.length-1]]=v};

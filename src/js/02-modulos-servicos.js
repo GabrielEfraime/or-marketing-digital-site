@@ -49,7 +49,7 @@ meta:{c:'#7C8CFF',name:'Anúncios no Instagram e Facebook (Meta Ads)',desc:'Colo
  ['local','Onde estão os clientes que você quer alcançar?','Cidade, bairros ou "Brasil todo"',0,'onde|cidade|região|local'],
  ['ativos','Quais contas você já tem na Meta?',['Instagram','Facebook','Gerenciador de Negócios (Meta Business)','Nenhuma ainda'],1,'conta|instagram|facebook|meta']],
  task:'Monte um plano de Meta Ads (Instagram e Facebook) para este cliente: 1) estratégia e estrutura de campanhas (atração, remarketing, conversão) com divisão da verba informada; 2) públicos sugeridos (interesses, localização, remarketing); 3) 6 ideias de criativos com gancho, formato e chamada; 4) textos de anúncio prontos; 5) rastreamento (Pixel, eventos); 6) como responder e converter os contatos; 7) otimização das 4 primeiras semanas e métricas, sem prometer resultado. Fale só de Meta Ads.'},
-social:{c:'#B58CFF',name:'Conteúdo para redes sociais',desc:'Ideias, roteiros e calendário para Instagram, TikTok e outras redes.',
+social:{c:'#B58CFF',name:'Gestão de redes sociais',desc:'Planejamento, conteúdo e cuidado do perfil no Instagram, TikTok e outras redes.',
  sys:'Você é estrategista de conteúdo para pequenos negócios e criadores no Brasil, especialista em retenção e engajamento. Responda em português do Brasil, em Markdown, com exemplos prontos para usar.',
  foco:'conteúdo orgânico para redes sociais (posts, Reels, Stories, TikTok)',
  qs:[['nome','Qual é o seu perfil ou negócio e sobre o que ele fala?','Ex: fitness para mulheres 40+, padaria artesanal, humor automotivo',0,'perfil|neg|nicho|fala|assunto|sobre'],
@@ -68,7 +68,7 @@ social:{c:'#B58CFF',name:'Conteúdo para redes sociais',desc:'Ideias, roteiros e
  ['resp','Quem responde mensagens e comentários?',['Eu mesmo','Uma pessoa da equipe','Preciso que a OR responda'],0,'respond|mensag|coment|quem'],
  ['evitar','Há temas, imagens ou abordagens que devem ser evitados?','Ex: política, comparações com concorrentes, "nenhum"',0,'evit|tema|abordag|proib']],
  task:'Entregue para este cliente: 1) perfil do público e o que ele mais consome (formatos, temas, horários); 2) 3 a 4 pilares de conteúdo; 3) 15 ideias de posts com formato, gancho dos 3 primeiros segundos e chamada; 4) 3 roteiros completos (gancho, desenvolvimento, fechamento, cenas e legenda); 5) calendário de 2 semanas; 6) dicas de edição e retenção para a rede escolhida; 7) métricas. Fale só de conteúdo para redes sociais.'},
-youtube:{c:'#FF6B6B',name:'YouTube (canal, vídeos e crescimento)',desc:'Criar, organizar e fazer o seu canal crescer: da configuração aos vídeos.',
+youtube:{c:'#FF6B6B',oculto:true,name:'YouTube (canal, vídeos e crescimento)',desc:'Criar, organizar e fazer o seu canal crescer: da configuração aos vídeos.',
  sys:'Você é estrategista de YouTube para criadores iniciantes e pequenos negócios no Brasil: conhece criação e configuração de canal, SEO de vídeo, roteiro, edição, thumbnails, retenção, Shorts, calendário e monetização. Responda em português do Brasil, em Markdown, com exemplos prontos e sem prometer resultado.',
  foco:'canal do YouTube (criação, configuração, gestão, roteiro, edição, thumbnails, SEO, crescimento, monetização)',
  qs:[['nicho','Qual é o assunto do seu canal (ou do canal que você quer criar)?','Ex: receitas veganas, games de corrida, dicas para MEI',0,'assunto|canal|nicho|sobre|tema'],
@@ -84,7 +84,7 @@ youtube:{c:'#FF6B6B',name:'YouTube (canal, vídeos e crescimento)',desc:'Criar, 
  ['mon','Sobre monetização, em que ponto você está?',['Já sou monetizado','Quero chegar lá','Não é meu foco'],0,'monetiza|parceria|ganhar|dinheiro'],
  ['ref','Quais canais você admira ou considera concorrentes?','Cite 2 ou 3',0,'canal|admir|concorr|referên|inspir']],
  task:'Monte um plano de YouTube para este cliente: 1) diagnóstico da situação do canal (ou plano de criação e configuração: nome, descrição, banner, links, seções, trailer); 2) posicionamento e pilares de conteúdo; 3) 15 ideias de vídeos com título, gancho dos primeiros 15 segundos e ideia de thumbnail; 4) 3 roteiros completos; 5) SEO de vídeo (palavras-chave, títulos, descrições, tags, capítulos); 6) calendário de publicação de 4 semanas; 7) plano de Shorts; 8) métricas (CTR, retenção) e caminho para monetização conforme as regras atuais do YouTube (peça para conferir). Sem prometer resultado. Fale só de YouTube.'},
-local:{c:'#F5B83D',name:'Google Meu Negócio e SEO local',desc:'Aparecer no Google Maps e na busca da sua cidade.',
+local:{c:'#F5B83D',oculto:true,name:'Google Meu Negócio e SEO local',desc:'Aparecer no Google Maps e na busca da sua cidade.',
  sys:'Você é especialista em SEO local e Google Meu Negócio (perfil da empresa no Google) para pequenos negócios no Brasil. Responda em português do Brasil, em Markdown, com passos práticos e sem prometer posição no Google.',
  foco:'perfil da empresa no Google (Google Meu Negócio), Google Maps, avaliações e SEO local',
  qs:[['negocio','Qual é o seu negócio?','Ex: clínica odontológica, barbearia, mecânica',0,'neg|empres|trabalh'],
@@ -99,7 +99,7 @@ local:{c:'#F5B83D',name:'Google Meu Negócio e SEO local',desc:'Aparecer no Goog
  ['resp','Quem responde avaliações e perguntas dos clientes no Google?',['Eu mesmo','Alguém da equipe','Ninguém, hoje'],0,'respond|avalia|pergunta|quem'],
  ['site','Você tem site? Qual o endereço?','Se não tem, escreva "sem site"',0,'site|endereço|link']],
  task:'Monte um plano de Google Meu Negócio e SEO local para este cliente: 1) diagnóstico do perfil atual; 2) checklist de configuração (categorias, serviços, produtos, atributos, horários, descrição, fotos, mensagens); 3) 8 ideias de publicações com texto pronto; 4) estratégia para pedir e responder avaliações (com 3 modelos de resposta e 1 de pedido por WhatsApp, sem comprar nem trocar avaliação por benefício); 5) palavras-chave locais; 6) ajustes no site para busca local (se houver); 7) rotina mensal e métricas (ligações, rotas, buscas). Sem prometer posição. Fale só de perfil no Google e SEO local.'},
-press:{c:'#9AD1FF',name:'Assessoria de imprensa',desc:'Fazer a sua história chegar a jornalistas, sites e veículos do seu setor.',
+press:{c:'#9AD1FF',oculto:true,name:'Assessoria de imprensa',desc:'Fazer a sua história chegar a jornalistas, sites e veículos do seu setor.',
  sys:'Você é assessor de imprensa para pequenas e médias empresas e criadores no Brasil: define pautas, escreve releases, monta mailing de jornalistas e prepara porta-vozes. Responda em português do Brasil, em Markdown, sem prometer publicação e sem inventar fatos sobre o cliente.',
  foco:'assessoria de imprensa (releases, pautas, relacionamento com jornalistas, clipping)',
  qs:[['negocio','Qual é o seu negócio ou o seu trabalho?','Ex: restaurante de bairro, escritório de arquitetura, criador de conteúdo',0,'neg|empres|trabalh'],
@@ -113,7 +113,7 @@ press:{c:'#9AD1FF',name:'Assessoria de imprensa',desc:'Fazer a sua história che
  ['mat','Você tem fotos e vídeos profissionais e um site ou perfil com informações para jornalistas?',['Tenho tudo','Tenho parte','Não tenho'],0,'foto|vídeo|material|site|perfil|jornalist'],
  ['risco','Existe algum assunto que NÃO deve ser divulgado?','Ex: processos, valores, dados de clientes. Se não, escreva "nada"',0,'assunto|divulg|evit|não|sigilo']],
  task:'Monte um plano de assessoria de imprensa para este cliente: 1) diagnóstico: o que é notícia no negócio (ângulos de pauta reais, baseados só no briefing); 2) mapa de veículos e tipos de jornalista a abordar (sem inventar nomes); 3) um release completo e pronto para revisão, usando apenas fatos do briefing e [DADO A CONFIRMAR] onde faltar; 4) 5 sugestões de pauta; 5) e-mail de abordagem curto; 6) preparo do porta-voz (3 mensagens-chave e perguntas difíceis prováveis); 7) calendário de 3 meses e como medir (clipping, menções, tráfego). Nunca prometa publicação. Fale só de imprensa.'},
-brand:{c:'#FF9E6B',name:'Identidade visual (logo e marca)',desc:'Logo, cores e jeito de aparecer, para o seu negócio ter cara própria.',
+brand:{c:'#FF9E6B',name:'Criação de branding',desc:'Logo, cores e jeito de aparecer, para o seu negócio ter cara própria.',
  sys:'Você é designer de marca e estrategista de identidade visual para pequenos negócios e criadores no Brasil. Responda em português do Brasil, em Markdown, com direção clara e sem copiar marcas existentes.',
  foco:'identidade visual (logo, paleta, tipografia, aplicações, manual de marca)',
  qs:[['negocio','Qual é o seu negócio ou projeto?','Ex: café de bairro, canal de games, consultoria financeira',0,'neg|empres|trabalh|projeto'],
@@ -167,14 +167,46 @@ resite:{c:'#E6D96B',name:'Refazer meu site',desc:'Seu site atual está fraco ou 
  ['acesso','Você tem acesso ao código, ao domínio e à hospedagem atuais?',['Tenho tudo','Só ao domínio','Não tenho acesso','Não sei'],0,'acesso|código|domínio|hospedagem'],
  ['migrar','Há conteúdo que precisa ser migrado para o novo site?','Páginas, produtos, posts, fotos... ou "nenhum"',0,'migr|conteúdo|transfer'],
  ['urls','Quais páginas atuais são importantes no Google e precisam de redirecionamento?','Endereços das páginas que trazem visitas, ou "não sei"',0,'url|págin|google|redirec']],
- task:'Refaça o site do cliente. 1) Comece com um diagnóstico curto: 5 problemas prováveis do site atual (com base no que o cliente contou) e como o novo site resolve cada um. 2) Crie o novo site completo em UM único arquivo HTML (HTML+CSS+JS inline, responsivo, acessível, sem recursos externos), mantendo o que o cliente pediu para manter, com design marcante e específico para este negócio, hero forte, seções completas com textos reais, botão de WhatsApp/CTA funcional e animações com propósito. Depois do diagnóstico, entregue TODO o código dentro de um único bloco ```html.\n\n'+SITE_REF+'\n'+SITE_REGRAS}
+ task:'Refaça o site do cliente. 1) Comece com um diagnóstico curto: 5 problemas prováveis do site atual (com base no que o cliente contou) e como o novo site resolve cada um. 2) Crie o novo site completo em UM único arquivo HTML (HTML+CSS+JS inline, responsivo, acessível, sem recursos externos), mantendo o que o cliente pediu para manter, com design marcante e específico para este negócio, hero forte, seções completas com textos reais, botão de WhatsApp/CTA funcional e animações com propósito. Depois do diagnóstico, entregue TODO o código dentro de um único bloco ```html.\n\n'+SITE_REF+'\n'+SITE_REGRAS},
+/* Novos em 02/11/2026: o plano de marketing e a assessoria mensal. Ainda sem preço na tabela: o orçamento mostra "a confirmar". */
+mkt:{c:'#F5B83D',name:'Marketing digital (plano e estratégia)',desc:'Um plano feito para o seu negócio: o que fazer, em que ordem e onde investir.',
+ sys:'Você é estrategista de marketing digital para pequenos negócios e criadores no Brasil: monta planos de marketing com diagnóstico, público, posicionamento, canais, prioridades e indicadores, sem prometer resultado. Responda em português do Brasil, em Markdown, com ações concretas e em ordem de prioridade.',
+ foco:'plano de marketing digital (diagnóstico, público, posicionamento, canais, prioridades e indicadores)',
+ qs:[['negocio','Qual é o seu negócio e o que você vende?','Ex: clínica de estética no Méier, loja de roupas online, consultoria financeira',0,'neg|empres|trabalh|vend'],
+ ['obj','Qual é o principal objetivo para os próximos meses?',['Ter mais clientes e contatos','Vender mais online','Lançar um produto ou serviço','Fortalecer a marca','Organizar o que já faço'],1,'objetiv|quer|meta|meses|conseguir'],
+ ['pub','Quem é o seu cliente ideal?','Perfil, idade, região e o que ele procura',0,'cliente|públic|quem|perfil'],
+ ['canais','Onde você divulga o seu negócio hoje?',['Instagram','Facebook','TikTok','Google (anúncios ou Maps)','Site','WhatsApp','Indicação','Ainda em nenhum lugar'],1,'divulg|onde|canal|rede|hoje'],
+ ['funciona','O que já funcionou e o que não funcionou até agora?','Ações, anúncios, posts, parcerias... Se está começando, escreva "ainda não sei"',0,'funcion|resultado|tentou|já'],
+ ['dif','O que faz as pessoas escolherem você e não o concorrente?','Diferenciais, prova social, garantias',0,'difer|concorr|escolh|vantag|melhor'],
+ ['conc','Quem são os seus principais concorrentes?','Nomes, @ ou sites, ou "não sei"',0,'concorr|referên'],
+ ['equipe','Quem vai colocar o plano em prática?',['Eu mesmo','A minha equipe','Quero contratar vocês para executar','Ainda não sei'],0,'prática|execut|quem|equipe|fazer'],
+ ['verba','Quanto você consegue investir por mês em anúncios (só a verba, sem o nosso trabalho)?',FAIXA_VERBA,0,'verba|invest|mês|r\\$|orçament|valor'],
+ ['tempo','Quanto tempo por semana você ou a sua equipe têm para o marketing?',['Menos de 2 horas','De 2 a 5 horas','Mais de 5 horas','Não sei'],0,'tempo|semana|horas|dedic'],
+ ['medir','Como você acompanha os resultados hoje?',['Não acompanho','Pelo número de contatos ou vendas','Por planilha','Por ferramentas como o Google Analytics'],0,'acompanh|medi|resultado|planilha|analytics']],
+ task:'Monte um plano de marketing digital para este cliente: 1) diagnóstico do momento, usando só o briefing; 2) público e posicionamento (o que dizer e para quem); 3) canais prioritários e por quê, em ordem, de acordo com a verba e o tempo informados; 4) plano de 90 dias, mês a mês, com ações concretas; 5) indicadores para acompanhar em cada canal; 6) o que o cliente consegue fazer sozinho e onde vale ter ajuda. Não prometa resultado.'},
+assess:{c:'#9AD1FF',name:'Assessoria de marketing',desc:'Acompanhamento todo mês, com reuniões, para analisar os resultados e decidir os próximos passos.',
+ sys:'Você é consultor de marketing digital que acompanha pequenos negócios e criadores no Brasil todo mês: analisa resultados, define prioridades e orienta quem executa, sem prometer resultado. Responda em português do Brasil, em Markdown, com orientações práticas.',
+ foco:'assessoria mensal de marketing digital (reuniões, análise de resultados, prioridades e orientação de quem executa)',
+ qs:[['negocio','Qual é o seu negócio e o que você vende?','Ex: clínica de estética no Méier, loja de roupas online, consultoria financeira',0,'neg|empres|trabalh|vend'],
+ ['desafio','Qual é o maior desafio do seu marketing hoje?',['Não sei o que priorizar','Faço muita coisa e vejo pouco resultado','Não tenho constância','A equipe precisa de direção','Não sei medir os resultados'],1,'desafio|problema|dificuldade|hoje'],
+ ['faz','O que o seu negócio já faz de marketing hoje?',['Posts nas redes','Anúncios no Google','Anúncios no Instagram e Facebook','Site','Mensagens em massa no WhatsApp ou e-mail','Ainda nada'],1,'faz|hoje|marketing|já'],
+ ['quem','Quem cuida do marketing no dia a dia?',['Eu mesmo','Uma pessoa da equipe','Uma agência ou freelancer','Ninguém ainda'],0,'cuida|execut|quem|equipe|dia'],
+ ['pub','Quem é o seu cliente ideal?','Perfil, idade, região e o que ele procura',0,'cliente|públic|quem|perfil'],
+ ['obj','O que você quer ter conseguido daqui a 6 meses?','Ex: agenda cheia, vender mais pelo site, uma marca mais conhecida',0,'objetiv|quer|meses|conseguir'],
+ ['freq','Com que frequência você gostaria de conversar com a gente?',['Uma vez por mês','A cada 15 dias','Toda semana'],0,'frequ|reuni|convers|mês|semana'],
+ ['medir','Como você acompanha os resultados hoje?',['Não acompanho','Pelo número de contatos ou vendas','Por planilha','Por ferramentas como o Google Analytics'],0,'acompanh|medi|resultado|planilha|analytics'],
+ ['ferr','Quais ferramentas vocês já usam?','Ex: Instagram, Google Ads, Canva, planilhas, sistema de clientes, ou "nenhuma"',0,'ferrament|usa|sistema|planilha'],
+ ['verba','Quanto você consegue investir por mês em anúncios (só a verba, sem o nosso trabalho)?',FAIXA_VERBA,0,'verba|invest|mês|r\\$|orçament|valor']],
+ task:'Prepare o início da assessoria deste cliente: 1) diagnóstico do marketing atual, usando só o briefing; 2) as 3 prioridades dos primeiros 3 meses e por quê; 3) pauta da primeira reunião; 4) indicadores para acompanhar todo mês; 5) modelo de relatório mensal simples; 6) orientações práticas para quem executa no dia a dia. Não assuma que a equipe da OR vai executar e não prometa resultado.'}
 };
 const TAREFAS={
  meta:[['Pedir acesso ao Gerenciador de Negócios da Meta (parceiro ou administrador), sem senha',1],['Instalar o Pixel e configurar os eventos',3],['Subir os criativos e as campanhas',5],['Primeira análise e ajuste de públicos',12],['Relatório do primeiro mês',30]],
  youtube:[['Pedir acesso ao canal por convite (gerente do canal), sem senha',1],['Configurar o canal: nome, descrição, banner, links e seções',3],['Definir o calendário de publicação das próximas 4 semanas',5],['Entregar os primeiros roteiros e thumbnails',10],['Revisar retenção e CTR dos primeiros vídeos e ajustar',21],['Relatório do primeiro mês',30]],
  local:[['Pedir acesso ao perfil do Google Meu Negócio (como gerente), sem senha',1],['Verificar o perfil e corrigir categorias, horários e contatos',3],['Subir fotos e as primeiras publicações',5],['Montar o link e a mensagem para pedir avaliações',7],['Responder às avaliações pendentes',10],['Relatório do primeiro mês',30]],
  press:[['Definir as pautas e os fatos que podem ser divulgados com o cliente',2],['Escrever o primeiro release e enviar para aprovação do cliente',7],['Enviar o release e acompanhar os retornos',12],['Montar o clipping das menções',30],['Relatório do primeiro mês',30]],
- brand:[['Reunião de briefing visual e aprovação do conceito',3],['Entregar as propostas de logo',12],['Rodada de ajustes',17],['Entregar arquivos finais e manual de marca',25]]
+ brand:[['Reunião de briefing visual e aprovação do conceito',3],['Entregar as propostas de logo',12],['Rodada de ajustes',17],['Entregar arquivos finais e manual de marca',25]],
+ mkt:[['Revisar o briefing e tirar as dúvidas com o cliente',3],['Entregar o plano de marketing',12],['Enviar o plano e fazer os ajustes pedidos',15]],
+ assess:[['Reunião inicial: objetivos e prioridades',3],['Pedir acesso aos relatórios das plataformas por convite, sem senha',5],['Entregar o diagnóstico e as prioridades do primeiro mês',10],['Primeira reunião de acompanhamento',30],['Relatório do primeiro mês',30]]
 };
 const COMUM=[['prazo','Para quando você precisa?',['O quanto antes','Em até 2 semanas','Em até 1 mês','Sem pressa']],
  ['inv','Quanto pretende investir no nosso trabalho?','Pode ser uma faixa. Por exemplo: de R$ 1.000 a R$ 2.000 por mês. A verba de anúncios, se houver, você já informou antes.',0],
@@ -203,9 +235,9 @@ const DIRQ=[
 MODS.guia={c:'#FF5A00',oculto:true,name:'Descobrir o que eu preciso',desc:'Responda algumas perguntas e indicamos os serviços certos para o seu caso.',
  sys:'Você é estrategista de marketing digital para pequenos negócios e criadores no Brasil. Responda em português do Brasil, em Markdown.',
  foco:'descobrir quais serviços de marketing digital o cliente precisa',
- qs:[['tipo','Para quem é o trabalho?',['Para uma empresa ou negócio','Para um canal no YouTube','Para um perfil de criador de conteúdo (Instagram, TikTok)','Ainda não sei'],0,'quem|trabalho|para'],
+ qs:[['tipo','Para quem é o trabalho?',['Para uma empresa ou negócio','Para um perfil de criador de conteúdo (Instagram, TikTok)','Ainda não sei'],0,'quem|trabalho|para'],
  ['negocio','Conte em poucas palavras sobre o seu negócio ou o seu conteúdo.','Ex: barbearia no Méier, canal de culinária, loja de roupas online',0,'neg|conte|conteúdo|trabalh'],
- ['obj','O que você mais quer conseguir agora?',['Ter mais clientes e contatos','Vender online','Ser encontrado na minha cidade','Crescer nas redes sociais','Crescer o meu canal no YouTube','Aparecer na imprensa','Ter uma marca e um logo profissionais','Ter ou melhorar o meu site','Ainda não sei'],1,'conseguir|quer|objetiv|agora'],
+ ['obj','O que você mais quer conseguir agora?',['Ter mais clientes e contatos','Vender online','Ser encontrado na minha cidade','Crescer nas redes sociais','Ter uma marca e um logo profissionais','Ter ou melhorar o meu site','Ter um plano de marketing','Ter alguém me orientando todo mês','Ainda não sei'],1,'conseguir|quer|objetiv|agora'],
  ['dor','Qual é o maior problema que você enfrenta hoje?',['Poucos clientes ou contatos chegando','Chegam contatos, mas poucos viram venda','Pouca gente conhece o meu negócio ou a minha marca','Concorrentes aparecem mais do que eu','Não consigo manter as redes sociais em dia','O meu site ou o meu visual não passam confiança','Não sei por onde começar'],1,'problema|dificuldade|enfrent|maior|hoje'],
  ['tem','O que você já tem hoje?',['Site','Logo e identidade visual','Perfil no Instagram, TikTok ou outra rede','Canal no YouTube','Perfil no Google Meu Negócio','Nada ainda'],1,'já tem|tem hoje|possui|hoje',A=>!ehEmp(A)&&!ehYt(A)],
  ['onde','Como os clientes ou seguidores chegam até você hoje?',['Indicação','Instagram ou TikTok','Google','WhatsApp','YouTube','Ainda não chegam'],1,'chegam|clientes|seguidor|hoje|encontr',A=>!naoExiste(A)],
@@ -225,11 +257,15 @@ function recomendar(qa){
   const comecando=has('fase','abrindo')||has('fase','ainda vai')||has('canal','ainda vou')||has('seg','ainda vou');
   if(has('obj','mais clientes')){add('ads',3,'Você quer mais clientes: os anúncios no Google alcançam quem já está procurando o que você vende.');add('meta',2,'Os anúncios no Instagram e Facebook colocam a sua oferta na frente de mais gente.')}
   if(has('obj','vender online')){add('ads',3,'Para vender online, o Google mostra a sua oferta para quem está pronto para comprar.');add('meta',3,'Instagram e Facebook vendem bem com anúncios e com remarketing.');if(!temSite)add('site',3,'Para vender online você precisa de um lugar seu, como um site ou uma loja.')}
-  if(has('obj','encontrado')){add('local',5,'Você quer ser encontrado na sua cidade: o perfil no Google Maps é o caminho mais direto.');add('ads',1)}
+  if(has('obj','encontrado'))add('ads',5,'Você quer ser encontrado na sua cidade: os anúncios no Google aparecem para quem procura o que você faz na sua região.');
   if(has('obj','redes')){add('social',5,'Você quer crescer nas redes: conteúdo planejado e constante é a base.');add('meta',1)}
   if(has('obj','youtube'))add('youtube',6,'Você quer crescer no YouTube: cuidamos do canal, dos vídeos e do crescimento.');
   if(has('obj','imprensa'))add('press',6,'Você quer aparecer na imprensa: preparamos releases, pautas e o contato com jornalistas.');
   if(has('obj','marca'))add('brand',6,'Você quer uma marca profissional: logo, cores e manual de marca.');
+  if(has('obj','plano de marketing'))add('mkt',6,'Você quer um plano de marketing: mostramos o que fazer, em que ordem e onde investir.');
+  if(has('obj','orientando'))add('assess',6,'Você quer alguém orientando todo mês: na assessoria analisamos os resultados com você e definimos os próximos passos.');
+  if(has('obj','ainda não sei'))add('mkt',3,'Você ainda não sabe o que precisa: o plano de marketing organiza as prioridades antes de investir.');
+  if(has('dor','por onde começar'))add('mkt',4,'Você não sabe por onde começar: o plano de marketing mostra o primeiro passo e a ordem do resto.');
   if(has('obj','site'))temSite?add('resite',5,'Você já tem site e quer melhorá-lo: refazemos mantendo o que funciona.'):add('site',5,'Você quer ter um site: uma página própria dá credibilidade e recebe os contatos.');
   if(has('tipo','criador')){add('social',3,'Como criador de conteúdo, as redes sociais são o centro do seu trabalho.');add('youtube',1)}
   if(comecando)A.tem?(!has('tem','logo')&&add('brand',3,'Você está começando e ainda não tem logo e identidade: uma marca clara ajuda em tudo.')):add('brand',2,'Você está começando: uma marca clara desde o início ajuda em tudo.');
@@ -256,7 +292,7 @@ function recomendar(qa){
   let ord=Object.keys(S).filter(k=>MODS[k]&&!MODS[k].oculto).sort((a,b)=>S[b]-S[a]);
   let pick=ord.filter(k=>S[k]>=3).slice(0,3);
   if(!pick.length&&ord.length&&S[ord[0]]>0)pick=[ord[0]];
-  if(!pick.length){const k=has('tipo','criador')?'social':(cidade?'local':'site');pick=[k];(W[k]=W[k]||[]).push('Para começar, é a base de uma presença digital organizada. Vamos refinar com você.')}
+  if(!pick.length){const k=has('tipo','criador')?'social':'mkt';pick=[k];(W[k]=W[k]||[]).push('Para começar, é a base de uma presença digital organizada. Vamos refinar com você.')}
   if((pick.includes('ads')||pick.includes('meta'))&&!temSite&&!pick.includes('site')&&pick.length<3){pick.push('site');(W.site=W.site||[]).push('Os anúncios funcionam melhor levando a pessoa para um lugar seu, como um site.')}
   return pick.map(k=>({k,why:(W[k]||[]).slice(0,2)}));
 }

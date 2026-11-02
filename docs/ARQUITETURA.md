@@ -23,7 +23,7 @@ Um **único escopo global de JavaScript**, sem módulos e sem build de verdade: 
 | 09 | `app-navegacao-icones` | Estado `P`, `nav()`, `render()`, ícones, logo |
 | 10 | `visual-3d-efeitos` | Canvas/WebGL: `vMarkStart`, `orbStart`, `dotsStart`, `capitulos`, `introStart`, `cenaStart`, `megaStart`, `rotulos` |
 | 11 | `esfera-agua` | `aifStart()`: esfera de água (shader) |
-| 12 | `conteudo-servicos` | `SOBRE`: textos de cada página de serviço |
+| 12 | `conteudo-servicos` | `SOBRE`: textos de cada página de serviço; `VITRINE`: os 6 serviços do site público (lista, cartões da primeira tela, SEO), cada um ligado a um ou mais módulos de `MODS` |
 | 13 | `site-publico-base` | `vida()`, `tick()`, `nav2()` (menu), constantes do briefing |
 | 14 | `site-publico-paginas` | `pub()` (home), `svcPage()`, `vagasPage()` |
 | 15 | `briefing-assistente` | `gate()`, perguntas da IA (`aiQ`, `nextQ`), `wizard()`, `submit()`, `thanks()` |
@@ -89,7 +89,7 @@ Cascata em camadas: o que vem depois vence. `01-base-e-minha-area.css` tem os to
 
 ## Como acrescentar…
 
-**Um novo serviço:** `MODS` (02), `SOBRE` (12), `ICON` (09), `PM_MOD` e `ESP` (18), linhas em `PRECOS` (01).
+**Um novo serviço:** `MODS` (02), `SOBRE` e `VITRINE` (12), `ICON` (09), `PM_MOD` e `ESP` (18), `CURTO` (19), linhas em `PRECOS` (01) e, se o "Descobrir o que eu preciso" deve indicá-lo, uma regra em `recomendar()` (02). Com mais ou menos de 6 serviços, ajuste as posições dos cartões em `16-hero-flutuante.css`.
 **Uma nova página pública:** uma função como `vagasPage()` em 14, o roteamento em `pub()` (`P.page`), um botão com `data-...` ligado em `setApp()` (07).
 **Um novo efeito visual:** função `xxxStart()` em 10, chamada no fim da página em que aparece (ex.: no fim da home em `pub()`), e o CSS em um arquivo `src/css/` novo registrado em `ordem.json`. Respeite `prefers-reduced-motion` e pare o `requestAnimationFrame` quando o elemento sair do DOM.
 

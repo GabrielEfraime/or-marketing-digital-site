@@ -55,6 +55,18 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Menu do topo vira "Menu" abaixo de 1240 px para não quebrar em duas linhas; trilho de capítulos só a partir de 1440 px.
 - Barra do topo na largura toda (sem o limite de 1320 px): logo junto da borda esquerda e "Solicitar orçamento" junto da direita, a 56 px das bordas em tela larga. Acima de 1240 px o menu fica no meio do espaço entre os dois, com a mesma folga dos dois lados (pedidos do dono em 31/10/2026).
 - Primeira tela: "Solicitar orçamento" centralizado sob o título, com "Ver como funciona" logo abaixo (31/10/2026).
+- **Supabase** (02/11/2026) será o banco, o login e o armazenamento.
+  - Entram na Minha área os dois donos, ambos com acesso a tudo. Papéis de funcionário ficam para quando houver equipe.
+  - Tudo continua dentro do site:
+    - a Minha área fica no mesmo endereço, com as mesmas seções e telas de hoje;
+    - não há outro painel nem outro acesso para ver os dados;
+    - o Supabase só guarda, por trás.
+  - A base desses acessos futuros entra já na fase 1:
+    - permissões numa tabela (papel × seção × nível) e uma função única `pode()` nas regras;
+    - o lead dividido em contato e briefing, orçamento e acompanhamento, para um papel poder ver uma parte sem ver as outras.
+  - Login: e-mail, senha e 2FA; o PIN sai.
+  - O Supabase é a fonte principal, com cópia local no navegador; o backup no HD continua opcional.
+  - Plano e papéis propostos em `docs/PLANO-SUPABASE.md`.
 - Revisão de alinhamento (31/10/2026, pedido do dono: "tem muita coisa desalinhada"):
   - Caixa de concordância (briefing e vagas): caixa de 22 px ao lado da primeira linha do texto.
   - Primeira tela: acima de 1240 px, os cartões flutuantes ficam presos nas laterais e nunca entram na coluna do meio (antes batiam no título e nas pílulas). Até 1240 px eles viram uma faixa centrada abaixo do texto. O 9º cartão fica centralizado.
@@ -142,3 +154,36 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - Foco em microempresas (ME): toda a tabela de preços (instalação e mensalidade, três pacotes e extras) caiu 60% (valores novos = 40% dos antigos). Marcador da tabela: `MARCADOR-TABELA-V3`. Quem tinha a tabela antiga salva no navegador recebe a nova uma vez; a antiga fica em `CFG.precosAntigos`.
 - Estratégia e execução saem do lead e passam para o Acompanhamento (abas "Estratégia" e "Execução"), onde o cliente já fechou. O lead gera só Resumo e Orçamento + mensagem (`gerarTudo`). Os mesmos geradores e o mesmo painel de leitura são usados nas abas novas (`detMini`).
 - Captação (30/10/2026): a busca é pelo Google (Places API New); sem chave, a tela pede a chave e mostra o passo a passo, em vez de cair no OpenStreetMap (dados antigos). "Salvar e testar" faz uma busca mínima antes de guardar a chave e mostra o erro exato do Google. O OpenStreetMap ficou só como botão à parte. A chave do Gemini (AI Studio, formato AQ.) não serve na Places API: o Google devolve 401 "API keys are not supported".
+
+## Serviços novos (02/11/2026)
+
+**Os 6 serviços.** A OR vai abrir outra frente, e no site ficam só estes, nesta ordem:
+1. Marketing digital
+2. Assessoria
+3. Tráfego pago
+4. Criação de sites
+5. Criação de branding
+6. Gestão de redes sociais
+
+Eles estão na lista `VITRINE`, em `12-conteudo-servicos.js`. Dela saem:
+- a lista "Soluções";
+- os cartões da primeira tela (3 de cada lado);
+- as páginas dos serviços;
+- o SEO e o conteúdo sem JavaScript, que o `montar.mjs` lê dela.
+
+**O que cada serviço é:**
+- **Marketing digital** é o plano e a estratégia. No código, o módulo é `mkt`.
+- **Assessoria** é o acompanhamento mensal com reuniões, sem execução própria. No código, o módulo é `assess`.
+- Os dois ainda **não têm preço** na tabela. No orçamento eles aparecem como "itens e valor a confirmar" e ficam fora do total, até o dono passar os pacotes.
+- **Tráfego pago** junta Google Ads e Meta Ads, e **Criação de sites** junta site novo e refazer site. Por dentro, os módulos e os preços continuam separados (`ads`, `meta`, `site`, `resite`).
+- **Criação de branding** é o antigo "Identidade visual". **Gestão de redes sociais** é o antigo "Conteúdo para redes sociais". Mudaram só o nome e o texto.
+
+**Os que saíram.** YouTube, Google Meu Negócio e SEO local, e Assessoria de imprensa saíram do site e do briefing (`oculto:true`). Os leads antigos desses serviços continuam abrindo, com preço e acompanhamento.
+
+**Briefing "Descobrir o que eu preciso":**
+- Saiu a opção "canal no YouTube".
+- Os objetivos ganharam "Ter um plano de marketing" e "Ter alguém me orientando todo mês".
+- "Ser encontrado na minha cidade" passou a indicar Google Ads.
+- Quando nada se destaca, a sugestão é o plano de marketing.
+
+**Base da IA.** A lista de serviços no "Sobre" foi trocada uma vez (`seededSvc`), só se a frase ainda fosse a original.

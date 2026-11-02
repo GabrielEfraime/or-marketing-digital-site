@@ -1,7 +1,7 @@
 const rs=n=>'R$ '+(Number(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:(Number(n)||0)%1?2:0,maximumFractionDigits:2});
 const tabNum=v=>{const s=String(v||'0').trim(),n=/^\d+\.\d{1,2}$/.test(s)?parseFloat(s):parseFloat(s.replace(/\./g,'').replace(',','.'));return isFinite(n)?n:0};
 const r2=n=>Math.round(n*100)/100;
-const CURTO={ads:'Google Ads',meta:'Meta Ads',social:'conteúdo para redes sociais',youtube:'YouTube',local:'Google Meu Negócio e SEO local',press:'assessoria de imprensa',brand:'identidade visual',site:'um site novo',resite:'refazer o seu site'};
+const CURTO={ads:'Google Ads',meta:'Meta Ads',social:'conteúdo para redes sociais',youtube:'YouTube',local:'Google Meu Negócio e SEO local',press:'assessoria de imprensa',brand:'identidade visual',site:'um site novo',resite:'refazer o seu site',mkt:'plano de marketing digital',assess:'assessoria de marketing'};
 const precoDe=k=>{const e=((parseTab(CFG.precos).mods[k]||{}).basico);return e?'a partir de '+rs(e.setup+e.mensal)+(e.mensal?' para começar':''):'valor sob consulta'};
 const curtoNomes=l=>svcs(l).map(k=>CURTO[k]||MODS[k].name).join(', ').replace(/, ([^,]*)$/,' e $1');
 function parseTab(t){

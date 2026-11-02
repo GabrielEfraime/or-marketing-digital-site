@@ -12,13 +12,14 @@ const ler = (rel) => fs.readFileSync(path.join(RAIZ, rel), 'utf8');
 const escH = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // SEO do site público: tudo invisível para o visitante e igual ao conteúdo da página (sem texto escondido, que o Google pune).
-// Lê src/seo.json, a marca e o WhatsApp de 01-config-precos.js e os serviços (nome e descrição) de 02-modulos-servicos.js.
+// Lê src/seo.json, a marca e o WhatsApp de 01-config-precos.js e os serviços da vitrine (nome e descrição) de 12-conteudo-servicos.js.
 export function seo() {
   const s = JSON.parse(ler('src/seo.json'));
-  const cfg = ler('src/js/01-config-precos.js'), mods = ler('src/js/02-modulos-servicos.js');
+  const cfg = ler('src/js/01-config-precos.js'), vit = ler('src/js/12-conteudo-servicos.js');
   const marca = (cfg.match(/const BRAND='([^']+)'/) || [])[1] || 'OR Marketing Digital';
   const whats = (cfg.match(/const MY_WHATS='(\d+)'/) || [])[1] || '';
-  const servicos = [...mods.matchAll(/^([a-z]+):\{c:'#[0-9A-Fa-f]+',name:'([^']+)',desc:'([^']+)'/gm)].map((m) => ({ nome: m[2], desc: m[3] }));
+  const servicos = [...vit.matchAll(/\{k:'[a-z]+',name:'([^']+)',mods:\[[^\]]*\],desc:'([^']+)'\}/g)].map((m) => ({ nome: m[1], desc: m[2] }));
+  if (!servicos.length) throw new Error('montar: não achei os serviços de VITRINE em 12-conteudo-servicos.js');
   const url = /^https:\/\/[^\s"'<>]+\/$/.test(s.url || '') ? s.url : '';
   const tel = whats.length === 13 ? '+' + whats.slice(0, 2) + '-' + whats.slice(2, 4) + '-' + whats.slice(4, 9) + '-' + whats.slice(9) : '';
   const negocio = {
