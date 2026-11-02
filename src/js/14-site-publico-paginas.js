@@ -31,7 +31,7 @@ function pub(){
     <div class="v-cta-row v-rv"><div><h3>Leva poucos minutos e não tem compromisso</h3><p>Do que você nos contar, montamos o plano e o orçamento com 3 opções.</p></div><button type="button" class="v-btn" data-brief="1" id="guiastart"><span>Responder o briefing</span>${ARR}</button></div></div></section>
 
     <section class="v-sec v-base v-gl" id="oferta"><div class="v-wrap"><h2 class="v-h2 v-rv">Soluções para o seu negócio<sup class="v-n">(${String(VITRINE.length).padStart(2,'0')})</sup>.</h2><p class="v-p v-rv">Escolha um serviço para ver o que é, como funciona e o que esperar. Pode contratar um só ou combinar vários.</p>
-    <div class="v-rows">${VITRINE.map(m=>`<button type="button" class="v-row v-rv" data-svc="${m.k}"><span class="v-rn">${m.name}</span><span class="v-rd">${m.desc}</span><span class="v-ra" aria-hidden="true">${ARR}</span></button>`).join('')}</div></div></section>
+    <ol class="v-pilha" aria-label="Serviços">${VITRINE.map((m,i)=>`<li class="v-pc" style="--i:${i}"><div class="v-pcin"><div class="v-pct"><span class="v-pcn" aria-hidden="true">(${String(i+1).padStart(2,'0')})</span><h3>${esc(m.name)}</h3><p>${esc(m.desc)}</p>${SOBRE[m.k]?`<p class="v-pcq">Para ${esc(SOBRE[m.k].p)}</p>`:''}<button type="button" class="v-link" data-svc="${m.k}" aria-label="Conhecer o serviço ${esc(m.name)}">Conhecer o serviço</button></div><span class="v-pci" aria-hidden="true">${ICON[m.mods[0]]||''}</span></div></li>`).join('')}</ol></div></section>
 
     <section class="v-scene est" id="como" aria-labelledby="como-t"><div class="v-stick"><div class="v-wrap v-scene-in"><div class="v-sc-l"><p class="v-sc-k">Como funciona</p><h2 id="como-t" class="v-sr">Como funciona, em quatro passos</h2><ol class="v-sc-steps"><li class="on"><h3>Você conta sobre o seu negócio</h3><p>Perguntas curtas e simples. Dá para responder pelo celular, em poucos minutos.</p></li><li><h3>Montamos o plano</h3><p>Lemos tudo e ajustamos a estratégia ao seu caso. Uma pessoa da equipe revisa antes de seguir.</p></li><li><h3>Três opções de orçamento</h3><p>Essencial, Crescimento e Completo, com o que está incluso, o valor total e o prazo.</p></li><li><h3>A gente conversa no WhatsApp</h3><p>Mandamos tudo por lá, tiramos as suas dúvidas e, se fizer sentido, a gente começa.</p></li></ol><p class="v-sc-n" aria-hidden="true"><b>00</b><span>%</span></p></div><div class="v-sc-c" aria-hidden="true"><canvas></canvas></div></div></div></section>
 
@@ -63,7 +63,7 @@ function pub(){
     const start=ks=>{P.mods=ks;P.mod=ks[0];P.qa=[];P.cur=null;P.fail=false;P.aiDone=false;P.skipTp=new Set();pub();window.scrollTo(0,0)};
     app.querySelectorAll('[data-brief]').forEach(b=>b.onclick=()=>start(['guia']));
     $('#guiastart').onclick=()=>start(['guia']);
-    vMarkStart();heroFlutuarStart();orbStart();dotsStart();capitulos();cenaStart();megaStart();rotulos();introStart();
+    vMarkStart();heroFlutuarStart();orbStart();dotsStart();capitulos();cenaStart();megaStart();rotulos();introStart();pilhaStart();marcaFundo();
     app.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{P.page='svc:'+b.dataset.svc;pub();window.scrollTo(0,0)});
     $('#totop').onclick=()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     return;

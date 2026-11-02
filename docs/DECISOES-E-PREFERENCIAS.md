@@ -187,3 +187,21 @@ Eles estão na lista `VITRINE`, em `12-conteudo-servicos.js`. Dela saem:
 - Quando nada se destaca, a sugestão é o plano de marketing.
 
 **Base da IA.** A lista de serviços no "Sobre" foi trocada uma vez (`seededSvc`), só se a frase ainda fosse a original.
+
+## Efeitos inspirados na digi.ag (02/11/2026)
+
+O dono pediu efeitos do site da Digi e deixou a escolha comigo. O código é nosso, sem nada do site deles.
+
+**Serviços em pilha.** A lista "Soluções" virou 6 cartões sólidos.
+- Cada cartão para abaixo da barra do topo e o seguinte sobe por cima, deixando um degrau de 20 px (10 px no celular).
+- O cartão que chega vem inclinado (3°, ou 2° no celular) e se endireita ao encaixar. Os de baixo encolhem e escurecem um pouco.
+- Cada cartão tem número, nome, descrição, "Para quem…" e o botão "Conhecer o serviço".
+- Arquivos: `pilhaStart()` em `10-visual-3d-efeitos.js` e `src/css/22-pilha-servicos.css`.
+- A seção usa `overflow:clip`, porque o `overflow:hidden` de `.v-gl` impedia o sticky.
+- Com movimento reduzido, a pilha continua, mas sem inclinação nem escala.
+
+**Marca como textura.** O símbolo OR aparece grande, em cinza e bem apagado, no fundo da seção de dúvidas (`marcaFundo()`).
+
+**O que ficou de fora:**
+- vídeo no topo e ilustrações 3D, porque dependem de arquivos de terceiros e pesam;
+- logos de clientes e números grandes, porque não há dados reais.

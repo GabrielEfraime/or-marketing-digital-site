@@ -21,7 +21,7 @@ Um **único escopo global de JavaScript**, sem módulos e sem build de verdade: 
 | 07 | `ui-base` | Diálogos, privacidade, trocar PIN, `qaOf`, `brief()`, `setApp()` |
 | 08 | `ia-chamadas` | `ask()` (streaming), `askF()` (cai na outra IA e na reserva), `warm()` |
 | 09 | `app-navegacao-icones` | Estado `P`, `nav()`, `render()`, ícones, logo |
-| 10 | `visual-3d-efeitos` | Canvas/WebGL: `vMarkStart`, `orbStart`, `dotsStart`, `capitulos`, `introStart`, `cenaStart`, `megaStart`, `rotulos` |
+| 10 | `visual-3d-efeitos` | Canvas/WebGL: `vMarkStart`, `orbStart`, `dotsStart`, `capitulos`, `introStart`, `cenaStart`, `megaStart`, `rotulos`, `pilhaStart` (serviços em pilha), `marcaFundo` (símbolo OR nas dúvidas) |
 | 11 | `esfera-agua` | `aifStart()`: esfera de água (shader) |
 | 12 | `conteudo-servicos` | `SOBRE`: textos de cada página de serviço; `VITRINE`: os 6 serviços do site público (lista, cartões da primeira tela, SEO), cada um ligado a um ou mais módulos de `MODS` |
 | 13 | `site-publico-base` | `vida()`, `tick()`, `nav2()` (menu), constantes do briefing |
