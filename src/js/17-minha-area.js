@@ -15,14 +15,14 @@ setInterval(()=>{const s=document.getElementById('stat');if(s)s.textContent=stat
 
 function admShell(inner){
   return `<div class="shell"><aside class="side">${window.OR_TESTE?'<p class="err" role="note" style="margin:0 0 10px">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}<button class="brandb" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
-  <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
+  <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['posts','nvpost','Posts'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
   <div class="iasum">IA 1 (criação): ${esc(CFG.ia1.model)}<br>IA 2 (atendimento): ${esc(CFG.ia2.model)}<br>IA 3 (captação): ${esc(CFG.ia3.model)}</div>
   <div id="disk" class="diskbar"></div><div id="savebar" class="savebar" role="status"></div>
   <div class="dtools"><button id="csv">Exportar CSV</button><button id="bkp">Baixar backup</button><button id="impb">Importar backup</button><input type="file" id="imp" accept=".json" hidden><button id="npin">Trocar PIN</button><button id="lclean">Limpar leads antigos</button></div>
   </aside><main class="mainc" tabindex="-1">${inner}</main></div>`;
 }
 function bindShell(){
-  $('#nvd').onclick=()=>{A.view='dash';admin()};$('#nvl').onclick=()=>{A.view='';admin()};$('#nvt').onclick=()=>{A.view='trk';T.id=null;T.msg='';admin()};$('#nvk').onclick=()=>{A.view='kb';admin()};$('#nvc').onclick=()=>{A.view='cap';CAP.id=null;CAP.err='';CAP.msg='';admin()};$('#nvi').onclick=()=>{A.view='ias';admin()};$('#nvvg').onclick=()=>{A.view='vagas';A.vgc=null;A.vgTab=null;admin()};
+  $('#nvd').onclick=()=>{A.view='dash';admin()};$('#nvl').onclick=()=>{A.view='';admin()};$('#nvt').onclick=()=>{A.view='trk';T.id=null;T.msg='';admin()};$('#nvpost').onclick=()=>{A.view='posts';admin()};$('#nvk').onclick=()=>{A.view='kb';admin()};$('#nvc').onclick=()=>{A.view='cap';CAP.id=null;CAP.err='';CAP.msg='';admin()};$('#nvi').onclick=()=>{A.view='ias';admin()};$('#nvvg').onclick=()=>{A.view='vagas';A.vgc=null;A.vgTab=null;admin()};
   $('#csv').onclick=()=>dl('leads.csv','nome,whatsapp,email,area,status,data\n'+getL().map(l=>[l.nome,l.whats,l.email,svcName(l),l.status,l.data].map(csvSafe).join(',')).join('\n'),'text/csv');
   $('#bkp').onclick=()=>bkpDlg();
   $('#impb').onclick=()=>$('#imp').click();
@@ -39,6 +39,7 @@ function admin(){
   if(A.view==='dash'){setApp(admShell(dashInner()));bindShell();return bindDash()}
   if(A.view==='tal'){A.view='vagas';A.vgTab='db';A.vgc=null;A.vg=null}
   if(A.view==='vagas'){setApp(admShell(vagasInner()));bindShell();return bindVagas()}
+  if(A.view==='posts'){setApp(admShell(postsInner()));bindShell();return postsBind()}
   if(A.view==='trk'){setApp(admShell('<div id="trk"></div>'));bindShell();return trkPaint()}
   if(A.view==='cap'){setApp(admShell('<div id="cap"></div>'));bindShell();return capPaint()}
   if(A.view==='kb'){setApp(admShell(kbInner()));bindShell();return bindKb()}
