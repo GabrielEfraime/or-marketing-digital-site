@@ -36,6 +36,7 @@ function reaArtePreparar(p,f){
   return a;
 }
 function reaArteHtml(l,f,p){
+  if(!f||f.k!=="social"||!["post","carrossel","stories"].includes(f.fmt))return "";
   const a=reaArtePreparar(p,f),s=a.slides[a.slide],multi=a.slides.length>1;
   const op=(v,n,cur)=>'<option value="'+v+'" '+(cur===v?"selected":"")+'>'+n+"</option>";
   return '<section class="rea-art" data-rea-art data-rea-id="'+esc(l.id)+'" data-rea-pid="'+esc(p.id)+'" data-rea-slide="'+a.slide+'" data-rea-foto="'+(a.foto?"1":"0")+'">'+
@@ -135,6 +136,11 @@ async function reaArteObterImagem(box,id,pid){
     img.onerror=()=>{URL.revokeObjectURL(url);resolve(null)};
     img.src=url;
   });
+}
+function reaArteLimparArquivo(id,pid){
+  const key=reaArteKey(id,pid),cached=REA_ART_IMAGENS.get(key);
+  if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
+  arqDel(key);
 }
 function reaArteAviso(box,msg){const e=box.querySelector("[data-rea-art-status]");if(e)e.textContent=msg}
 function reaArteAtualizar(box,id,pid){
