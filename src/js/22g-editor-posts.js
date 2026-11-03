@@ -5,6 +5,8 @@ const REA_ART_FORMATOS={
   story:{w:1080,h:1920,n:"Story · 9:16"}
 };
 const REA_ART_IMAGENS=new Map();
+const REA_ART_FONTES=["Sora","Inter","Georgia","Arial","Trebuchet MS"];
+function reaArteFonte(v,fallback){const x=REA_ART_FONTES.includes(v)?v:fallback;return x==="Trebuchet MS"?'"Trebuchet MS"':x}
 
 function reaArteKey(id,pid){return "arte:"+id+":"+pid}
 function reaArteHex(v,base){return /^#[0-9a-f]{6}$/i.test(String(v||""))?v:base}
@@ -17,10 +19,10 @@ function reaArteExtrairSlides(txt){
   });
   return slides.slice(0,10);
 }
-function reaArtePreparar(p,f){
+function reaArtePreparar(p,f,l){
   p.arte=p.arte&&typeof p.arte==="object"?p.arte:{};
-  const a=p.arte;
-  if(!REA_ART_FORMATOS[a.formato])a.formato=f.fmt==="stories"?"story":"feed";
+  const a=p.arte,iv=l&&l.track&&l.track.identidadeVisual||{};
+  if(!REA_ART_FORMATOS[a.formato])a.formato=(f.fmt==="stories"||f.fmt==="reels")?"story":"feed";
   if(!["editorial","foto","tipografico"].includes(a.modelo))a.modelo="editorial";
   if(!Array.isArray(a.slides)||!a.slides.length){
     const lidos=(f.fmt==="carrossel"||f.fmt==="stories")?reaArteExtrairSlides(p.txt):[];
@@ -28,18 +30,20 @@ function reaArtePreparar(p,f){
   }
   a.slides=a.slides.slice(0,10).map(x=>({titulo:String(x&&x.titulo||"").slice(0,100),apoio:String(x&&x.apoio||"").slice(0,240),cta:String(x&&x.cta||"").slice(0,60)}));
   a.slide=Math.max(0,Math.min(a.slides.length-1,Math.round(Number(a.slide)||0)));
-  if(typeof a.marca!=="string")a.marca=String(CFG.brand||"OR Marketing Digital").slice(0,80);
-  a.fundo=reaArteHex(a.fundo,"#0A0908");
-  a.acento=reaArteHex(a.acento,"#C6AC8E");
-  a.texto=reaArteHex(a.texto,"#EAE0D5");
+  if(typeof a.marca!=="string")a.marca=String(iv.nomePerfil||l&&l.nome||CFG.brand||"OR Marketing Digital").slice(0,80);
+  a.fonteTitulo=REA_ART_FONTES.includes(a.fonteTitulo)?a.fonteTitulo:(REA_ART_FONTES.includes(iv.fonteTitulo)?iv.fonteTitulo:"Sora");
+  a.fonteTexto=REA_ART_FONTES.includes(a.fonteTexto)?a.fonteTexto:(REA_ART_FONTES.includes(iv.fonteTexto)?iv.fonteTexto:"Inter");
+  a.fundo=reaArteHex(a.fundo,reaArteHex(iv.corFundo,"#0A0908"));
+  a.acento=reaArteHex(a.acento,reaArteHex(iv.corDestaque,"#C6AC8E"));
+  a.texto=reaArteHex(a.texto,reaArteHex(iv.corTexto,"#EAE0D5"));
   a.foto=!!a.foto;
   return a;
 }
 function reaArteHtml(l,f,p){
-  if(!f||f.k!=="social"||!["post","carrossel","stories"].includes(f.fmt))return "";
-  const a=reaArtePreparar(p,f),s=a.slides[a.slide],multi=a.slides.length>1;
+  if(!f||f.k!=="social"||!["post","carrossel","stories","reels"].includes(f.fmt))return "";
+  const a=reaArtePreparar(p,f,l),s=a.slides[a.slide],multi=a.slides.length>1;
   const op=(v,n,cur)=>'<option value="'+v+'" '+(cur===v?"selected":"")+'>'+n+"</option>";
-  return '<section class="rea-art" data-rea-art data-rea-id="'+esc(l.id)+'" data-rea-pid="'+esc(p.id)+'" data-rea-slide="'+a.slide+'" data-rea-foto="'+(a.foto?"1":"0")+'">'+
+  return '<section class="rea-art" data-rea-art data-rea-id="'+esc(l.id)+'" data-rea-pid="'+esc(p.id)+'" data-rea-slide="'+a.slide+'" data-rea-foto="'+(a.foto?"1":"0")+'" data-rea-font-title="'+esc(a.fonteTitulo)+'" data-rea-font-text="'+esc(a.fonteTexto)+'">'+
     '<div class="rea-art-head"><div><span class="rea-art-kicker">EDITOR DE ARTE</span><h3>Monte a peça visual</h3><p class="hint">A IA cria o conteúdo; ajuste o texto e o layout aqui. A foto escolhida fica neste navegador.</p></div>'+
     (multi?'<div class="rea-art-pages"><button type="button" class="btn ghost" data-rea-art-page="-1" aria-label="Slide anterior">‹</button><span data-rea-art-count>Slide '+(a.slide+1)+' de '+a.slides.length+'</span><button type="button" class="btn ghost" data-rea-art-page="1" aria-label="Próximo slide">›</button></div>':'')+'</div>'+
     '<div class="rea-art-grid"><div class="rea-art-controls">'+
@@ -67,6 +71,7 @@ function reaArteCampos(box){
     titulo:get("titulo").value.slice(0,100),apoio:get("apoio").value.slice(0,240),cta:get("cta").value.slice(0,60),
     marca:get("marca").value.slice(0,80),fundo:reaArteHex(get("fundo").value,"#0A0908"),
     acento:reaArteHex(get("acento").value,"#C6AC8E"),texto:reaArteHex(get("texto").value,"#EAE0D5"),
+    fonteTitulo:REA_ART_FONTES.includes(box.dataset.reaFontTitle)?box.dataset.reaFontTitle:"Sora",fonteTexto:REA_ART_FONTES.includes(box.dataset.reaFontText)?box.dataset.reaFontText:"Inter",
     foto:box.dataset.reaFoto==="1",slide:Math.max(0,Number(box.dataset.reaSlide)||0)
   };
 }
@@ -76,7 +81,7 @@ function reaArteSalvar(id,pid,box,campos){
     const a=p.arte&&typeof p.arte==="object"?p.arte:{};
     const slides=Array.isArray(a.slides)?a.slides:[];
     a.formato=campos.formato;a.modelo=campos.modelo;a.marca=campos.marca;a.fundo=campos.fundo;
-    a.acento=campos.acento;a.texto=campos.texto;a.foto=campos.foto;a.slide=campos.slide;
+    a.acento=campos.acento;a.texto=campos.texto;a.fonteTitulo=campos.fonteTitulo;a.fonteTexto=campos.fonteTexto;a.foto=campos.foto;a.slide=campos.slide;
     slides[campos.slide]={titulo:campos.titulo,apoio:campos.apoio,cta:campos.cta};a.slides=slides.slice(0,10);p.arte=a;
   });
 }
@@ -92,7 +97,7 @@ function reaArteLinhas(ctx,text,x,y,max,font,lineH,n,align,color){
   linhas.slice(0,n).forEach((l,i)=>ctx.fillText(l,x,y+i*lineH,max));
   return Math.min(linhas.length,n)*lineH;
 }
-function reaArteDesenhar(box,a,img){
+function reaArteDesenhar(box,a,img,logo){
   const canvas=box.querySelector("[data-rea-art-canvas]");if(!canvas)return;
   const d=REA_ART_FORMATOS[a.formato]||REA_ART_FORMATOS.feed,w=d.w,h=d.h;
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;canvas.style.aspectRatio=w+" / "+h}
@@ -105,21 +110,22 @@ function reaArteDesenhar(box,a,img){
   if(img&&a.modelo==="foto"){ctx.fillStyle="rgba(10,9,8,.58)";ctx.fillRect(0,0,w,h)}
   ctx.globalAlpha=.20;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(w*.84,h*.17,Math.min(w,h)*.22,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
   ctx.fillStyle=ac;ctx.fillRect(m,m,Math.max(82,Math.min(220,w*.2)),7);
-  ctx.font="600 27px Sora, Inter, system-ui, sans-serif";ctx.textAlign="left";ctx.fillStyle=fg;
-  ctx.fillText(String(a.marca||"").toUpperCase().slice(0,40),m,m+54, w-m*2);
+  ctx.font="600 27px "+reaArteFonte(a.fonteTexto,"Inter")+", sans-serif";ctx.textAlign="left";ctx.fillStyle=fg;
+  const brandMax=w-m*2-(logo?180:0);ctx.fillText(String(a.marca||"").toUpperCase().slice(0,40),m,m+54,brandMax);
+  if(logo&&logo.width&&logo.height){const scale=Math.min(150/logo.width,100/logo.height),lw=logo.width*scale,lh=logo.height*scale;ctx.drawImage(logo,w-m-lw,m,lw,lh)}
   const center=a.modelo==="tipografico",x=center?w/2:m,align=center?"center":"left",max=w-m*2;
   ctx.fillStyle=fg;
   const fs=center?96:(h>1500?88:82),lh=Math.round(fs*1.13);
   const y0=h*(h>1500?0.42:(img&&a.modelo!=="foto"?0.42:0.32));
-  const usado=reaArteLinhas(ctx,slide.titulo,x,y0,max,"700 "+fs+"px Sora, Inter, system-ui, sans-serif",lh,3,align,fg);
+  const usado=reaArteLinhas(ctx,slide.titulo,x,y0,max,"700 "+fs+"px "+reaArteFonte(a.fonteTitulo,"Sora")+", sans-serif",lh,3,align,fg);
   let y=y0+usado+36;
-  if(slide.apoio){y+=reaArteLinhas(ctx,slide.apoio,x,y,max,"400 36px Inter, system-ui, sans-serif",52,4,align,fg)+32}
+  if(slide.apoio){y+=reaArteLinhas(ctx,slide.apoio,x,y,max,"400 36px "+reaArteFonte(a.fonteTexto,"Inter")+", sans-serif",52,4,align,fg)+32}
   if(slide.cta){
     const wtxt=ctx.measureText(slide.cta).width,pw=wtxt+56,ph=72,px=center?(w-pw)/2:m,py=Math.min(y+20,h*.82);
-    ctx.fillStyle=ac;ctx.fillRect(px,py,pw,ph);ctx.fillStyle=a.fundo;ctx.font="700 27px Inter, system-ui, sans-serif";ctx.textAlign="center";ctx.fillText(slide.cta,px+pw/2,py+46,pw-24);
+    ctx.fillStyle=ac;ctx.fillRect(px,py,pw,ph);ctx.fillStyle=a.fundo;ctx.font="700 27px "+reaArteFonte(a.fonteTexto,"Inter")+", sans-serif";ctx.textAlign="center";ctx.fillText(slide.cta,px+pw/2,py+46,pw-24);
   }
   ctx.fillStyle=ac;ctx.fillRect(m,h-126,w-m*2,2);
-  ctx.font="500 22px Inter, system-ui, sans-serif";ctx.fillStyle=fg;ctx.textAlign="left";
+  ctx.font="500 22px "+reaArteFonte(a.fonteTexto,"Inter")+", sans-serif";ctx.fillStyle=fg;ctx.textAlign="left";
   ctx.fillText(String(a.marca||"OR Marketing Digital").slice(0,60),m,h-76,w-m*2);
   ctx.font="500 18px Inter, system-ui, sans-serif";ctx.textAlign="right";ctx.fillStyle=ac;
   ctx.fillText(String(a.slide+1).padStart(2,"0"),w-m,h-76,90);
@@ -145,7 +151,7 @@ function reaArteLimparArquivo(id,pid){
 function reaArteAviso(box,msg){const e=box.querySelector("[data-rea-art-status]");if(e)e.textContent=msg}
 function reaArteAtualizar(box,id,pid){
   const a=reaArteCampos(box);reaArteSalvar(id,pid,box,a);
-  reaArteDesenhar(box,a,box._reaImagem||null);
+  reaArteDesenhar(box,a,box._reaImagem||null,box._reaLogo||null);
 }
 function reaArteLerSugestao(txt){
   const out={};String(txt||"").split(/\r?\n/).forEach(l=>{
@@ -200,8 +206,8 @@ function reaArteBind(el,id){
   const box=el.querySelector("[data-rea-art]");if(!box)return;
   const pid=box.dataset.reaPid;
   const state=reaArteCampos(box);
-  reaArteDesenhar(box,state,null);
-  reaArteObterImagem(box,id,pid).then(img=>{if(box.isConnected&&img){box._reaImagem=img;reaArteDesenhar(box,reaArteCampos(box),img)}else if(box.isConnected&&box.dataset.reaFoto==="1")reaArteAviso(box,"A foto salva não está disponível neste navegador.")});
+  reaArteDesenhar(box,state,null,null);
+  Promise.all([reaArteObterImagem(box,id,pid),reaPostsObterLogo(id)]).then(([img,logo])=>{if(!box.isConnected)return;box._reaImagem=img||null;box._reaLogo=logo||null;reaArteDesenhar(box,reaArteCampos(box),box._reaImagem,box._reaLogo);if(!img&&box.dataset.reaFoto==="1")reaArteAviso(box,"A foto salva não está disponível neste navegador.")});
   box.querySelectorAll("[data-rea-art-field]").forEach(e=>{
     const fn=()=>reaArteAtualizar(box,id,pid);e.addEventListener("input",fn);e.addEventListener("change",fn);
   });
