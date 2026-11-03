@@ -94,5 +94,31 @@ await t('servidor: leitura de site recusa endereço local', async () => {
   assert.equal((await chama('site?url=' + encodeURIComponent('file:///etc/passwd'), {}, TOKEN)).status, 400);
 });
 
+await t('servidor: redirecionamento não pode acessar rede local', async () => {
+  const anterior = globalThis.fetch;
+  const vistos = [];
+  try {
+    globalThis.fetch = async (u) => { vistos.push(String(u)); return new Response(null, { status: 302, headers: { Location: 'http://127.0.0.1/admin' } }); };
+    assert.equal((await chama('site?url=https://www.exemplo.com.br', {}, TOKEN)).status, 400);
+    assert.equal(vistos.length, 1);
+    for (const url of ['http://localhost./', 'http://app.local/', 'http://[::1]/', 'http://2130706433/']) {
+      assert.equal((await chama('site?url=' + encodeURIComponent(url), {}, TOKEN)).status, 400);
+    }
+    assert.equal(vistos.length, 1);
+  } finally { globalThis.fetch = anterior; }
+});
+await t('servidor: limites contam bytes e recusam HTML excessivo', async () => {
+  assert.equal((await chama('ia', { method: 'POST', body: 'á'.repeat(210000) }, TOKEN)).status, 413);
+  const anterior = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response('x'.repeat(1500001), { headers: { 'Content-Type': 'text/html' } });
+    assert.equal((await chama('site?url=https://www.exemplo.com.br', {}, TOKEN)).status, 413);
+    globalThis.fetch = async () => new Response('<html>ok</html>', { headers: { 'Content-Type': 'text/html' } });
+    const r = await chama('site?url=https://www.exemplo.com.br', {}, TOKEN);
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).final, 'https://www.exemplo.com.br/');
+  } finally { globalThis.fetch = anterior; }
+});
+
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
 process.exit(falhou ? 1 : 0);

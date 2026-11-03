@@ -28,9 +28,20 @@ async function consultor(req, env) {
   return !!env.ADMIN_TOKEN && env.ADMIN_TOKEN.length >= 32 && t.length >= 20 && (await igual(t, env.ADMIN_TOKEN));
 }
 async function lerTexto(req, max) {
-  const t = await req.text();
-  if (t.length > max) throw new Error('grande');
-  return t;
+  if (Number(req.headers.get('Content-Length')) > max) throw new Error('grande');
+  if (!req.body) return '';
+  const reader = req.body.getReader(), decoder = new TextDecoder();
+  let size = 0, text = '';
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > max) { await reader.cancel(); throw new Error('grande'); }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally { reader.releaseLock(); }
 }
 // limite por IP com contador no KV (aproximado: o KV não é atômico, serve para segurar abuso, não para cobrança)
 async function passouLimite(env, ip, chave, max, ttl) {
@@ -81,19 +92,38 @@ async function apagaLeads(req, env) {
   return json({ ok: true, apagados: ids.length });
 }
 
+function sitePublico(u) {
+  const host = u.hostname.toLowerCase().replace(/\.$/, '');
+  return /^https?:$/.test(u.protocol) && !u.username && !u.password &&
+    (!u.port || (u.protocol === 'https:' ? u.port === '443' : u.port === '80')) &&
+    host.includes('.') && !/^(localhost|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(host) &&
+    !/(^|\.)(localhost|local|internal|test|invalid|example|onion)$/.test(host);
+}
+
 // baixa só http(s) na porta padrão, sem usuário e senha na URL, com tempo-limite e tamanho máximo
 async function baixaSite(url) {
   let u;
   try { u = new URL(url); } catch (e) { return erro(400, 'Endereço inválido.'); }
-  if (!/^https?:$/.test(u.protocol) || u.username || u.password || (u.port && !['80', '443'].includes(u.port)) || /^(localhost|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(u.hostname)) return erro(400, 'Use um endereço público do site, como https://www.exemplo.com.br');
   let r;
-  try { r = await fetch(u.toString(), { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (OR Marketing Digital; analise de site)' }, signal: AbortSignal.timeout(15000) }); } catch (e) { return erro(502, 'O site não respondeu em 15 segundos.'); }
+  const signal = AbortSignal.timeout(15000);
+  try {
+    for (let salto = 0; salto <= 5; salto++) {
+      if (!sitePublico(u)) return erro(400, 'Use um endereço público do site, como https://www.exemplo.com.br');
+      r = await fetch(u.toString(), { redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (OR Marketing Digital; analise de site)' }, signal });
+      if (![301, 302, 303, 307, 308].includes(r.status)) break;
+      const destino = r.headers.get('Location');
+      if (r.body) await r.body.cancel();
+      if (!destino || salto === 5) return erro(502, 'Redirecionamento inválido ou excessivo.');
+      u = new URL(destino, u);
+    }
+  } catch (e) { return erro(502, 'O site não respondeu ou devolveu um endereço inválido.'); }
   const tipo = r.headers.get('Content-Type') || '';
   if (!/text\/html|application\/xhtml/i.test(tipo)) return erro(415, 'O endereço não devolveu uma página HTML.');
-  const html = (await r.text()).slice(0, MAX_SITE);
+  let html;
+  try { html = await lerTexto(r, MAX_SITE); } catch (e) { return erro(413, 'A página ultrapassou o tamanho máximo permitido.'); }
   const cab = {};
   for (const h of ['content-security-policy', 'strict-transport-security', 'x-frame-options', 'x-content-type-options', 'referrer-policy', 'permissions-policy', 'server']) { const v = r.headers.get(h); if (v) cab[h] = v.slice(0, 400); }
-  return json({ status: r.status, final: r.url, https: r.url.startsWith('https:'), cabecalhos: cab, html });
+  return json({ status: r.status, final: u.href, https: u.protocol === 'https:', cabecalhos: cab, html });
 }
 
 export async function onRequest({ request: req, env, params }) {
