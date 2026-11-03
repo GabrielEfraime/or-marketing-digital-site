@@ -182,3 +182,20 @@
   .rea-posts-nav button,.rea-post-tabs button{flex:1 1 40%;padding:8px}
   .rea-post-card-actions .btn{flex:1 1 40%}
 }
+
+/* Quadro da própria Minha área; rolagem fica contida no quadro. */
+.or-quadro{display:grid;grid-template-columns:repeat(6,minmax(240px,1fr));gap:14px;overflow-x:auto;max-width:100%;padding:6px 0 20px;align-items:start}
+.or-coluna{min-width:0;background:var(--panel,#151515);border:1px solid rgba(234,224,213,.16);border-radius:12px;padding:12px}
+.or-coluna h3{display:flex;gap:8px;justify-content:space-between;margin:0 0 12px;font-size:15px}
+.or-coluna h3 span{color:var(--muted)}
+.or-cartao{padding:12px;margin:10px 0;border:1px solid rgba(234,224,213,.18);border-radius:8px;background:#1b1917;overflow-wrap:anywhere}
+.or-cartao>.btn{display:block;width:100%;white-space:normal;text-align:left}
+.or-cartao p{font-size:12px;color:var(--muted)}
+.or-cartao label,.or-cartao select{display:block;width:100%;margin-top:6px}
+.or-cartao select,.or-demanda input,.or-demanda select{min-height:44px}
+.or-checklist{padding:0;list-style:none}
+.or-checklist label{display:flex;align-items:center;gap:10px;min-height:44px}
+.or-checklist input{flex:0 0 auto;width:22px;height:22px}
+.or-demanda{margin-top:18px;scroll-margin-top:20px}
+#or-q-nova>input,#or-q-nova>select,#or-q-nova>textarea,#or-q-editar>input,#or-q-editar>select,#or-q-editar>textarea{display:block;width:100%;margin:5px 0 12px}
+@media(max-width:700px){.or-quadro{grid-template-columns:repeat(6,minmax(260px,80vw))}.or-demanda .fr{grid-template-columns:1fr}}

@@ -63,11 +63,13 @@ await t('servidor: sem código, nada de IA nem de leads', async () => {
   assert.equal((await chama('ia', { method: 'POST', body: '{}' }, 'errado-errado-errado-errado')).status, 401);
 });
 await t('servidor: visitante manda o briefing, consultor puxa e apaga', async () => {
-  const lead = { id: 'abc123', nome: 'Maria', qa: [{ q: 'Negócio', a: 'Confeitaria' }] };
+  const lead = { id: 'abc123', nome: 'Maria', status:'aplicado', orc:'Preço forjado', track:{segredo:true}, qa: [{ q: 'Negócio', a: 'Confeitaria' }] };
   assert.equal((await chama('lead', { method: 'POST', body: JSON.stringify(lead) })).status, 200);
   assert.equal((await chama('lead', { method: 'POST', body: '{"id":"../x"}' })).status, 400);
   const L = (await (await chama('leads', {}, TOKEN)).json()).leads;
   assert.equal(L.length, 1); assert.equal(L[0].nome, 'Maria');
+  assert.equal(L[0].status,'novo');assert.equal(L[0].orc,undefined);assert.equal(L[0].track,undefined);
+  assert.equal((await chama('lead', {method:'POST',body:JSON.stringify(lead)})).status,409);
   assert.equal((await chama('leads', { method: 'DELETE', body: JSON.stringify({ ids: ['abc123'] }) }, TOKEN)).status, 200);
   assert.equal((await (await chama('leads', {}, TOKEN)).json()).leads.length, 0);
 });
@@ -92,6 +94,112 @@ await t('servidor: cada modelo vai para a sua plataforma com a sua chave', async
 await t('servidor: leitura de site recusa endereço local', async () => {
   assert.equal((await chama('site?url=' + encodeURIComponent('http://127.0.0.1/admin'), {}, TOKEN)).status, 400);
   assert.equal((await chama('site?url=' + encodeURIComponent('file:///etc/passwd'), {}, TOKEN)).status, 400);
+});
+
+await t('servidor: redirecionamento não pode acessar rede local', async () => {
+  const anterior = globalThis.fetch;
+  const vistos = [];
+  try {
+    globalThis.fetch = async (u) => { vistos.push(String(u)); return new Response(null, { status: 302, headers: { Location: 'http://127.0.0.1/admin' } }); };
+    assert.equal((await chama('site?url=https://www.exemplo.com.br', {}, TOKEN)).status, 400);
+    assert.equal(vistos.length, 1);
+    for (const url of ['http://localhost./', 'http://app.local/', 'http://[::1]/', 'http://2130706433/']) {
+      assert.equal((await chama('site?url=' + encodeURIComponent(url), {}, TOKEN)).status, 400);
+    }
+    assert.equal(vistos.length, 1);
+  } finally { globalThis.fetch = anterior; }
+});
+await t('servidor: limites contam bytes e recusam HTML excessivo', async () => {
+  assert.equal((await chama('ia', { method: 'POST', body: 'á'.repeat(210000) }, TOKEN)).status, 413);
+  const anterior = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response('x'.repeat(1500001), { headers: { 'Content-Type': 'text/html' } });
+    assert.equal((await chama('site?url=https://www.exemplo.com.br', {}, TOKEN)).status, 413);
+    globalThis.fetch = async () => new Response('<html>ok</html>', { headers: { 'Content-Type': 'text/html' } });
+    const r = await chama('site?url=https://www.exemplo.com.br', {}, TOKEN);
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).final, 'https://www.exemplo.com.br/');
+  } finally { globalThis.fetch = anterior; }
+});
+
+await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funciona', async () => {
+  const c = vm.createContext({ OPENAI_URL:'https://api.openai.com/v1', sget:()=>null, sset(){}, location:{protocol:'http:'}, DOMException, setTimeout, clearTimeout });
+  vm.runInContext("const IAS=['ia1','ia2','ia3'],CFG={ia1:{kind:'openai',url:'u',model:'a',key:'teste'},ia2:{kind:'openai',url:'u',model:'b',key:''},ia3:{kind:'openai',url:'u',model:'c',key:''}};",c);
+  vm.runInContext(ler('src/js/08-ia-chamadas.js'),c);
+  vm.runInContext("var chamadas=0;ask=async()=>{chamadas++;throw new DOMException('Parado','AbortError')}",c);
+  await assert.rejects(vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),e=>e.name==='AbortError');
+  assert.equal(vm.runInContext('chamadas',c),1);
+  vm.runInContext("chamadas=0;ask=async()=>{chamadas++;if(chamadas===1)throw new Error('limite');return 'reserva'}",c);
+  assert.equal(await vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),'reserva');
+  assert.equal(vm.runInContext('chamadas',c),2);
+});
+await t('demandas: quadro vazio, transições validadas, histórico e isolamento de dados', () => {
+  const memory = {};
+  const c=vm.createContext({setInterval(){},document:{addEventListener(){}},getL:()=>[],qaOf:()=>[],sget:k=>memory[k]||null,sset:(k,v)=>{memory[k]=v},STORE_OK:true,Date});
+  vm.runInContext(ler('src/js/17-minha-area.js'),c);
+  assert.equal(vm.runInContext('OR_QUADRO.itens.length',c),0);
+  vm.runInContext("OR_QUADRO.itens.push({id:'d1',titulo:'Nova arte',coluna:OR_COLUNAS[0],descricao:'Briefing',historico:[]})",c);
+  assert.equal(vm.runInContext("orQuadroMover('d1','Etapa inválida')",c),false);
+  assert.equal(vm.runInContext("orQuadroMover('d1',OR_COLUNAS[2])",c),true);
+  assert.equal(vm.runInContext("orQuadroItem('d1').historico.length",c),1);
+  assert.equal(JSON.parse(memory['or-demandas-v1'])[0].coluna,'Em produção');
+  assert.equal(vm.runInContext("orQuadroArteCliente('demanda:d1').track.pecas[0].txt",c),'Briefing');
+});
+await t('editor: troca de slide usa o índice real e prévia recebe texto do slide', () => {
+  const c=vm.createContext({Map,CFG:{brand:'OR'}});
+  vm.runInContext(ler('src/js/22g-editor-posts.js'),c);
+  const a=vm.runInContext("reaArtePreparar({arte:{slides:[{titulo:'Um'},{titulo:'Dois'}],slide:1}},{fmt:'post'},{nome:'Cliente'})",c);
+  assert.equal(a.slides[a.slide].titulo,'Dois');
+  const desenhados=[];
+  const ctx={createLinearGradient:()=>({addColorStop(){}}),fillRect(){},save(){},restore(){},beginPath(){},arc(){},fill(){},measureText:t=>({width:t.length*10}),fillText:t=>desenhados.push(t)};
+  const canvas={width:0,height:0,style:{},getContext:()=>ctx};
+  c.box={querySelector:s=>s==='[data-rea-art-canvas]'?canvas:null};c.a=a;
+  vm.runInContext('reaArteDesenhar(box,a,null,null)',c);
+  assert.ok(desenhados.includes('Dois'));
+  const fonte=ler('src/js/22g-editor-posts.js');
+  assert.ok(!/dataset\.reaArtSlide\b/.test(fonte));
+});
+
+await t('fonte completa: JavaScript concatenado compila', () => {
+  const ordem=JSON.parse(ler('src/ordem.json'));
+  const js=ordem.js.map(x=>ler(x.arquivo)).join('\n');
+  new vm.Script(js,{filename:'site-concatenado.js'});
+});
+await t('Canva: exige autenticação e não lista artes existentes', async () => {
+  assert.equal((await chama('canva/gerar',{method:'POST',body:'{}'})).status,401);
+  assert.equal((await chama('canva/gerar',{method:'POST',body:'{}'},TOKEN)).status,503);
+  const anterior=globalThis.fetch;env.CANVA_ACCESS_TOKEN='canva-teste';
+  const vistos=[];
+  try{
+    globalThis.fetch=async(u,o)=>{vistos.push({u:String(u),o});return new Response(JSON.stringify({job:{id:'job1',status:'in_progress'}}),{headers:{'Content-Type':'application/json'}})};
+    const r=await chama('canva/gerar',{method:'POST',body:JSON.stringify({prompt:'Nova demanda de post',chave:'demanda_nova_123456',formato:'feed'})},TOKEN);
+    assert.equal(r.status,200);assert.equal((await r.json()).job.id,'job1');
+    assert.equal(vistos[0].u,'https://api.canva.com/rest/v1/image-generations');
+    assert.equal(vistos[0].o.headers.Authorization,'Bearer canva-teste');
+    const b=JSON.parse(vistos[0].o.body);assert.equal(b.aspect_ratio,'portrait_4_5');assert.equal(b.asset_upload.type,'none');
+    assert.equal((await chama('canva/gerar',{method:'POST',body:'{}'},TOKEN)).status,400);
+    assert.equal(vistos.length,1);
+  }finally{globalThis.fetch=anterior;delete env.CANVA_ACCESS_TOKEN}
+});
+
+await t('briefing: materiais, aprovação e datas não se repetem entre serviços', () => {
+  const c=vm.createContext({});
+  vm.runInContext(ler('src/js/01-config-precos.js')+'\n'+ler('src/js/02-modulos-servicos.js'),c);
+  vm.runInContext("const SEED=2,P={mods:['social','meta'],qa:[],skipTp:new Set()};",c);
+  vm.runInContext(ler('src/js/15-briefing-assistente.js'),c);
+  for(const id of ['materiaisbase','aprovacaoprazo','datasconfirmadas']){
+    assert.equal(vm.runInContext("topicPool().filter(x=>x.t[0]==="+JSON.stringify(id)+").length",c),1);
+  }
+});
+
+await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', () => {
+  const c=vm.createContext({URL});
+  const linha=ler('src/js/07-ui-base.js').split('\n').find(x=>x.startsWith('const webLink='));
+  vm.runInContext(linha,c);
+  for(const v of ['javascript:alert(1)','java\nscript:alert(1)','data:text/html,<script>alert(1)</script>','https://usuario:senha@site.com/']){
+    assert.equal(vm.runInContext('webLink('+JSON.stringify(v)+')',c),'');
+  }
+  assert.equal(vm.runInContext("webLink('https://site.com/portfolio')",c),'https://site.com/portfolio');
 });
 
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');

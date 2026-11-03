@@ -1,3 +1,14 @@
+
+function reaArteCliente(id){return id.startsWith('demanda:')?orQuadroArteCliente(id):trkL(id)}
+function reaArteTrackSet(id,fn){
+  if(!id.startsWith('demanda:'))return trkSet(id,fn);
+  const l=orQuadroArteCliente(id);if(!l)return;fn(l.track);
+  const d=orQuadroItem(id.slice(8));d.arte=l.track.pecas[0].arte;orQuadroSalvar();
+}
+function reaArteUpd(id,patch){
+  if(!id.startsWith('demanda:'))return upd(id,patch);
+  const d=orQuadroItem(id.slice(8));if(d&&patch.track){d.arte=patch.track.pecas[0].arte;orQuadroSalvar()}
+}
 /* Editor visual de posts: arte local editável integrada à Produção. */
 const REA_ART_FORMATOS={
   feed:{w:1080,h:1350,n:"Feed · 4:5"},
@@ -23,7 +34,7 @@ function reaArtePreparar(p,f,l){
   p.arte=p.arte&&typeof p.arte==="object"?p.arte:{};
   const a=p.arte,iv=l&&l.track&&l.track.identidadeVisual||{};
   if(!REA_ART_FORMATOS[a.formato])a.formato=(f.fmt==="stories"||f.fmt==="reels")?"story":"feed";
-  if(!["editorial","foto","tipografico"].includes(a.modelo))a.modelo="editorial";
+  if(!["editorial","foto","tipografico","imagem"].includes(a.modelo))a.modelo="editorial";
   if(!Array.isArray(a.slides)||!a.slides.length){
     const lidos=(f.fmt==="carrossel"||f.fmt==="stories")?reaArteExtrairSlides(p.txt):[];
     a.slides=lidos.length?lidos:[{titulo:String(p.titulo||"").trim().slice(0,100),apoio:"",cta:""}];
@@ -48,7 +59,10 @@ function reaArteHtml(l,f,p){
     (multi?'<div class="rea-art-pages"><button type="button" class="btn ghost" data-rea-art-page="-1" aria-label="Slide anterior">‹</button><span data-rea-art-count>Slide '+(a.slide+1)+' de '+a.slides.length+'</span><button type="button" class="btn ghost" data-rea-art-page="1" aria-label="Próximo slide">›</button></div>':'')+'</div>'+
     '<div class="rea-art-grid"><div class="rea-art-controls">'+
     '<div class="rea-art-row"><div><label for="rea-art-format">Formato</label><select id="rea-art-format" data-rea-art-field="formato">'+op("feed","Feed · 4:5",a.formato)+op("quadrado","Quadrado · 1:1",a.formato)+op("story","Story · 9:16",a.formato)+'</select></div>'+
-    '<div><label for="rea-art-model">Composição</label><select id="rea-art-model" data-rea-art-field="modelo">'+op("editorial","Editorial",a.modelo)+op("foto","Foto em foco",a.modelo)+op("tipografico","Tipográfico",a.modelo)+'</select></div></div>'+
+    '<div><label for="rea-art-model">Composição</label><select id="rea-art-model" data-rea-art-field="modelo">'+op("editorial","Editorial",a.modelo)+op("foto","Foto em foco",a.modelo)+op("tipografico","Tipográfico",a.modelo)+op("imagem","Imagem completa",a.modelo)+'</select></div></div>'+
+    '<div class="rea-art-row"><div><label for="rea-art-font-title">Fonte do título</label><select id="rea-art-font-title" data-rea-art-field="fonteTitulo">'+REA_ART_FONTES.map(n=>op(n,n,a.fonteTitulo)).join('')+'</select></div><div><label for="rea-art-font-text">Fonte do texto</label><select id="rea-art-font-text" data-rea-art-field="fonteTexto">'+REA_ART_FONTES.map(n=>op(n,n,a.fonteTexto)).join('')+'</select></div></div>'+
+    '<div class="rea-art-row"><label>Posição vertical do título<input type="range" min="15" max="60" value="'+(a.posicaoY||32)+'" data-rea-art-field="posicaoY"></label><label>Tamanho do título<input type="range" min="45" max="110" value="'+(a.tamanhoTitulo||82)+'" data-rea-art-field="tamanhoTitulo"></label></div>'+
+    '<div class="row"><button type="button" class="btn ghost" data-rea-art-slide-action="novo">Adicionar slide</button><button type="button" class="btn ghost" data-rea-art-slide-action="duplicar">Duplicar slide</button><button type="button" class="btn ghost" data-rea-art-slide-action="remover" '+(a.slides.length<2?'disabled':'')+'>Remover slide</button></div>'+
     '<label for="rea-art-title">Título da arte</label><textarea id="rea-art-title" rows="2" maxlength="100" data-rea-art-field="titulo">'+esc(s.titulo)+'</textarea>'+
     '<label for="rea-art-support">Texto complementar</label><textarea id="rea-art-support" rows="3" maxlength="240" data-rea-art-field="apoio">'+esc(s.apoio)+'</textarea>'+
     '<label for="rea-art-cta">Chamada para ação <span class="hint">(opcional)</span></label><input id="rea-art-cta" maxlength="60" data-rea-art-field="cta" value="'+esc(s.cta)+'" placeholder="Ex.: Saiba mais">'+
@@ -71,16 +85,18 @@ function reaArteCampos(box){
     titulo:get("titulo").value.slice(0,100),apoio:get("apoio").value.slice(0,240),cta:get("cta").value.slice(0,60),
     marca:get("marca").value.slice(0,80),fundo:reaArteHex(get("fundo").value,"#0A0908"),
     acento:reaArteHex(get("acento").value,"#C6AC8E"),texto:reaArteHex(get("texto").value,"#EAE0D5"),
-    fonteTitulo:REA_ART_FONTES.includes(box.dataset.reaFontTitle)?box.dataset.reaFontTitle:"Sora",fonteTexto:REA_ART_FONTES.includes(box.dataset.reaFontText)?box.dataset.reaFontText:"Inter",
+    fonteTitulo:get("fonteTitulo").value,fonteTexto:get("fonteTexto").value,
+    posicaoY:Math.max(15,Math.min(60,Number(get("posicaoY").value)||32)),tamanhoTitulo:Math.max(45,Math.min(110,Number(get("tamanhoTitulo").value)||82)),
     foto:box.dataset.reaFoto==="1",slide:Math.max(0,Number(box.dataset.reaSlide)||0)
   };
 }
 function reaArteSalvar(id,pid,box,campos){
-  trkSet(id,t=>{
+  reaArteTrackSet(id,t=>{
     const p=(t.pecas||[]).find(x=>x.id===pid);if(!p)return;
     const a=p.arte&&typeof p.arte==="object"?p.arte:{};
     const slides=Array.isArray(a.slides)?a.slides:[];
     a.formato=campos.formato;a.modelo=campos.modelo;a.marca=campos.marca;a.fundo=campos.fundo;
+    a.posicaoY=campos.posicaoY;a.tamanhoTitulo=campos.tamanhoTitulo;
     a.acento=campos.acento;a.texto=campos.texto;a.fonteTitulo=campos.fonteTitulo;a.fonteTexto=campos.fonteTexto;a.foto=campos.foto;a.slide=campos.slide;
     slides[campos.slide]={titulo:campos.titulo,apoio:campos.apoio,cta:campos.cta};a.slides=slides.slice(0,10);p.arte=a;
   });
@@ -102,7 +118,8 @@ function reaArteDesenhar(box,a,img,logo){
   const d=REA_ART_FORMATOS[a.formato]||REA_ART_FORMATOS.feed,w=d.w,h=d.h;
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;canvas.style.aspectRatio=w+" / "+h}
   const ctx=canvas.getContext("2d");if(!ctx)return;
-  const slide=a,m=86,fg=a.texto,ac=a.acento;
+  if(a.modelo==='imagem'&&img){reaArteCobrir(ctx,img,0,0,w,h);const info=box.querySelector("[data-rea-art-dims]");if(info)info.textContent=d.w+" × "+d.h+" px";return}
+  const slide=a.slides?.[a.slide]||a,m=86,fg=a.texto,ac=a.acento;
   const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,a.fundo);grad.addColorStop(1,"#171411");
   ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
   if(img&&a.modelo==="foto")reaArteCobrir(ctx,img,0,0,w,h);
@@ -115,8 +132,8 @@ function reaArteDesenhar(box,a,img,logo){
   if(logo&&logo.width&&logo.height){const scale=Math.min(150/logo.width,100/logo.height),lw=logo.width*scale,lh=logo.height*scale;ctx.drawImage(logo,w-m-lw,m,lw,lh)}
   const center=a.modelo==="tipografico",x=center?w/2:m,align=center?"center":"left",max=w-m*2;
   ctx.fillStyle=fg;
-  const fs=center?96:(h>1500?88:82),lh=Math.round(fs*1.13);
-  const y0=h*(h>1500?0.42:(img&&a.modelo!=="foto"?0.42:0.32));
+  const fs=a.tamanhoTitulo|| (center?96:(h>1500?88:82)),lh=Math.round(fs*1.13);
+  const y0=a.posicaoY?h*a.posicaoY/100:h*(h>1500?0.42:(img&&a.modelo!=="foto"?0.42:0.32));
   const usado=reaArteLinhas(ctx,slide.titulo,x,y0,max,"700 "+fs+"px "+reaArteFonte(a.fonteTitulo,"Sora")+", sans-serif",lh,3,align,fg);
   let y=y0+usado+36;
   if(slide.apoio){y+=reaArteLinhas(ctx,slide.apoio,x,y,max,"400 36px "+reaArteFonte(a.fonteTexto,"Inter")+", sans-serif",52,4,align,fg)+32}
@@ -162,7 +179,7 @@ function reaArteLerSugestao(txt){
 }
 async function reaArteSugerir(box,id,pid){
   const b=box.querySelector('[data-rea-art-action="sugerir"]');if(!b||b.disabled)return;
-  const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid),f=p&&l.track.frentes.find(x=>x.id===p.fid);if(!p||!f)return;
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid),f=p&&l.track.frentes.find(x=>x.id===p.fid);if(!p||!f)return;
   const campos=reaArteCampos(box),slide=campos.titulo+"\n"+campos.apoio;
   b.disabled=true;b.textContent="Preparando…";reaArteAviso(box,"A IA está resumindo o texto para a arte.");
   try{
@@ -175,16 +192,16 @@ async function reaArteSugerir(box,id,pid){
     const sug=reaArteLerSugestao(out),idx=campos.slide;
     const t=box.querySelector('[data-rea-art-field="titulo"]'),a=box.querySelector('[data-rea-art-field="apoio"]'),c=box.querySelector('[data-rea-art-field="cta"]');
     if(t)t.value=String(sug.titulo||"").slice(0,100);if(a)a.value=String(sug.apoio||"").slice(0,240);if(c)c.value=String(sug.cta||"").slice(0,60);
-    box.dataset.reaArtSlide=String(idx);reaArteAtualizar(box,id,pid);reaArteAviso(box,"Texto sugerido. Revise antes de baixar ou enviar.");
+    box.dataset.reaSlide=String(idx);reaArteAtualizar(box,id,pid);reaArteAviso(box,"Texto sugerido. Revise antes de baixar ou enviar.");
   }catch(e){if(box.isConnected)reaArteAviso(box,e.message||"Não consegui sugerir o texto agora.")}
   finally{if(box.isConnected){b.disabled=false;b.textContent="Sugerir texto com IA"}}
 }
 function reaArteTrocarSlide(box,id,pid,delta){
   const atual=reaArteCampos(box);reaArteSalvar(id,pid,box,atual);
-  const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!p||!p.arte)return;
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!p||!p.arte)return;
   const a=p.arte;a.slide=(a.slide+delta+a.slides.length)%a.slides.length;
-  trkSet(id,t=>{const q=(t.pecas||[]).find(x=>x.id===pid);if(q&&q.arte)q.arte.slide=a.slide});
-  box.dataset.reaArtSlide=String(a.slide);
+  reaArteTrackSet(id,t=>{const q=(t.pecas||[]).find(x=>x.id===pid);if(q&&q.arte)q.arte.slide=a.slide});
+  box.dataset.reaSlide=String(a.slide);
   const s=a.slides[a.slide]||{};
   [["titulo",s.titulo],["apoio",s.apoio],["cta",s.cta]].forEach(x=>{const e=box.querySelector('[data-rea-art-field="'+x[0]+'"]');if(e)e.value=x[1]||""});
   const n=box.querySelector("[data-rea-art-count]");if(n)n.textContent="Slide "+(a.slide+1)+" de "+a.slides.length;
@@ -192,12 +209,12 @@ function reaArteTrocarSlide(box,id,pid,delta){
 }
 function reaArteBaixar(box,id,pid){
   const canvas=box.querySelector("[data-rea-art-canvas]");if(!canvas)return;
-  const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);
   canvas.toBlob(blob=>{
     if(!blob){reaArteAviso(box,"O navegador não conseguiu exportar o PNG.");return}
     const url=URL.createObjectURL(blob),a=document.createElement("a");
     const base=String(p&&p.titulo||"post").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"-").replace(/^-|-$/g,"").toLowerCase().slice(0,50)||"post";
-    const slide=Number(box.dataset.reaArtSlide)||0;a.href=url;a.download=base+"-slide-"+String(slide+1).padStart(2,"0")+".png";
+    const slide=Number(box.dataset.reaSlide)||0;a.href=url;a.download=base+"-slide-"+String(slide+1).padStart(2,"0")+".png";
     document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
     reaArteAviso(box,"PNG baixado no tamanho escolhido.");
   },"image/png");
@@ -211,13 +228,23 @@ function reaArteBind(el,id){
   box.querySelectorAll("[data-rea-art-field]").forEach(e=>{
     const fn=()=>reaArteAtualizar(box,id,pid);e.addEventListener("input",fn);e.addEventListener("change",fn);
   });
+  box.querySelectorAll("[data-rea-art-slide-action]").forEach(b=>b.onclick=()=>{
+    reaArteSalvar(id,pid,box,reaArteCampos(box));
+    const l=reaArteCliente(id),p=l?.track.pecas.find(x=>x.id===pid);if(!p?.arte)return;
+    const a=p.arte,acao=b.dataset.reaArtSlideAction;
+    if(acao!=='remover'&&a.slides.length>=10){reaArteAviso(box,'O limite é de 10 slides.');return}
+    if(acao==='remover'&&a.slides.length<2)return;
+    if(acao==='remover'){a.slides.splice(a.slide,1);a.slide=Math.max(0,a.slide-1)}
+    else{a.slides.splice(a.slide+1,0,acao==='duplicar'?{...a.slides[a.slide]}:{titulo:'',apoio:'',cta:''});a.slide++}
+    reaArteTrackSet(id,t=>{const p=t.pecas.find(x=>x.id===pid);if(p)p.arte=a});admin();
+  });
   box.querySelectorAll("[data-rea-art-page]").forEach(b=>b.addEventListener("click",()=>reaArteTrocarSlide(box,id,pid,Number(b.dataset.reaArtPage)||0)));
   const suggest=box.querySelector('[data-rea-art-action="sugerir"]');if(suggest)suggest.addEventListener("click",()=>reaArteSugerir(box,id,pid));
   const download=box.querySelector('[data-rea-art-action="baixar"]');if(download)download.addEventListener("click",()=>reaArteBaixar(box,id,pid));
   const remove=box.querySelector('[data-rea-art-action="remover"]');if(remove)remove.addEventListener("click",async()=>{
     const key=reaArteKey(id,pid),cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
     await arqDel(key);box.dataset.reaFoto="0";
-    const p=trkL(id).track.pecas.find(x=>x.id===pid);if(p&&p.arte){p.arte.foto=false;upd(id,{track:trkL(id).track})}
+    const p=reaArteCliente(id).track.pecas.find(x=>x.id===pid);if(p&&p.arte){p.arte.foto=false;reaArteUpd(id,{track:reaArteCliente(id).track})}
     const row=box.querySelector(".rea-art-upload-row");if(row){remove.remove();box.querySelector('[data-rea-art-upload]').value=""}
     reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.");
   });
@@ -229,9 +256,9 @@ function reaArteBind(el,id){
     try{
       await arqPut(key,new Blob([file],{type:file.type}));
       const cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
-      box.dataset.reaFoto="1";const p=trkL(id).track.pecas.find(x=>x.id===pid);if(p){p.arte=p.arte||{};p.arte.foto=true;upd(id,{track:trkL(id).track})}
+      box.dataset.reaFoto="1";const p=reaArteCliente(id).track.pecas.find(x=>x.id===pid);if(p){p.arte=p.arte||{};p.arte.foto=true;reaArteUpd(id,{track:reaArteCliente(id).track})}
       const row=box.querySelector(".rea-art-upload-row");
-      if(row&&!row.querySelector('[data-rea-art-action="remover"]')){const b=document.createElement("button");b.type="button";b.className="btn ghost";b.dataset.reaArtAction="remover";b.textContent="Remover foto";row.insertBefore(b,box.querySelector('[data-rea-art-action="sugerir"]'));b.addEventListener("click",async()=>{await arqDel(key);box.dataset.reaFoto="0";const x=REA_ART_IMAGENS.get(key);if(x){URL.revokeObjectURL(x.url);REA_ART_IMAGENS.delete(key)};const q=trkL(id).track.pecas.find(y=>y.id===pid);if(q&&q.arte){q.arte.foto=false;upd(id,{track:trkL(id).track})};b.remove();reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.")})}
+      if(row&&!row.querySelector('[data-rea-art-action="remover"]')){const b=document.createElement("button");b.type="button";b.className="btn ghost";b.dataset.reaArtAction="remover";b.textContent="Remover foto";row.insertBefore(b,box.querySelector('[data-rea-art-action="sugerir"]'));b.addEventListener("click",async()=>{await arqDel(key);box.dataset.reaFoto="0";const x=REA_ART_IMAGENS.get(key);if(x){URL.revokeObjectURL(x.url);REA_ART_IMAGENS.delete(key)};const q=reaArteCliente(id).track.pecas.find(y=>y.id===pid);if(q&&q.arte){q.arte.foto=false;reaArteUpd(id,{track:reaArteCliente(id).track})};b.remove();reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.")})}
       box._reaImagem=await reaArteObterImagem(box,id,pid);reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto adicionada. Ela fica somente neste navegador.");
     }catch(e){reaArteAviso(box,"Não consegui guardar a foto neste navegador.")}
     upload.value="";

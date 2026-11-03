@@ -28,9 +28,20 @@ async function consultor(req, env) {
   return !!env.ADMIN_TOKEN && env.ADMIN_TOKEN.length >= 32 && t.length >= 20 && (await igual(t, env.ADMIN_TOKEN));
 }
 async function lerTexto(req, max) {
-  const t = await req.text();
-  if (t.length > max) throw new Error('grande');
-  return t;
+  if (Number(req.headers.get('Content-Length')) > max) throw new Error('grande');
+  if (!req.body) return '';
+  const reader = req.body.getReader(), decoder = new TextDecoder();
+  let size = 0, text = '';
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > max) { await reader.cancel(); throw new Error('grande'); }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally { reader.releaseLock(); }
 }
 // limite por IP com contador no KV (aproximado: o KV não é atômico, serve para segurar abuso, não para cobrança)
 async function passouLimite(env, ip, chave, max, ttl) {
@@ -58,7 +69,19 @@ async function guardaLead(req, env) {
   let l;
   try { l = JSON.parse(await lerTexto(req, MAX_LEAD)); } catch (e) { return erro(400, 'Briefing inválido.'); }
   if (!l || typeof l.id !== 'string' || !/^[A-Za-z0-9]{1,24}$/.test(l.id) || typeof l.nome !== 'string' || !Array.isArray(l.qa)) return erro(400, 'Briefing incompleto.');
-  await env.LEADS.put('lead:' + l.id, JSON.stringify({ ...l, recebido: new Date().toISOString() }), { expirationTtl: LEAD_TTL });
+  if (await env.LEADS.get('lead:' + l.id)) return erro(409, 'Este briefing já foi recebido.');
+  const texto = (v, max) => typeof v === 'string' ? v.slice(0, max) : '';
+  const servicos = ['ads','meta','social','youtube','local','press','brand','site','resite','mkt','assess','guia'];
+  const recebido = new Date().toISOString();
+  const publico = {
+    id: l.id, nome: texto(l.nome, 120), whats: texto(l.whats, 30), email: texto(l.email, 160),
+    mod: servicos.includes(l.mod) ? l.mod : undefined,
+    mods: (Array.isArray(l.mods) ? l.mods : []).filter(x => servicos.includes(x)).slice(0, 12),
+    qa: l.qa.filter(x => x && typeof x === 'object' && !Array.isArray(x)).slice(0, 100).map(x => ({ q: texto(x.q, 500), a: texto(x.a, 5000), tp: texto(x.tp, 40) })),
+    consent: l.consent && typeof l.consent === 'object' ? { em: texto(l.consent.em, 40), versao: texto(l.consent.versao, 80) } : undefined,
+    status: 'novo', t: Date.now(), data: recebido, recebido
+  };
+  await env.LEADS.put('lead:' + l.id, JSON.stringify(publico), { expirationTtl: LEAD_TTL });
   return json({ ok: true });
 }
 
@@ -81,19 +104,89 @@ async function apagaLeads(req, env) {
   return json({ ok: true, apagados: ids.length });
 }
 
+function sitePublico(u) {
+  const host = u.hostname.toLowerCase().replace(/\.$/, '');
+  return /^https?:$/.test(u.protocol) && !u.username && !u.password &&
+    (!u.port || (u.protocol === 'https:' ? u.port === '443' : u.port === '80')) &&
+    host.includes('.') && !/^(localhost|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(host) &&
+    !/(^|\.)(localhost|local|internal|test|invalid|example|onion)$/.test(host);
+}
+
 // baixa só http(s) na porta padrão, sem usuário e senha na URL, com tempo-limite e tamanho máximo
 async function baixaSite(url) {
   let u;
   try { u = new URL(url); } catch (e) { return erro(400, 'Endereço inválido.'); }
-  if (!/^https?:$/.test(u.protocol) || u.username || u.password || (u.port && !['80', '443'].includes(u.port)) || /^(localhost|\d+\.\d+\.\d+\.\d+|\[.*\])$/i.test(u.hostname)) return erro(400, 'Use um endereço público do site, como https://www.exemplo.com.br');
   let r;
-  try { r = await fetch(u.toString(), { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (OR Marketing Digital; analise de site)' }, signal: AbortSignal.timeout(15000) }); } catch (e) { return erro(502, 'O site não respondeu em 15 segundos.'); }
+  const signal = AbortSignal.timeout(15000);
+  try {
+    for (let salto = 0; salto <= 5; salto++) {
+      if (!sitePublico(u)) return erro(400, 'Use um endereço público do site, como https://www.exemplo.com.br');
+      r = await fetch(u.toString(), { redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (OR Marketing Digital; analise de site)' }, signal });
+      if (![301, 302, 303, 307, 308].includes(r.status)) break;
+      const destino = r.headers.get('Location');
+      if (r.body) await r.body.cancel();
+      if (!destino || salto === 5) return erro(502, 'Redirecionamento inválido ou excessivo.');
+      u = new URL(destino, u);
+    }
+  } catch (e) { return erro(502, 'O site não respondeu ou devolveu um endereço inválido.'); }
   const tipo = r.headers.get('Content-Type') || '';
   if (!/text\/html|application\/xhtml/i.test(tipo)) return erro(415, 'O endereço não devolveu uma página HTML.');
-  const html = (await r.text()).slice(0, MAX_SITE);
+  let html;
+  try { html = await lerTexto(r, MAX_SITE); } catch (e) { return erro(413, 'A página ultrapassou o tamanho máximo permitido.'); }
   const cab = {};
   for (const h of ['content-security-policy', 'strict-transport-security', 'x-frame-options', 'x-content-type-options', 'referrer-policy', 'permissions-policy', 'server']) { const v = r.headers.get(h); if (v) cab[h] = v.slice(0, 400); }
-  return json({ status: r.status, final: r.url, https: r.url.startsWith('https:'), cabecalhos: cab, html });
+  return json({ status: r.status, final: u.href, https: u.protocol === 'https:', cabecalhos: cab, html });
+}
+
+
+/* Canva opcional: apenas gera novas imagens; não lista nem importa artes da conta. */
+async function canvaPedido(env, caminho, init = {}) {
+  return fetch('https://api.canva.com/rest/v1/' + caminho, {
+    ...init, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.CANVA_ACCESS_TOKEN },
+    redirect: 'error', signal: AbortSignal.timeout(30000)
+  });
+}
+async function canvaRota(req, env, rota) {
+  if (!env.CANVA_ACCESS_TOKEN) return erro(503, 'Canva não configurado no servidor. A conexão do chat não conecta o site. Use o editor interno enquanto a integração é autorizada.');
+  if (rota === 'canva/gerar' && req.method === 'POST') {
+    let b;
+    try { b = JSON.parse(await lerTexto(req, 40000)); } catch (e) { return erro(400, 'Briefing de arte inválido.'); }
+    if (!b || typeof b.prompt !== 'string' || !b.prompt.trim() || b.prompt.length > 10000 ||
+        typeof b.chave !== 'string' || !/^[a-zA-Z0-9_-]{16,100}$/.test(b.chave)) return erro(400, 'Informe o briefing e a identificação da nova demanda.');
+    const formatos = { feed: 'portrait_4_5', quadrado: 'square', story: 'portrait' };
+    const r = await canvaPedido(env, 'image-generations', { method: 'POST', body: JSON.stringify({
+      prompt: b.prompt, idempotency_key: b.chave, aspect_ratio: formatos[b.formato] || 'portrait_4_5',
+      asset_upload: { type: 'none' }
+    }) });
+    if (!r.ok) return erro(r.status, r.status === 402 ? 'Os créditos de IA do Canva acabaram.' : r.status === 401 ? 'A autorização do Canva expirou. Renove a conexão no servidor.' : 'O Canva recusou a geração. Confira as permissões de geração de imagem da integração.');
+    const o = await r.json();
+    return json({ job: { id: o.job?.id, status: o.job?.status } });
+  }
+  const m = rota.match(/^canva\/(tarefa|imagem)\/([A-Za-z0-9_-]{1,200})$/);
+  if (!m || req.method !== 'GET') return erro(404, 'Rota do Canva não encontrada.');
+  const r = await canvaPedido(env, 'image-generations/' + encodeURIComponent(m[2]));
+  if (!r.ok) return erro(r.status, 'Não foi possível consultar esta geração do Canva.');
+  const o = await r.json(), job = o.job;
+  if (m[1] === 'tarefa') return json({ job: { id: job?.id, status: job?.status, error: job?.error ? 'O Canva não conseguiu gerar esta imagem.' : undefined } });
+  if (job?.status !== 'success' || !job.result?.image?.url) return erro(409, 'A imagem ainda não está pronta.');
+  let url;
+  try { url = new URL(job.result.image.url); } catch (e) { return erro(502, 'O Canva devolveu um endereço inválido.'); }
+  if (url.protocol !== 'https:' || !sitePublico(url)) return erro(502, 'O Canva devolveu um endereço inválido.');
+  const image = await fetch(url.href, { redirect: 'error', signal: AbortSignal.timeout(30000) });
+  const tipo = image.headers.get('Content-Type')?.split(';')[0];
+  if (!image.ok || !['image/png', 'image/jpeg', 'image/webp'].includes(tipo) || !image.body) return erro(502, 'O Canva não devolveu uma imagem compatível.');
+  const reader = image.body.getReader(), partes = []; let tamanho = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      tamanho += value.byteLength;
+      if (tamanho > 12 * 1024 * 1024) { await reader.cancel(); return erro(413, 'A imagem ultrapassou 12 MB.'); }
+      partes.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(tamanho);let pos = 0;
+  for (const p of partes) { bytes.set(p, pos);pos += p.length; }
+  return new Response(bytes, { headers: { 'Content-Type': tipo, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
 }
 
 export async function onRequest({ request: req, env, params }) {
@@ -102,6 +195,7 @@ export async function onRequest({ request: req, env, params }) {
     // "return await" para o catch pegar qualquer erro das rotas
     if (rota === 'lead' && m === 'POST') return env.LEADS ? await guardaLead(req, env) : erro(500, 'KV LEADS não ligado no Cloudflare.');
     if (!(await consultor(req, env))) return erro(401, 'Código do servidor ausente ou errado.');
+    if (rota.startsWith('canva/')) return await canvaRota(req, env, rota);
     if (rota === 'ping' && m === 'GET') return json({ ok: true });
     if (rota === 'ia' && m === 'POST') return await ia(req, env);
     if (rota === 'leads' && env.LEADS && m === 'GET') return await listaLeads(env);
