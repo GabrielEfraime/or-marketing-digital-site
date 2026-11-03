@@ -137,7 +137,7 @@ export async function publicLead(req,env){
 const clamp=(v,max)=>String(v||'').slice(0,max);
 export async function upsertClient(db,lead){
  if(!validId(lead?.id)||typeof lead.nome!=='string'||!lead.nome.trim()||!['novo','pronto','aprovado','aplicado','recusado'].includes(lead.status||'novo'))return fail(400,'Dados do cliente inválidos.');
- const data=JSON.stringify(lead),t=Math.max(1,Math.floor(Number(lead.t)||now()));
+ const data=JSON.stringify(lead),t=Math.min(now()+60000,Math.max(1,Math.floor(Number(lead.t)||now())));
  if(data.length>850000)return fail(413,'Projeto excede o limite de tamanho.');
  const old=await db.prepare('SELECT updated_at FROM clients WHERE id=?').bind(lead.id).first();
  if(old&&+old.updated_at>t)return fail(409,'Há uma versão mais recente no servidor. Recarregue antes de salvar.');
