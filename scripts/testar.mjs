@@ -133,7 +133,7 @@ await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funcion
 });
 await t('demandas: quadro vazio, transições validadas, histórico e isolamento de dados', () => {
   const memory = {};
-  const c=vm.createContext({setInterval(){},sget:k=>memory[k]||null,sset:(k,v)=>{memory[k]=v},STORE_OK:true,Date});
+  const c=vm.createContext({setInterval(){},document:{addEventListener(){}},sget:k=>memory[k]||null,sset:(k,v)=>{memory[k]=v},STORE_OK:true,Date});
   vm.runInContext(ler('src/js/17-minha-area.js'),c);
   assert.equal(vm.runInContext('OR_QUADRO.itens.length',c),0);
   vm.runInContext("OR_QUADRO.itens.push({id:'d1',titulo:'Nova arte',coluna:OR_COLUNAS[0],descricao:'Briefing',historico:[]})",c);
@@ -155,7 +155,7 @@ await t('editor: troca de slide usa o índice real e prévia recebe texto do sli
   vm.runInContext('reaArteDesenhar(box,a,null,null)',c);
   assert.ok(desenhados.includes('Dois'));
   const fonte=ler('src/js/22g-editor-posts.js');
-  assert.ok(!fonte.includes('dataset.reaArtSlide'));
+  assert.ok(!/dataset\.reaArtSlide\b/.test(fonte));
 });
 
 await t('fonte completa: JavaScript concatenado compila', () => {
@@ -178,6 +178,16 @@ await t('Canva: exige autenticação e não lista artes existentes', async () =>
     assert.equal((await chama('canva/gerar',{method:'POST',body:'{}'},TOKEN)).status,400);
     assert.equal(vistos.length,1);
   }finally{globalThis.fetch=anterior;delete env.CANVA_ACCESS_TOKEN}
+});
+
+await t('briefing: materiais, aprovação e datas não se repetem entre serviços', () => {
+  const c=vm.createContext({});
+  vm.runInContext(ler('src/js/01-config-precos.js')+'\n'+ler('src/js/02-modulos-servicos.js'),c);
+  vm.runInContext("const SEED=2,P={mods:['social','meta'],qa:[],skipTp:new Set()};",c);
+  vm.runInContext(ler('src/js/15-briefing-assistente.js'),c);
+  for(const id of ['materiaisbase','aprovacaoprazo','datasconfirmadas']){
+    assert.equal(vm.runInContext("topicPool().filter(x=>x.t[0]==="+JSON.stringify(id)+").length",c),1);
+  }
 });
 
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');

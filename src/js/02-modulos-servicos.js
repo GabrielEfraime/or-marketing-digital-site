@@ -208,6 +208,17 @@ const TAREFAS={
  mkt:[['Revisar o briefing e tirar as dúvidas com o cliente',3],['Entregar o plano de marketing',12],['Enviar o plano e fazer os ajustes pedidos',15]],
  assess:[['Reunião inicial: objetivos e prioridades',3],['Pedir acesso aos relatórios das plataformas por convite, sem senha',5],['Entregar o diagnóstico e as prioridades do primeiro mês',10],['Primeira reunião de acompanhamento',30],['Relatório do primeiro mês',30]]
 };
+/* Produção recebe os materiais e as restrições no briefing inicial, sem pedir senhas. */
+MODS.social.qs.push(
+ ['formatosarte','Quais formatos fazem sentido para o seu negócio?',['Posts de imagem','Carrosséis','Stories','Reels ou vídeos curtos','Quero uma recomendação'],1,'formato|post|carross|stories|reels'],
+ ['identidadebase','Quais cores, fontes e elementos da sua marca devemos usar nas artes?','Informe os que já são oficiais. Se não houver identidade definida, escreva "preciso de orientação".',0,'cor|fonte|marca|arte|identidade']
+);
+const Q_PRODUCAO=[
+ ['materiaisbase','Quais materiais próprios e autorizados você já tem para usarmos?','Logo, manual de marca, fotos, vídeos ou catálogo. Pode informar links públicos; não envie senhas ou chaves.',0,'material|logo|foto|vídeo|catálogo|autoriz'],
+ ['aprovacaoprazo','Quanto tempo a pessoa responsável precisa para revisar cada entrega?','Ex.: dois dias úteis. Se ainda não decidiu, escreva "a combinar".',0,'tempo|prazo|revis|aprov|entrega'],
+ ['datasconfirmadas','Há alguma campanha, data ou oferta já confirmada para o primeiro mês?','Informe só o que já está confirmado, com datas e condições. Se não houver, escreva "nenhuma por enquanto".',0,'campanha|data|oferta|mês|confirm']
+];
+['social','meta','brand','site','resite','youtube'].forEach(k=>{if(MODS[k])MODS[k].qs.push(...Q_PRODUCAO)});
 const COMUM=[['prazo','Para quando você precisa?',['O quanto antes','Em até 2 semanas','Em até 1 mês','Sem pressa']],
  ['inv','Quanto pretende investir no nosso trabalho?','Pode ser uma faixa. Por exemplo: de R$ 1.000 a R$ 2.000 por mês. A verba de anúncios, se houver, você já informou antes.',0],
  ['pgto','Como prefere contratar?',['Pagamento único','Mensal recorrente','Quero ver as opções']]];
