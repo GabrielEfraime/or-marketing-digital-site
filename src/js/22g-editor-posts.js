@@ -366,7 +366,7 @@ function reaPostsCalendar(l,L){
   const agendadas=items.filter(x=>x.p.status==="Agendado").length,qtd=front?Math.max(1,Math.min(24,Number(alvo(front)||front.qtd)||8)):0;
   return '<section class="rea-post-panel"><div class="rea-post-panel-head"><div><span class="rea-art-kicker">PLANEJAMENTO EDITORIAL</span><h3>'+esc(label.charAt(0).toUpperCase()+label.slice(1))+'</h3><p class="hint">'+agendadas+' post(s) marcados como agendados · '+items.length+' peça(s) com data</p></div><div class="rea-calendar-controls"><button type="button" class="btn ghost" data-rea-calendar-move="-1" aria-label="Mês anterior">‹</button><button type="button" class="btn ghost" data-rea-calendar-today>Este mês</button><button type="button" class="btn ghost" data-rea-calendar-move="1" aria-label="Próximo mês">›</button></div></div>'+
     '<div class="rea-calendar-ai"><p>A IA vai criar '+qtd+' peças a partir do briefing e distribuir temas pelo mês, dentro da quantidade contratada.</p><button type="button" class="btn" data-rea-post-plan '+(!reaPostsTemBriefing(l)||!front?"disabled":"")+' >Gerar plano deste mês com IA</button></div>'+
-    '<div class="rea-calendar-grid">'+days.map(x=>'<div class="rea-calendar-weekday">'+x+'</div>').join("")+cells+'</div><p class="hint">As datas e os status são planejamento interno. Para publicar, revise o arquivo e publique pela conta conectada fora desta tela.</p></section>';
+    '<div class="rea-calendar-grid-scroll"><div class="rea-calendar-grid">'+days.map(x=>'<div class="rea-calendar-weekday">'+x+'</div>').join("")+cells+'</div></div><p class="hint">As datas e os status são planejamento interno. Para publicar, revise o arquivo e publique pela conta conectada fora desta tela.</p></section>';
 }
 function reaPostsFontOptions(current){return REA_POSTS_FONTES.map(x=>'<option value="'+esc(x)+'" '+(current===x?"selected":"")+'>'+esc(x)+'</option>').join("")}
 function reaPostsIdentity(l){
@@ -492,7 +492,8 @@ async function reaPostsGerarPlano(id,fid,y,m){
   admin();
 }
 async function reaPostsGerarLegenda(id,pid){
-  const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!l||!p)return;
+  const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!l||!p||T.busy)return;
+  T.busy="posts-legenda:"+id;
   const msgs=[
     {role:"system",content:"Você escreve a legenda de uma publicação social usando exclusivamente os fatos do briefing. Entregue uma legenda pronta em português do Brasil, natural, clara e apropriada ao público. Não invente promessas, preços, estatísticas, depoimentos ou garantias. Inclua chamada para ação e no máximo cinco hashtags somente se fizer sentido."},
     {role:"user",content:"BRIEFING DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,8000)+"\n\nPOST PARA ADAPTAÇÃO:\n<POST>\n"+String(p.txt||"").slice(0,5000)+"\n</POST>\n\nTítulo: "+String(p.titulo||"")}
@@ -500,7 +501,7 @@ async function reaPostsGerarLegenda(id,pid){
   REA_POSTS_STATE.notice="A IA está adaptando a legenda ao briefing…";admin();
   try{const out=clean(await askF(msgs,()=>{},{slot:"ia1",max:900,temp:.65}));trkSet(id,t=>{const x=(t.pecas||[]).find(y=>y.id===pid);if(x)x.legenda=out});REA_POSTS_STATE.notice="Legenda criada por IA com o contexto do briefing. Revise antes de usar."}
   catch(e){REA_POSTS_STATE.notice=e.message||"Não consegui gerar a legenda."}
-  admin();
+  T.busy="";admin();
 }
 function reaPostsDuplicar(id,pid){
   const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!l||!p)return;
