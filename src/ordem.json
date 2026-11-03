@@ -107,7 +107,7 @@
     },
     {
       "arquivo": "src/css/27-editor-posts.css",
-      "descricao": "Editor visual das peças sociais: proporções, composição, cores, foto local e exportação PNG"
+      "descricao": "Editor e painel administrativo de posts, calendário editorial, identidade visual e exportação PNG"
     }
   ],
   "js": [
@@ -217,11 +217,11 @@
     },
     {
       "arquivo": "src/js/22e-acompanhamento-producao.js",
-      "descricao": "Acompanhamento: o que vamos fazer (escopo), produção por ciclo com IA, campanhas com exemplos, Meta Ads, imprensa, versões do código do site, mensagens prontas"
+      "descricao": "Acompanhamento: produção por ciclo com IA a partir do briefing, plano editorial, campanhas, anúncios e entregas"
     },
     {
       "arquivo": "src/js/22g-editor-posts.js",
-      "descricao": "Editor visual de posts e carrosséis com prévia, textos, paleta, foto local e exportação PNG"
+      "descricao": "Posts administrativos por briefing: geração com IA, calendário mensal, galeria, identidade visual e editor PNG"
     },
     {
       "arquivo": "src/js/22c-vagas.js",
