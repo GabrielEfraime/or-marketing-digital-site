@@ -1,3 +1,4 @@
+const webLink=v=>{try{const u=new URL(String(v||''));return /^https?:$/.test(u.protocol)&&!u.username&&!u.password?u.href:''}catch(e){return ''}};
 /* Modal padrão: botão fechar, Esc, foco preso e devolvido, fundo travado, rolagem interna e aviso de alteração não salva (m.sujo) */
 function dlg(label,html,o){
   o=o||{};const id=o.id||'sdlg',old=document.getElementById(id);if(old)old.remove();

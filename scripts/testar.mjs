@@ -190,5 +190,15 @@ await t('briefing: materiais, aprovação e datas não se repetem entre serviço
   }
 });
 
+await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', () => {
+  const c=vm.createContext({URL});
+  const linha=ler('src/js/07-ui-base.js').split('\n').find(x=>x.startsWith('const webLink='));
+  vm.runInContext(linha,c);
+  for(const v of ['javascript:alert(1)','java\nscript:alert(1)','data:text/html,<script>alert(1)</script>','https://usuario:senha@site.com/']){
+    assert.equal(vm.runInContext('webLink('+JSON.stringify(v)+')',c),'');
+  }
+  assert.equal(vm.runInContext("webLink('https://site.com/portfolio')",c),'https://site.com/portfolio');
+});
+
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
 process.exit(falhou ? 1 : 0);

@@ -162,7 +162,7 @@ function paneHtml(l,o,h){
   }
   if(A.tab==='orc'){
     if(mineJ('orc',l)&&J.orc.what==='orc')return md(J.orc.live.replace(/---(BASICO|MEDIO|MAX|MENSAGEM)---/g,(x,k)=>'\n## '+LBL[k]+'\n'))||wait('A IA está pensando…');
-    if(o.BASICO||o.MEDIO||o.MAX)return `<div class="tiers">${['BASICO','MEDIO','MAX'].map(k=>o[k]?`<div class="tier ${k==='MEDIO'?'rec':''}"><h3>${LBL[k]}${k==='MEDIO'?' · recomendado':''}</h3>${md(o[k])}</div>`:'').join('')}</div>`;
+    if(o.BASICO||o.MEDIO||o.MAX)return `<div class="tiers">${['BASICO','MEDIO','MAX'].map(k=>o[k]?`<div class="tier"><h3>${LBL[k]}</h3>${md(o[k])}</div>`:'').join('')}</div>`;
     return l.orc?md(l.orc):wait('Ainda não gerado. Clique em "Gerar 3 orçamentos + mensagem".');
   }
   if(mineJ('orc',l))return J.orc.what==='msg'?(md(J.orc.live)||wait('Reescrevendo…')):wait('A mensagem aparece aqui quando os orçamentos terminarem…');
