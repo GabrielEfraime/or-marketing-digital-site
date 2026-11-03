@@ -249,3 +249,12 @@ O dono quer o site **clean, minimalista, 3D e moderno**. Ele mandou como referê
 - **Títulos:** os rótulos de seção ficam entre traços em areia ("| SERVIÇOS |"), sem número. Uma palavra-chave do título vai em pílula, mas a pílula nunca abre uma linha: ela, a palavra anterior e a pontuação ficam num `.v-nw` que não quebra. O dono cobrou alinhamento perfeito.
 - **Dúvidas:** seção escura, com cada pergunta numa barra que abre e fecha (`details`) e um "+" em areia.
 - **Minha área:** usa o mesmo visual limpo (`26-minha-area-clean.css`). Rótulos em Inter, cartões sólidos com borda fina e status nas cores da paleta: novo em areia, pronto em marfim, aprovado em ardósia clara, em execução em sálvia. O item ativo do menu leva um traço em areia. Na barra lateral, as caixas ficam a 16 px da borda e os textos a 32 px; no celular, tudo a 18 px.
+
+
+## Demandas, artes e briefing inicial (03/11/2026)
+- O dono quer as funções de organização de demandas e edição de artes dentro da Minha área, sem importar cartões do Trello nem designs existentes do Canva.
+- O briefing inicial é a fonte de todas as entregas de clientes. Cada nova demanda fica ligada ao cliente e às respostas; a IA não inventa fatos ou confirmações que faltam.
+- Parte do briefing pode adaptar as perguntas com IA; manter perguntas padrão quando não houver autorização ou quando a IA falhar. Melhorar o briefing quando faltarem dados para a produção.
+- Canva pode ser integrado se gerar as novas demandas de posts a partir desse briefing. A conexão do chat não equivale à autorização do site. Geração externa é opcional, com revisão humana e sem publicação automática.
+- Quadro interno começa vazio. Novo planejamento pelo briefing é explícito, por botão; não disparar IA ao abrir o painel.
+- Implementação e limites da branch: docs/REVISAO-DEMANDAS-IA.md.

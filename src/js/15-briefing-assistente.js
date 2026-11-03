@@ -1,6 +1,6 @@
 /* rascunho do briefing: fica só neste navegador até o envio, para continuar depois */
 const rascLe=()=>{try{const r=JSON.parse(sget('brief2')||'null');return r&&Array.isArray(r.qa)&&r.who&&Date.now()-r.t<12096e5?r:null}catch(e){return null}};
-const rascSalva=()=>{if(P.who&&P.mod!=='guia')sset('brief2',JSON.stringify({t:Date.now(),mod:P.mod,mods:P.mods,who:P.who,qa:P.qa,skip:[...P.skipTp]}))};
+const rascSalva=()=>{if(P.who&&P.mod!=='guia')sset('brief2',JSON.stringify({t:Date.now(),mod:P.mod,mods:P.mods,who:P.who,qa:P.qa,skip:[...P.skipTp],usarIA:!!P.usarIA}))};
 const rascLimpa=()=>{try{sset('brief2','')}catch(e){}};
 /* painel por serviço (status e progresso) e resumo das respostas, na lateral do briefing */
 function modsRail(){
@@ -30,7 +30,7 @@ function gate(){
     if(!$('#lc').checked){$('#er').textContent='Para continuar, marque a concordância com a política de privacidade.';return}
     P.who={...w,consent:{em:new Date().toISOString(),versao:PRIV_VERSAO}};pub()};
   $('#lpv').onclick=privacy;
-  const rs=rascLe();if(rs&&rs.mod===P.mod&&JSON.stringify(rs.mods)===JSON.stringify(P.mods)){const b=document.createElement('button');b.className='btn ghost';b.type='button';b.textContent='Continuar briefing salvo ('+rs.qa.length+' respostas)';b.onclick=()=>{P.who=rs.who;P.qa=rs.qa;P.skipTp=new Set(rs.skip||[]);P.cur=null;pub()};$('#go').parentNode.appendChild(b)}
+  const rs=rascLe();if(rs&&rs.mod===P.mod&&JSON.stringify(rs.mods)===JSON.stringify(P.mods)){const b=document.createElement('button');b.className='btn ghost';b.type='button';b.textContent='Continuar briefing salvo ('+rs.qa.length+' respostas)';b.onclick=()=>{P.who=rs.who;P.usarIA=!!rs.usarIA;P.qa=rs.qa;P.skipTp=new Set(rs.skip||[]);P.cur=null;pub()};$('#go').parentNode.appendChild(b)}
   $('#go').onclick=go;app.querySelectorAll('input').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')go()});
   $('#ln').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#lw').focus()}};$('#ln').focus();
 }
