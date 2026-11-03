@@ -66,10 +66,6 @@
       "descricao": "Estilos da abertura 3D da OR"
     },
     {
-      "arquivo": "src/css/16-hero-flutuante.css",
-      "descricao": "Primeira tela centralizada com cartões dos serviços flutuando"
-    },
-    {
       "arquivo": "src/css/17-manifesto-cartoes.css",
       "descricao": "Seção Manifesto em grade de cartões (4 passos) e Três opções em cartões alinhados"
     },
@@ -96,6 +92,18 @@
     {
       "arquivo": "src/css/23-identidade-earthen.css",
       "descricao": "Identidade Earthen Luxe: assinatura OR | MARKETING DIGITAL, slogan, seções claras em marfim, cartões em ardósia (vence as camadas anteriores)"
+    },
+    {
+      "arquivo": "src/css/24-topo-3d.css",
+      "descricao": "Topo da home limpo: cena 3D de tela cheia, título em dois tamanhos, seta de rolar; fundo do Como funciona"
+    },
+    {
+      "arquivo": "src/css/25-titulos-duvidas.css",
+      "descricao": "Rótulos entre traços em areia, palavra-chave em pílula nos títulos e dúvidas em barras com +"
+    },
+    {
+      "arquivo": "src/css/26-minha-area-clean.css",
+      "descricao": "Minha área repaginada: fundo liso, cartões sólidos, rótulos em Inter, status na paleta, traço em areia no menu"
     }
   ],
   "js": [
@@ -150,6 +158,10 @@
     {
       "arquivo": "src/js/11-esfera-agua.js",
       "descricao": "Esfera de água (shader) das páginas de serviço"
+    },
+    {
+      "arquivo": "src/js/11b-topo-3d.js",
+      "descricao": "Cena 3D do topo da home (WebGL puro): areia e seda em ondas lentas, câmera avançando"
     },
     {
       "arquivo": "src/js/12-conteudo-servicos.js",

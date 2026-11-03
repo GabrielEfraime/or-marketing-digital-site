@@ -37,7 +37,7 @@ const SOBRE={
   "c": "Organizamos o canal, definimos os temas e o estilo, criamos uma lista de ideias com títulos e roteiros e orientamos as miniaturas. Depois analisamos o que o público mais assiste para ajustar os próximos vídeos.",
   "d": "Usamos IA para levantar ideias, sugerir títulos e rascunhar roteiros com mais rapidez. Toda estratégia, texto e decisão de verba passa pela revisão de uma pessoa da nossa equipe antes de chegar até você.",
   "e": "Um canal mais organizado e um plano de vídeos para seguir. O crescimento depende do conteúdo, da constância e do algoritmo da plataforma, por isso não prometemos números.",
-  "p": "criadores e negócios que querem usar vídeo."
+  "p": "negócios que querem usar vídeo."
  },
  "local": {
   "t": "Ser encontrado por quem está perto de você.",

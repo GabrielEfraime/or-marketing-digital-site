@@ -1,0 +1,98 @@
+/* Minha área repaginada (02/11/2026): o mesmo visual limpo do site, na identidade Earthen Luxe.
+   Fundo obsidiana liso, cartões sólidos com borda fina, rótulos em Inter (sem a fonte monoespaçada), status nas cores
+   da paleta e o item ativo do menu marcado por um traço em areia, como o divisor da assinatura.
+   O vidro continua só em barras, botões e menus (decisão de 31/10/2026). Vem por último: vence as camadas antigas. */
+html body.adm{
+  --st-novo:#C6AC8E;--st-pronto:#EAE0D5;--st-aprovado:#8FB0C0;--st-aplicado:#93B59F;--st-recusado:#C98B7F;
+  --panel:#121110;--vc-solid:#121110;--bd:rgba(234,224,213,.09);--surf2:rgba(234,224,213,.03);--inpbg:rgba(234,224,213,.035);
+  --ylw:var(--st-novo);--blue:var(--st-pronto);--vio:var(--st-aprovado);--ok:var(--st-aplicado);--focus:#C6AC8E;
+  background:radial-gradient(60% 45% at 100% 0,#22333B38,transparent 70%) fixed,var(--or-obsidiana);font-family:var(--fb)}
+
+/* barra lateral */
+html body.adm .side{border-right:1px solid var(--bd);padding:26px 16px 22px;gap:8px}
+html body.adm .side *:focus-visible{outline:2px solid var(--or-areia)!important;outline-offset:2px}
+/* coluna da barra: caixas (pílulas, botões) a 16 px da borda e textos a 32 px, no computador */
+html body.adm .side .brandb{margin:0 0 14px}
+html body.adm .side .wmw .wm{font:500 9.5px/1 var(--fb);letter-spacing:.22em;white-space:nowrap}
+html body.adm .side .wmw .wt{display:block;margin:0;font:600 9px/1 var(--fb);letter-spacing:.34em;text-transform:uppercase;color:var(--or-areia);opacity:1}
+html body.adm .side .nv{position:relative;box-sizing:border-box;font:500 14.5px/1.25 var(--fb);color:rgba(234,224,213,.62);padding:11px 14px 11px 16px;border-radius:10px;border:1px solid transparent;background:none;box-shadow:none}
+html body.adm .side .nv:hover{color:var(--or-marfim);background:rgba(234,224,213,.04)}
+html body.adm .side .nv.on{color:var(--or-marfim);font-weight:600;background:rgba(234,224,213,.06);border-color:rgba(234,224,213,.08);box-shadow:none}
+html body.adm .side .nv.sub{padding-left:28px}
+html body.adm .nvgt{padding:18px 16px 6px;font:600 10px/1 var(--fb);letter-spacing:.22em;color:var(--or-areia);opacity:.85}
+html body.adm .iasum{margin-top:8px;padding:14px 16px 0;border-top:1px solid var(--bd);font-size:12px;line-height:1.6;color:rgba(234,224,213,.45)}
+html body.adm .diskbar{padding:0;font-size:12.5px;line-height:1.5;color:rgba(234,224,213,.55)}
+html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{display:block;padding:0 16px}
+html body.adm .side .btn{width:100%;margin:4px 0 6px;padding:11px 14px;border-radius:12px;font:600 13px/1.3 var(--fb);color:var(--or-areia)!important;
+  background:rgba(198,172,142,.06)!important;background-image:none!important;border:1px solid rgba(198,172,142,.45)!important;box-shadow:none!important}
+html body.adm .side .btn:hover{background:rgba(198,172,142,.14)!important}
+html body.adm .side .ok2{color:var(--st-aplicado)}
+html body.adm .dtools{gap:6px}
+html body.adm .dtools button{font:500 13px/1.3 var(--fb);color:rgba(234,224,213,.72);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}
+html body.adm .dtools button:hover{color:var(--or-marfim);border-color:rgba(234,224,213,.2)}
+/* no computador, o item ativo ganha o traço em areia à esquerda */
+@media(min-width:901px){html body.adm .side .nv.on::before{content:"";position:absolute;left:0;top:50%;width:2px;height:18px;translate:0 -50%;border-radius:2px;background:var(--or-areia)}}
+
+/* conteúdo */
+html body.adm .mainc{padding:clamp(22px,3.2vw,48px) clamp(18px,3.2vw,52px)}
+html body.adm .pt{margin:0 0 8px;font:600 clamp(28px,2.8vw,40px)/1.1 var(--fd);letter-spacing:-.025em}
+html body.adm .hint{color:rgba(234,224,213,.6)}
+html body.adm label{font:600 13.5px/1.35 var(--fb);color:rgba(234,224,213,.86)}
+html body.adm .dsh-f label,html body.adm .mper,html body.adm .dsh-h,html body.adm .tbl th,html body.adm .bn-t{font-family:var(--fb);font-weight:600;letter-spacing:.14em;color:rgba(234,224,213,.6);opacity:1}
+html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select,html body.adm textarea{
+  font:400 14.5px/1.4 var(--fb);color:var(--or-marfim);background-color:var(--inpbg);border:1px solid rgba(234,224,213,.12);border-radius:12px}
+html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select{min-height:46px}
+html body.adm input:focus-visible,html body.adm select:focus-visible,html body.adm textarea:focus-visible{outline:2px solid var(--or-areia);outline-offset:1px;border-color:var(--or-areia)}
+html body.adm ::placeholder{color:rgba(234,224,213,.38)}
+
+/* cartões: sólidos, borda fina, sem brilho */
+html body.adm .panel,html body.adm .kpi,html body.adm .sc,html body.adm .mbox,html body.adm .bn{background:var(--panel)!important;border:1px solid var(--bd)!important;box-shadow:none!important}
+html body.adm .panel{border-radius:18px}
+html body.adm .sc,html body.adm .kpi,html body.adm .bn{border-radius:16px}
+/* cartões de resumo: a cor do status vira um ponto antes da legenda (mesmo ponto dos selos de status) */
+html body.adm .sc{border-top-width:1px!important}
+html body.adm .sc span::before{content:"";display:inline-block;width:6px;height:6px;margin:0 8px 1px 0;border-radius:50%;vertical-align:middle;background:var(--c,var(--or-areia))}
+html body.adm .sc b{font:600 clamp(28px,3vw,38px)/1 var(--fd);letter-spacing:-.03em}
+html body.adm .sc span{font-size:13.5px;color:rgba(234,224,213,.62)}
+html body.adm .bn-n{font:600 38px/1.05 var(--fd);letter-spacing:-.03em;border-left-width:2px}
+html body.adm .bn-n.big{font-size:56px}
+
+/* lista de leads e status */
+html body.adm .it{background:var(--panel);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:14px;padding:14px 16px;transition:background-color .2s,box-shadow .2s}
+html body.adm .it:hover{background:#171512}
+html body.adm .it.on{background:#171512;box-shadow:0 0 0 1px rgba(198,172,142,.6)}
+html body.adm .it.novo{border-left-color:var(--st-novo)}
+html body.adm .it.pronto{border-left-color:var(--st-pronto)}
+html body.adm .it.aprovado{border-left-color:var(--st-aprovado)}
+html body.adm .it.aplicado{border-left-color:var(--st-aplicado)}
+html body.adm .it.recusado{border-left-color:var(--st-recusado)}
+html body.adm .chip{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;padding:4px 9px;border-radius:99px;font:600 10.5px/1.2 var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--or-marfim);background:rgba(234,224,213,.06);border:1px solid var(--bd)}
+html body.adm .chip::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:currentColor}
+html body.adm .chip.novo{color:var(--st-novo);background:rgba(198,172,142,.1);border-color:rgba(198,172,142,.3)}
+html body.adm .chip.pronto{color:var(--st-pronto);background:rgba(234,224,213,.08);border-color:rgba(234,224,213,.24)}
+html body.adm .chip.aprovado{color:var(--st-aprovado);background:rgba(143,176,192,.1);border-color:rgba(143,176,192,.3)}
+html body.adm .chip.aplicado{color:var(--st-aplicado);background:rgba(147,181,159,.1);border-color:rgba(147,181,159,.3)}
+html body.adm .chip.recusado{color:var(--st-recusado);background:rgba(201,139,127,.1);border-color:rgba(201,139,127,.3)}
+
+/* botões: mesma família do site; o vidro das camadas anteriores continua */
+html body.adm .btn{font:600 14px/1.2 var(--fb);border-radius:999px}
+html body.adm .btn.ghost{border-width:1px;border-color:rgba(234,224,213,.28)}
+html body.adm .btn.ghost:hover{border-color:var(--or-areia)}
+html body.adm .btn.hl{background-color:var(--or-areia);color:var(--or-obsidiana)}
+html body.adm .btn.ok{background-color:var(--st-aplicado);color:var(--or-obsidiana)}
+html body.adm .tab{font:600 13.5px/1.2 var(--fb)}
+html body.adm .tab.on{background:var(--or-marfim);color:var(--or-obsidiana);background-image:none}
+html body.adm .savebar{padding:0 16px;color:rgba(234,224,213,.55)}
+html body.adm .savebar.ok{color:var(--st-aplicado)}
+/* celular e tablet: o menu vira uma fila de pílulas (13-glass.css); aqui só o acabamento */
+@media(max-width:900px){
+  /* tudo na mesma borda do conteúdo (18 px) */
+  html body.adm .mainc{padding-left:18px;padding-right:18px}
+  html body.adm .side .brandb{padding-left:18px;padding-right:18px}
+  html body.adm .side>.nvs{align-items:center;padding:8px 18px 12px}
+  html body.adm .savebar,html body.adm .iasum,html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{padding-left:18px;padding-right:18px}
+  html body.adm .diskbar{padding:0 18px}html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{padding:0}
+  html body.adm .side>.dtools{padding-left:18px;padding-right:18px}
+  html body.adm .side .nv{align-self:center;height:auto;border-radius:99px;padding:10px 16px;min-height:44px}html body.adm .side .nv.on{background:var(--or-marfim);color:var(--or-obsidiana);border-color:var(--or-marfim)}}
+
+@media(prefers-reduced-motion:reduce){html body.adm .it{transition:none}}

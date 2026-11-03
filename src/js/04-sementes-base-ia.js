@@ -91,7 +91,7 @@ Completo: [para uma necessidade mais ampla]. R$ [valor]
 Qual combina mais com o seu momento? Podemos ajustar o que precisar.
 Formato do orçamento: cada pacote lista o que está incluso, o total em R$ [valor da tabela], o prazo em dias úteis e a condição de pagamento. Os valores entre colchetes vêm sempre da tabela de preços, nunca copie valores dos exemplos. Nenhum pacote é recomendado por padrão: se o Essencial bastar para o briefing, diga isso.`;
 const KB_SEED={
-sobre:`Marca: OR Marketing Digital. A OR é uma equipe de marketing digital do Rio de Janeiro que atende pequenos negócios e criadores de conteúdo, com conversa simples e próxima. Nas mensagens, a equipe se apresenta como "a equipe da OR" e fala sempre em "nós", sem citar o nome de nenhuma pessoa.
+sobre:`Marca: OR Marketing Digital. A OR é uma equipe de marketing digital do Rio de Janeiro que atende empresas e pequenos negócios, com conversa simples e próxima. Nas mensagens, a equipe se apresenta como "a equipe da OR" e fala sempre em "nós", sem citar o nome de nenhuma pessoa.
 Serviços oferecidos aos clientes: marketing digital (plano e estratégia), assessoria de marketing (acompanhamento mensal com reuniões), tráfego pago (anúncios no Google e no Instagram e Facebook), criação de sites (site novo ou refazer o site existente), criação de branding (logo e identidade visual) e gestão de redes sociais.
 Todo plano e todo orçamento são revisados por uma pessoa da equipe antes de ir para o cliente.`,
 regras:`- Assinar sempre como "a equipe da OR" e falar em "nós". Nunca citar o nome de uma pessoa da equipe, a menos que o consultor peça.
@@ -135,3 +135,8 @@ if(CFG.seededSvc!=='1'){const k=CFG.kb=CFG.kb||{sobre:'',regras:'',exemplos:'',l
   const velho='Serviços oferecidos aos clientes: anúncios no Google (Google Ads), anúncios no Instagram e Facebook (Meta Ads), conteúdo para redes sociais, YouTube (canal, vídeos e crescimento), Google Meu Negócio e SEO local, assessoria de imprensa, identidade visual (logo e marca), criação de sites e redesign de sites existentes.';
   if(k.sobre&&k.sobre.includes(velho))k.sobre=k.sobre.replace(velho,()=>'Serviços oferecidos aos clientes: marketing digital (plano e estratégia), assessoria de marketing (acompanhamento mensal com reuniões), tráfego pago (anúncios no Google e no Instagram e Facebook), criação de sites (site novo ou refazer o site existente), criação de branding (logo e identidade visual) e gestão de redes sociais.');
   CFG.seededSvc='1';CFG.t=Date.now();saveCfg()}
+/* Foco B2B (02/11/2026): tira "criadores de conteúdo" do "Sobre" já salvo, se a frase ainda for a original. */
+if(CFG.seededB2b!=='1'){const k=CFG.kb=CFG.kb||{sobre:'',regras:'',exemplos:'',licoes:[]};
+  const velho='que atende pequenos negócios e criadores de conteúdo,';
+  if(k.sobre&&k.sobre.includes(velho))k.sobre=k.sobre.replace(velho,()=>'que atende empresas e pequenos negócios,');
+  CFG.seededB2b='1';CFG.t=Date.now();saveCfg()}

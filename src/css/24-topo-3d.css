@@ -1,0 +1,30 @@
+/* Topo da home (02/11/2026): limpo e minimalista, com a cena 3D de tela cheia (11b-topo-3d.js) no fundo, como o vídeo
+   da referência que o dono mandou. Título em dois tamanhos: "MARKETING DIGITAL" pequeno e "sob medida." enorme.
+   Sem a cena (sem WebGL), fica o degradê em ardósia sobre obsidiana. */
+/* o topo começa abaixo da faixa de avisos e do menu fixo (100 px juntos), por isso a altura desconta 100 px */
+body.pub .v-t3{position:relative;display:grid;place-items:center;min-height:calc(100svh - 100px);padding:clamp(48px,8vh,96px) 0 clamp(96px,14vh,128px);overflow:clip;isolation:isolate;text-align:center;
+  background:radial-gradient(90% 60% at 50% 72%,#22333B8c,transparent 70%),var(--or-obsidiana)!important}
+.v-t3c{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;opacity:0;transition:opacity 1.6s ease}
+.v-t3c.on{opacity:1}
+/* véu escuro: o texto lê bem sobre a cena, e a borda de baixo funde com a seção seguinte */
+.v-t3::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(62% 48% at 50% 48%,rgba(10,9,8,.5),transparent 75%),linear-gradient(180deg,rgba(10,9,8,.6),rgba(10,9,8,0) 26%,rgba(10,9,8,0) 72%,#0A0908)}
+body.pub .v-t3 .v-hero-in{position:relative;z-index:2;display:block;width:100%;max-width:1400px;margin-inline:auto}
+.v-t3 .v-hero-t{display:flex;flex-direction:column;align-items:center}
+body.pub .v-t3 .v-h1{display:flex;flex-direction:column;align-items:center;gap:.08em;max-width:none;margin:0;font-size:inherit;line-height:1;letter-spacing:0;text-transform:none}
+.v-h1a{font:500 clamp(15px,2.1vw,30px)/1.1 var(--fd);letter-spacing:.08em;text-transform:uppercase;color:var(--or-marfim)}
+.v-h1b{font:600 clamp(54px,14vw,200px)/.95 var(--fd);letter-spacing:-.045em;color:var(--or-marfim);text-wrap:balance}
+body.pub .v-t3 .v-lead{max-width:46ch;margin:clamp(18px,2.4vw,30px) auto 0;font-size:clamp(15px,1.25vw,18px);line-height:1.55;color:rgba(234,224,213,.78)}
+body.pub .v-t3 .v-act{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px 22px;margin-top:clamp(22px,3vw,34px)}
+/* seta de rolar desenhada à mão, como na referência */
+.v-t3s{position:absolute;z-index:2;left:50%;bottom:clamp(10px,2.5vh,28px);translate:-50% 0;display:grid;place-items:center;width:56px;height:84px;padding:0;border:0;border-radius:12px;background:none;color:var(--or-marfim);opacity:.8;cursor:pointer}
+.v-t3s:hover,.v-t3s:focus-visible{opacity:1}
+.v-t3s path{stroke-dasharray:1;stroke-dashoffset:1;animation:t3-traco 1.6s ease .6s forwards}
+.v-t3s svg{animation:t3-boia 2.8s ease-in-out 2.4s infinite}
+@keyframes t3-traco{to{stroke-dashoffset:0}}
+@keyframes t3-boia{50%{transform:translateY(6px)}}
+@media(max-height:620px){.v-t3s{display:none}}
+@media(prefers-reduced-motion:reduce){.v-t3c{transition:none}.v-t3s svg,.v-t3s path{animation:none}.v-t3s path{stroke-dashoffset:0}}
+
+/* Como funciona: o efeito continua; no lugar dos pontos, uma luz suave em ardósia e terra */
+.v-scene .v-stick{background:radial-gradient(70% 60% at 85% 30%,#22333B59,transparent 70%),radial-gradient(60% 50% at 8% 92%,#5E503F33,transparent 70%)}

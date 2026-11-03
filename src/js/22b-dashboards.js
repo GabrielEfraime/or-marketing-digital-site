@@ -130,10 +130,10 @@ function dashPainel(R){
   <p class="bn-res">${sem?'Ainda não há leads. Quando alguém concluir um briefing no site, os números aparecem aqui.':`<b>${R.recebidos}</b> lead(s) ${per}, <b>${R.pend}</b> aguardando ação e <b>${R.apr}</b> aprovado(s).`}</p>
   <div class="bento">
    <section class="bn bn-hero"><h3 class="dsh-h">Leads por dia</h3><b class="bn-n big">${R.recebidos}</b><span class="bn-s">leads recebidos ${per}</span>${graficoBento(R.porDia)}</section>
-   ${numCard('',R.pend,'Pendentes','novo ou pronto','#ffd166')}
-   ${numCard('',R.orc,'Orçamentos gerados',R.msg+' mensagens, '+R.env+' enviados','#EAE0D5')}
-   ${numCard('',R.apr,'Aprovados',R.rec+' recusados','#C6AC8E')}
-   ${numCard('',tx.aprov.v,'Taxa de aprovação',esc(tx.aprov.nota),'#12805c')}
+   ${numCard('',R.pend,'Pendentes','novo ou pronto','var(--st-novo)')}
+   ${numCard('',R.orc,'Orçamentos gerados',R.msg+' mensagens, '+R.env+' enviados','var(--st-pronto)')}
+   ${numCard('',R.apr,'Aprovados',R.rec+' recusados','var(--st-aprovado)')}
+   ${numCard('',tx.aprov.v,'Taxa de aprovação',esc(tx.aprov.nota),'var(--st-aplicado)')}
    ${bentoCard('bn-w2','Precisa de atenção',al.length?`<ul class="alr">${al.slice(0,8).map(x=>`<li><span class="hint">${esc(x.t)}</span><button class="lnkb" ${x.proj?`data-proj="${esc(x.proj)}"`:`data-lead="${esc(x.id)}"`}>${esc(x.n)}</button></li>`).join('')}</ul>${al.length>8?`<p class="hint">Mostrando 8 de ${al.length}.</p>`:''}`:'<p class="hint">Nada exigindo atenção agora.</p>')}
    ${bentoCard('bn-w2','Funil comercial',funilLinks(R))}
    ${bentoCard('','Conversão',`<b class="bn-n">${tx.conv.v}</b><span class="bn-s">${esc(tx.conv.nota)}</span>`)}

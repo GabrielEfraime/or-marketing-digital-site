@@ -14,7 +14,7 @@ const statLine=()=>['orc','plano','ex'].filter(k=>J[k].on&&J[k].id===A.sel).map(
 setInterval(()=>{const s=document.getElementById('stat');if(s)s.textContent=statLine()},1000);
 
 function admShell(inner){
-  return `<div class="shell"><aside class="side">${window.OR_TESTE?'<p class="err" role="note" style="margin:0 0 10px">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}<button class="brandb" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">marketing</span><span class="wt">digital · painel</span></span></button>
+  return `<div class="shell"><aside class="side">${window.OR_TESTE?'<p class="err" role="note" style="margin:0 0 10px">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}<button class="brandb" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
   <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
   <div class="iasum">IA 1 (criação): ${esc(CFG.ia1.model)}<br>IA 2 (atendimento): ${esc(CFG.ia2.model)}<br>IA 3 (captação): ${esc(CFG.ia3.model)}</div>
   <div id="disk" class="diskbar"></div><div id="savebar" class="savebar" role="status"></div>
@@ -64,7 +64,7 @@ function paintList(){
   const L=getL(),c=s=>L.filter(l=>l.status===s).length,vis=A.filter==='todos'?L:L.filter(l=>l.status===A.filter);
   A.sig=sig();
   const st=document.getElementById('sts');
-  if(st)st.innerHTML=`<div class="stats">${[['novo','novos','--c:#ffd166'],['pronto','prontos para revisar','--c:#C6AC8E'],['aprovado','aprovados','--c:#C6AC8E'],['aplicado','em execução','--c:#12805c']].map(([k,t,s])=>`<div class="sc" style="${s}"><b>${c(k)}</b><span>${t}</span></div>`).join('')}</div>`;
+  if(st)st.innerHTML=`<div class="stats">${[['novo','novos','--c:var(--st-novo)'],['pronto','prontos para revisar','--c:var(--st-pronto)'],['aprovado','aprovados','--c:var(--st-aprovado)'],['aplicado','em execução','--c:var(--st-aplicado)']].map(([k,t,s])=>`<div class="sc" style="${s}"><b>${c(k)}</b><span>${t}</span></div>`).join('')}</div>`;
   const ls=document.getElementById('lst');if(!ls)return;
   ls.innerHTML=vis.length?vis.map(l=>`<button class="it ${l.status} ${l.id===A.sel?'on':''}" data-i="${esc(l.id)}"><b>${esc(l.nome)}</b><span class="chip ${l.status}">${stl(l.status)}</span>${(l.envios||[]).length?'<span class="wsent" title="Orçamento enviado no WhatsApp">'+WAI+'enviado</span>':''}<br><span class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.data)}</span></button>`).join(''):'<p class="hint">Nenhum lead aqui ainda. Abra o site público em outra aba e faça um briefing.</p>';
   ls.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{A.sel=b.dataset.i;A.edit=false;A.err='';A.fs=false;paintList();paintDet()});

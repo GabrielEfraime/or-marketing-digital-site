@@ -266,18 +266,13 @@ function megaStart(){
     if(!reduz)raf=requestAnimationFrame(tick);
   });
 }
-/* Rótulos com índice no início de cada seção (estilo United Carriers). */
+/* Rótulos no início de cada seção, entre traços em areia como "| SERVIÇOS |" (referência: iBoost; os traços são CSS, em 25-titulos-duvidas.css). */
 function rotulos(){
   const M={topo:'Início',manifesto:'Manifesto',opcoes:'Opções',sobre:'AI-Driven',briefing:'Briefing',oferta:'Serviços',como:'Processo',duvidas:'Dúvidas',contato:'Contato','svp-corpo':'O serviço','vagas-lista':'Vagas',cadastro:'Cadastro'};
-  let n=0;document.querySelectorAll('main section[id]').forEach(sec=>{
+  document.querySelectorAll('main section[id]').forEach(sec=>{
     const nome=M[sec.id];if(!nome||sec.querySelector(':scope .v-lab')||sec.classList.contains('v-scene')||sec.id==='topo')return;
-    const w=sec.querySelector('.v-wrap');if(!w)return;n++;
-    const p=document.createElement('p');p.className='v-lab';p.innerHTML='<b>('+String(n).padStart(2,'0')+')</b> '+nome;w.insertBefore(p,w.firstChild)});
-}
-function heroFlutuarStart(){
-  const h=app.querySelector('.v-hc');
-  if(!h||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  h.addEventListener('pointermove',e=>{const r=h.getBoundingClientRect();h.style.setProperty('--mx',((e.clientX-r.left)/r.width-.5)*2);h.style.setProperty('--my',((e.clientY-r.top)/r.height-.5)*2)});
+    const w=sec.querySelector('.v-wrap');if(!w)return;
+    const p=document.createElement('p');p.className='v-lab';p.textContent=nome;w.insertBefore(p,w.firstChild)});
 }
 /* Serviços em pilha (referência: digi.ag). O empilhar é só CSS (sticky); aqui, o cartão que chega vem inclinado e se
    endireita ao encaixar, e os de baixo encolhem e escurecem um pouco. Só transform e opacidade; desligado com movimento reduzido. */

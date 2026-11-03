@@ -20,7 +20,7 @@ Registro do que foi decidido e do que o Gabriel gostou ou não, para quem contin
 - **Orbe do AI-Driven** gira sozinha (sem reagir ao mouse).
 - **Rodapé em pontos** reage ao cursor (essa interação ele pediu).
 - **Vidro (glass) só em barras, botões e menus** (31/10/2026): barra do topo e menu aberto, capítulos laterais, botões e opções, menu lateral, abas e barras de filtro da Minha área. Cartões, painéis, janelas e o briefing são sólidos (`#151515`). Fica em `src/css/21-vidro-barras-botoes.css`, com fallback sólido (`prefers-reduced-transparency` e navegador sem `backdrop-filter`). O dono pediu `expo-glass-effect`, mas ele só funciona em app Expo/React Native no iOS; no site o vidro é CSS.
-- A **abertura** (uma vez por visita; "Entrar", Esc ou Enter entram direto; fecha sozinha em 7,5 s). Sem botão "Pular" (o dono pediu para tirar em 31/10/2026).
+- A **abertura** (uma vez por visita; "Entrar", Esc ou Enter entram direto; fecha sozinha em 8 s). Sem botão "Pular" (o dono pediu para tirar em 31/10/2026).
 - "Como funciona" como **cena fixa** em canvas com contador de 0 a 100%.
 
 ## O que o dono NÃO gostou (não repetir)
@@ -230,6 +230,22 @@ O dono mandou o kit `OR_Identidade_Completa_Earthen_Luxe_FINAL`, que traz logos,
 
 **Fontes:** Sora nos títulos e Inter nos textos (licença OFL), embutidas no site. O dono autorizou baixar as duas (pacotes `@fontsource-variable`, conjunto latino).
 
-**Abertura:** a 3D saiu, por escolha do dono. Entrou a animação do kit: o contorno do OR se desenha em areia e depois aparece a assinatura. O site ficou cerca de 550 KB menor sem o Three.js.
+**Abertura:** a 3D saiu, por escolha do dono. Entrou a animação do kit: o contorno do OR se desenha em areia e depois aparece a assinatura. O site ficou cerca de 550 KB menor sem o Three.js. Em 02/11/2026 o dono pediu dois ajustes: MARKETING DIGITAL fica centralizado na altura do OR e do divisor (no kit ele ficava mais baixo), e o texto surge de trás do divisor depois que o OR aparece (o divisor cresce do centro e as letras deslizam para a direita). O slogan entra quando o texto termina (3,5 s).
 
 **Slogan:** "Estratégia. Criatividade. Resultado." aparece no rodapé e na abertura.
+
+## Topo limpo com cena 3D (02/11/2026)
+
+O dono quer o site **clean, minimalista, 3D e moderno**. Ele mandou como referência um topo com vídeo de fundo escuro e um título enorme por cima ("INSPIRE O / extraordinário").
+
+- **Topo da home:** cena 3D em código no fundo (escolha dele, no lugar de um vídeo). É uma superfície de areia e seda em ondas lentas, com a câmera avançando devagar e luz baixa em areia. Por cima ficam "MARKETING DIGITAL" pequeno e "sob medida." enorme, o texto de apoio, o botão e uma seta de rolar desenhada à mão.
+- **Saíram:** os cartões de serviço que flutuavam no topo (os 6 serviços continuam na pilha logo abaixo) e as três pílulas "O que você recebe".
+- **Fundos:** as texturas de pontos saíram do site todo. O efeito do Como funciona continua (pedido dele), agora com uma luz suave em ardósia e terra no lugar dos pontos.
+- **Desempenho:** a cena desenha em meia resolução, a ~30 quadros por segundo, e para quando sai da tela. Com "reduzir movimento", fica parada.
+
+## Foco B2B, títulos e Minha área repaginada (02/11/2026)
+
+- **Público:** empresas e pequenos negócios (B2B). "Criadores de conteúdo" saiu de todos os textos, das instruções das IAs e do "Descobrir o que eu preciso". O "Sobre" da base da IA que já estava salvo é corrigido uma vez (`seededB2b`). O texto do topo não cita mais o WhatsApp.
+- **Títulos:** os rótulos de seção ficam entre traços em areia ("| SERVIÇOS |"), sem número. Uma palavra-chave do título vai em pílula, mas a pílula nunca abre uma linha: ela, a palavra anterior e a pontuação ficam num `.v-nw` que não quebra. O dono cobrou alinhamento perfeito.
+- **Dúvidas:** seção escura, com cada pergunta numa barra que abre e fecha (`details`) e um "+" em areia.
+- **Minha área:** usa o mesmo visual limpo (`26-minha-area-clean.css`). Rótulos em Inter, cartões sólidos com borda fina e status nas cores da paleta: novo em areia, pronto em marfim, aprovado em ardósia clara, em execução em sálvia. O item ativo do menu leva um traço em areia. Na barra lateral, as caixas ficam a 16 px da borda e os textos a 32 px; no celular, tudo a 18 px.

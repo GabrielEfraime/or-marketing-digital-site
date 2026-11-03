@@ -1,0 +1,40 @@
+/* Ideias das referências que o dono mandou (02/11/2026), no visual limpo:
+   rótulos de seção entre traços em areia (iBoost), palavra-chave dos títulos em pílula (Your Digital Resource)
+   e dúvidas em barras escuras com "+" (iBoost). */
+
+/* rótulo "| SERVIÇOS |": os traços ecoam o divisor da assinatura OR | MARKETING DIGITAL */
+.v-lab{display:flex;align-items:center;gap:.95em;width:fit-content;font:600 12.5px/1 var(--fb);letter-spacing:.22em;opacity:.9}
+.v-lab::before,.v-lab::after{content:"";flex:none;width:1.5px;height:1.5em;background:var(--or-areia)}
+.v-lab::after{margin-left:-.22em}/* desconta o espaçamento depois da última letra: os dois traços ficam à mesma distância do texto */
+.v-ink .v-lab::before,.v-ink .v-lab::after{background:var(--or-terra)}
+.v-lime .v-lab::before,.v-lime .v-lab::after{background:var(--or-obsidiana)}
+.v-mfs .v-lab{margin-inline:auto}
+
+/* palavra-chave do título em pílula. Ela nunca começa uma linha: a palavra anterior, a pílula e a pontuação ficam juntas
+   num .v-nw que não quebra (o espaço interno da pílula empurraria a palavra e tiraria o título do alinhamento da coluna) */
+.v-nw{white-space:nowrap}
+.v-pl{display:inline-block;padding:0 .2em .05em;margin:0 .02em;border-radius:.22em;background:var(--or-areia);color:var(--or-obsidiana);line-height:1.04}
+.v-lime .v-pl{background:var(--or-obsidiana);color:var(--or-areia)}
+
+/* dúvidas: seção escura; cada pergunta é uma barra que abre e fecha (details/summary: teclado e leitor de tela sem JS) */
+#duvidas::before{filter:none;opacity:.02}
+#duvidas{interpolate-size:allow-keywords}
+body.pub #duvidas .v-faq{display:flex;flex-direction:column;gap:10px;max-width:none}
+#duvidas .v-faq>details{border:1px solid rgba(234,224,213,.12);border-radius:16px;background:rgba(234,224,213,.035);transition:border-color .25s ease,background-color .25s ease}
+#duvidas .v-faq>details:hover{border-color:rgba(198,172,142,.35)}
+#duvidas .v-faq>details[open]{border-color:rgba(198,172,142,.45);background:rgba(34,51,59,.38)}
+#duvidas summary{display:flex;align-items:center;gap:16px;min-height:64px;padding:14px 22px;border-radius:15px;cursor:pointer;list-style:none}
+#duvidas summary::-webkit-details-marker{display:none}
+#duvidas summary:focus-visible{outline:2px solid var(--or-areia);outline-offset:3px}
+body.pub #duvidas summary h3{margin:0;font-size:clamp(15px,1.3vw,18px);font-weight:600;line-height:1.35;letter-spacing:-.005em;text-transform:none}
+.v-fq-i{position:relative;flex:none;width:28px;height:28px;border:1px solid rgba(198,172,142,.55);border-radius:50%}
+.v-fq-i::before,.v-fq-i::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:1.5px;background:var(--or-areia);translate:-50% -50%;transition:rotate .3s ease}
+.v-fq-i::after{rotate:90deg}
+details[open]>summary .v-fq-i::after{rotate:0deg}
+body.pub #duvidas .v-faq details>p{margin:0;max-width:70ch;padding:0 22px 20px 66px;font-size:clamp(15px,1.2vw,17px);line-height:1.6;color:rgba(234,224,213,.8)}
+#duvidas details::details-content{block-size:0;overflow:clip;transition:block-size .35s ease,content-visibility .35s allow-discrete}
+#duvidas details[open]::details-content{block-size:auto}
+@media(max-width:600px){#duvidas summary{padding:12px 16px;gap:12px}body.pub #duvidas .v-faq details>p{padding:0 16px 18px 56px}}
+@media(prefers-reduced-motion:reduce){#duvidas details::details-content,.v-fq-i::before,.v-fq-i::after,#duvidas .v-faq>details{transition:none}}
+/* em tela estreita, o número decorativo do título, como "(08)", cairia sozinho numa linha: some */
+@media(max-width:520px){.v-h2 .v-n{display:none}}

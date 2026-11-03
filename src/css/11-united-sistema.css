@@ -1,9 +1,7 @@
 /* ================= SISTEMA VISUAL "UNITED" EM TODO O SITE PÚBLICO ================= */
 body.pub{--bg:#0A0908;--panel:#141414;--surf:#ffffff0d;--bd:#ffffff26}
-/* texturas de pontos em todos os fundos */
-.v-base,.v-ai,.v-scene,.v-foot{background-image:radial-gradient(rgba(244,245,251,.13) 1px,transparent 1.5px);background-size:24px 24px}
-.v-ink{background-color:#fff;background-image:radial-gradient(rgba(10,9,8,.12) 1px,transparent 1.5px);background-size:24px 24px;color:#0E0E0E}
-.v-lime{background-image:radial-gradient(rgba(10,9,8,.16) 1px,transparent 1.5px);background-size:24px 24px}
+/* fundos limpos: as texturas de pontos saíram em 02/11/2026 (pedido do dono: site clean e minimalista) */
+.v-ink{background-color:#fff;color:#0E0E0E}
 .v-ai{background-color:var(--bg)!important}
 .v-gl::before{display:none}
 /* topo: faixa de avisos */

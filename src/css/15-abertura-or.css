@@ -1,5 +1,5 @@
 /* Abertura com a assinatura animada do kit Earthen Luxe (02/11/2026): o contorno do OR se desenha em areia,
-   a assinatura OR | MARKETING DIGITAL aparece em marfim, depois o slogan e o botão Entrar. */
+   o OR aparece em marfim, o divisor cresce, MARKETING DIGITAL surge do divisor, depois o slogan e o botão Entrar. */
 #or-intro{--obs:#0A0908;--areia:#C6AC8E;--marfim:#EAE0D5;--ardosia:#22333B;font-family:var(--fb,Inter,system-ui,sans-serif);color:var(--marfim)}
 #or-intro *{box-sizing:border-box}
 #or-intro{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .9s ease,visibility .9s;
@@ -8,11 +8,18 @@
 .or-ass{position:absolute;left:50%;top:42%;width:min(84vw,820px);height:auto;transform:translate(-50%,-50%);overflow:visible}
 .or-traco{fill:none;stroke:var(--areia);stroke-width:11;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
 .or-marca{opacity:0}
+/* depois do OR, o divisor cresce do centro e MARKETING DIGITAL sai de trás dele (o recorte or-wm-corte esconde o que está à esquerda) */
+.or-div{transform-box:fill-box;transform-origin:50% 50%;transform:scaleY(0)}
+.or-wm{opacity:0}
 #or-intro.go .or-traco{animation:or-desenha 2.35s cubic-bezier(.65,0,.35,1) forwards,or-some .25s linear 2.3s forwards}
 #or-intro.go .or-marca{animation:or-aparece .65s ease 2.1s forwards}
+#or-intro.go .or-div{animation:or-cresce .6s cubic-bezier(.2,.7,.2,1) 2.45s forwards}
+#or-intro.go .or-wm{animation:or-desliza 1.2s cubic-bezier(.16,1,.3,1) 2.75s both,or-aparece .7s ease 2.75s forwards}
 @keyframes or-desenha{to{stroke-dashoffset:0}}
 @keyframes or-some{to{opacity:0}}
 @keyframes or-aparece{to{opacity:1}}
+@keyframes or-cresce{to{transform:scaleY(1)}}
+@keyframes or-desliza{from{transform:translateX(-150px)}to{transform:none}}
 /* linhas diagonais finas no canto, como as diagonais da identidade */
 .or-line{position:absolute;height:1px;width:46vmax;background:linear-gradient(90deg,transparent,var(--areia));transform-origin:right center;opacity:0;transform:rotate(-52deg) translateX(40px);transition:opacity 1.2s ease,transform 1.8s cubic-bezier(.2,.7,.2,1)}
 .or-line.l1{right:-6vw;bottom:6vh}
@@ -30,7 +37,8 @@
 .or-btn:hover,.or-btn:focus-visible{border-color:var(--areia);background:var(--areia);color:var(--obs);outline:none}
 @media(prefers-reduced-motion:reduce){
   .or-traco{display:none}
-  .or-marca{opacity:1}
-  #or-intro.go .or-marca{animation:none}
+  .or-marca,.or-wm{opacity:1}
+  .or-div{transform:none}
+  #or-intro.go .or-marca,#or-intro.go .or-div,#or-intro.go .or-wm{animation:none}
   .or-line,.or-tag,.or-sub,.or-actions{transition:none}
 }
