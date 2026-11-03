@@ -174,7 +174,7 @@ function prPeca(l,f,p){
   <aside class="proj-side"><label for="pcs">Situação</label><select id="pcs" data-pc-s="${p.id}">${PC_ST.map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}</select>
     <label for="pcd">Data sugerida de publicação</label><input id="pcd" type="date" data-pc-d="${p.id}" value="${esc(p.data||'')}">
     <div class="proj-b"><button class="btn" data-act="pcgen:${p.id}" ${T.busy?'disabled':''}>${busy?'Gerando… '+(T.relLive||0)+' caracteres':p.txt?'Gerar de novo com IA':'Desenvolver com IA'}</button><button class="btn ghost" data-act="pccp:${p.id}">Copiar</button><button class="btn ok" data-act="pcwa:${p.id}">Enviar para aprovação</button><button class="btn ghost danger-t" data-act="pcdel:${p.id}">Apagar peça</button></div>
-    <p class="hint">Gerada em ${esc(fdate(p.geradoEm))}. A IA só usa o briefing, o escopo e os exemplos das campanhas: revise antes de enviar.</p></aside></article>`;
+    <p class="hint">Gerada em ${esc(fdate(p.geradoEm))}. A IA só usa o briefing, o escopo e os exemplos das campanhas: revise antes de enviar.</p></aside></article>${reaArteHtml(l,f,p)}`;
 }
 function tabProd(l){
   const t=l.track,f=T.area&&t.frentes.find(x=>x.id===T.area);if(T.area&&!f){T.area=null;T.peca=null}
@@ -674,6 +674,7 @@ function prodBind(el,id){
     if(!/<html|<!doctype|<body/i.test(txt)){T.msg='O arquivo não parece ser uma página HTML.';return trkPaint()}
     siteNovaVersao(id,txt,'Importado: '+file.name.slice(0,80))};
   lpBind();
+  reaArteBind(el,id);
   el.querySelectorAll('[data-thumb]').forEach(img=>arqGet(img.dataset.thumb).then(bl=>{if(bl&&img.isConnected){img.src=URL.createObjectURL(bl);img.onload=()=>URL.revokeObjectURL(img.src)}}).catch(()=>{}));
 }
 
