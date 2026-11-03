@@ -4,9 +4,9 @@
 
 const arqDb=()=>new Promise((res,rej)=>{try{const q=indexedDB.open('or-arquivos',1);q.onupgradeneeded=()=>q.result.createObjectStore('f');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}catch(e){rej(e)}});
 const arqTx=async(modo,fn)=>{const d=await arqDb();return new Promise((res,rej)=>{const tx=d.transaction('f',modo),r=fn(tx.objectStore('f'));tx.oncomplete=()=>res(r&&r.result);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)})};
-const arqPut=(k,v)=>arqTx('readwrite',s=>s.put(v,k));
-const arqGet=k=>arqTx('readonly',s=>s.get(k));
-const arqDel=k=>arqTx('readwrite',s=>s.delete(k)).catch(()=>{});
+const arqPut=async(k,v)=>{await arqTx('readwrite',s=>s.put(v,k));if(typeof orCloudUploadAsset==='function')await orCloudUploadAsset(k,v)};
+const arqGet=async k=>{const local=await arqTx('readonly',s=>s.get(k)).catch(()=>null);if(local)return local;if(typeof orCloudGetAsset==='function'){const remote=await orCloudGetAsset(k);if(remote){await arqTx('readwrite',s=>s.put(remote,k)).catch(()=>{});return remote}}return null};
+const arqDel=async k=>{await arqTx('readwrite',s=>s.delete(k)).catch(()=>{});if(typeof orCloudDeleteAsset==='function')await orCloudDeleteAsset(k)};
 const arqDelPref=p=>arqTx('readwrite',s=>{const c=s.openCursor();c.onsuccess=()=>{const x=c.result;if(!x)return;if(String(x.key).startsWith(p))x.delete();x.continue()};return null}).catch(()=>{});
 
 /* ---------- o que vamos fazer: frentes de cada serviço (redes e formatos; áreas dos outros serviços) ---------- */
