@@ -104,6 +104,10 @@
     {
       "arquivo": "src/css/26-minha-area-clean.css",
       "descricao": "Minha área repaginada: fundo liso, cartões sólidos, rótulos em Inter, status na paleta, traço em areia no menu"
+    },
+    {
+      "arquivo": "src/css/27-editor-posts.css",
+      "descricao": "Editor visual das peças sociais: proporções, composição, cores, foto local e exportação PNG"
     }
   ],
   "js": [
@@ -214,6 +218,10 @@
     {
       "arquivo": "src/js/22e-acompanhamento-producao.js",
       "descricao": "Acompanhamento: o que vamos fazer (escopo), produção por ciclo com IA, campanhas com exemplos, Meta Ads, imprensa, versões do código do site, mensagens prontas"
+    },
+    {
+      "arquivo": "src/js/22g-editor-posts.js",
+      "descricao": "Editor visual de posts e carrosséis com prévia, textos, paleta, foto local e exportação PNG"
     },
     {
       "arquivo": "src/js/22c-vagas.js",

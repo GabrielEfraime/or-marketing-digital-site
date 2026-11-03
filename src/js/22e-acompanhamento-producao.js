@@ -174,7 +174,7 @@ function prPeca(l,f,p){
   <aside class="proj-side"><label for="pcs">Situação</label><select id="pcs" data-pc-s="${p.id}">${PC_ST.map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}</select>
     <label for="pcd">Data sugerida de publicação</label><input id="pcd" type="date" data-pc-d="${p.id}" value="${esc(p.data||'')}">
     <div class="proj-b"><button class="btn" data-act="pcgen:${p.id}" ${T.busy?'disabled':''}>${busy?'Gerando… '+(T.relLive||0)+' caracteres':p.txt?'Gerar de novo com IA':'Desenvolver com IA'}</button><button class="btn ghost" data-act="pccp:${p.id}">Copiar</button><button class="btn ok" data-act="pcwa:${p.id}">Enviar para aprovação</button><button class="btn ghost danger-t" data-act="pcdel:${p.id}">Apagar peça</button></div>
-    <p class="hint">Gerada em ${esc(fdate(p.geradoEm))}. A IA só usa o briefing, o escopo e os exemplos das campanhas: revise antes de enviar.</p></aside></article>`;
+    <p class="hint">Gerada em ${esc(fdate(p.geradoEm))}. A IA só usa o briefing, o escopo e os exemplos das campanhas: revise antes de enviar.</p></aside></article>${reaArteHtml(l,f,p)}`;
 }
 function tabProd(l){
   const t=l.track,f=T.area&&t.frentes.find(x=>x.id===T.area);if(T.area&&!f){T.area=null;T.peca=null}
@@ -562,14 +562,14 @@ function prodAct(k,arg,b){
   else if(k==='escdone')trkSet(id,t=>{const x=t.escopo.find(y=>y.id===arg);if(x){x.done=!x.done;x.at=x.done?today():''}});
   else if(k==='escgen'){entregaUma(id,arg);return true}
   else if(k==='rede'){const r=arg,t0=l.track;
-    if(t0.redes.includes(r)){const ids=t0.frentes.filter(x=>x.rede===r).map(x=>x.id),n=(t0.pecas||[]).filter(p=>ids.includes(p.fid)).length;
-      const tira=()=>{trkSet(id,t=>{t.redes=t.redes.filter(x=>x!==r);t.frentes=t.frentes.filter(x=>x.rede!==r);t.pecas=(t.pecas||[]).filter(p=>!ids.includes(p.fid))});trkPaint()};
+    if(t0.redes.includes(r)){const ids=t0.frentes.filter(x=>x.rede===r).map(x=>x.id),pids=(t0.pecas||[]).filter(p=>ids.includes(p.fid)).map(p=>p.id),n=pids.length;
+      const tira=()=>{pids.forEach(pid=>reaArteLimparArquivo(id,pid));trkSet(id,t=>{t.redes=t.redes.filter(x=>x!==r);t.frentes=t.frentes.filter(x=>x.rede!==r);t.pecas=(t.pecas||[]).filter(p=>!ids.includes(p.fid))});trkPaint()};
       if(n){trkPaint();confirma('Tirar '+r+'? As '+n+' peça(s) já geradas para '+r+' serão apagadas.',tira,{ok:'Tirar',titulo:'Tirar rede?'})}else tira();return true}
     trkSet(id,t=>{t.redes.push(r);(REDE_FMT[r]||['post']).forEach(fm=>{const base=t.frentes.find(x=>x.k==='social'&&(x.fmt===fm||((fm==='video'||fm==='shorts')&&x.fmt==='reels')));t.frentes.push({id:uid(),k:'social',rede:r,fmt:fm,qtd:base?base.qtd:4,por:base?base.por:'mes'})})})}
   else if(k==='fradd'){const fm=val2('fa_f_'+arg)||'outro',q=Math.max(1,Math.min(60,Math.round(+val2('fa_q_'+arg))||1)),r=arg==='social'?val2('fa_r_'+arg):'';
     trkSet(id,t=>t.frentes.push({id:uid(),k:arg,rede:r,fmt:fm,qtd:q,por:arg==='brand'?'projeto':'mes',...(fm==='outro'?{nome:''}:{})}))}
-  else if(k==='frdel'){const fr=l.track.frentes.find(x=>x.id===arg);if(!fr)return true;const n=(l.track.pecas||[]).filter(p=>p.fid===arg).length;
-    const faz=()=>{trkSet(id,t=>{t.frentes=t.frentes.filter(x=>x.id!==arg);t.pecas=(t.pecas||[]).filter(p=>p.fid!==arg)});trkPaint()};
+  else if(k==='frdel'){const fr=l.track.frentes.find(x=>x.id===arg);if(!fr)return true;const pids=(l.track.pecas||[]).filter(p=>p.fid===arg).map(p=>p.id),n=pids.length;
+    const faz=()=>{pids.forEach(pid=>reaArteLimparArquivo(id,pid));trkSet(id,t=>{t.frentes=t.frentes.filter(x=>x.id!==arg);t.pecas=(t.pecas||[]).filter(p=>p.fid!==arg)});trkPaint()};
     if(n)confirma('Apagar a frente "'+frNome(fr)+'" e as '+n+' peça(s) dela? Não dá para desfazer.',faz,{ok:'Apagar',titulo:'Apagar frente?'});else faz();return true}
   else if(k==='area'){T.area=arg||null;T.peca=null;T.tab='prod';T.msg='';T.info='';trkPaint();window.scrollTo(0,0);return true}
   else if(k==='peca'){T.peca=arg||null;T.msg='';trkPaint();window.scrollTo(0,0);return true}
@@ -584,7 +584,7 @@ function prodAct(k,arg,b){
   else if(k==='pccp'||k==='pcwa'){const p=(l.track.pecas||[]).find(x=>x.id===arg),fr=p&&l.track.frentes.find(x=>x.id===p.fid);if(!p)return true;const tx=(p.titulo?p.titulo+'\n\n':'')+p.txt;
     if(k==='pccp'){navigator.clipboard.writeText(tx);copiado(b);return true}
     abreWa(l,'Oi, '+l.nome.split(' ')[0]+'! Aqui é a equipe da OR. Segue uma peça'+(fr?' de '+frNome(fr):'')+' para você aprovar:\n\n'+tx.slice(0,2800)+'\n\nPode nos dizer se aprova ou o que quer ajustar?');return true}
-  else if(k==='pcdel'){confirma('Apagar esta peça? Não dá para desfazer.',()=>{trkSet(id,t=>{t.pecas=(t.pecas||[]).filter(x=>x.id!==arg)});T.peca=null;trkPaint()},{ok:'Apagar',titulo:'Apagar peça?'});return true}
+  else if(k==='pcdel'){confirma('Apagar esta peça? Não dá para desfazer.',()=>{reaArteLimparArquivo(id,arg);trkSet(id,t=>{t.pecas=(t.pecas||[]).filter(x=>x.id!==arg)});T.peca=null;trkPaint()},{ok:'Apagar',titulo:'Apagar peça?'});return true}
   else if(k==='ia'){iaCanal(id,a1,a2);return true}
   else if(k==='iafix'){const c=val2('iacx-'+a2);if(!c){T.iaMsg='Escreva o que a IA errou.';T.iaCanal=a1;return trkPaint(),true}const g=document.getElementById('iacg-'+a2);iaCanal(id,a1,'',{rid:a2,corr:c.slice(0,600),geral:!!(g&&g.checked)});return true}
   else if(k==='iacp'){const r=((l.track.ia||{})[a1]||[]).find(x=>x.id===a2);if(r)navigator.clipboard.writeText(r.txt);copiado(b);return true}
@@ -674,6 +674,7 @@ function prodBind(el,id){
     if(!/<html|<!doctype|<body/i.test(txt)){T.msg='O arquivo não parece ser uma página HTML.';return trkPaint()}
     siteNovaVersao(id,txt,'Importado: '+file.name.slice(0,80))};
   lpBind();
+  reaArteBind(el,id);
   el.querySelectorAll('[data-thumb]').forEach(img=>arqGet(img.dataset.thumb).then(bl=>{if(bl&&img.isConnected){img.src=URL.createObjectURL(bl);img.onload=()=>URL.revokeObjectURL(img.src)}}).catch(()=>{}));
 }
 
