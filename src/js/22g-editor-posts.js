@@ -11,7 +11,7 @@ function reaArteHex(v,base){return /^#[0-9a-f]{6}$/i.test(String(v||""))?v:base}
 function reaArteExtrairSlides(txt){
   const linhas=String(txt||"").split(/\r?\n/),slides=[];let atual=null;
   linhas.forEach(l=>{
-    const m=l.match(/^\s*(?:slide|tela)\s*(\d+)\s*[:.)\-–]?\s*(.*)$/i);
+    const m=l.match(/^\s*[*#>_-]*\s*(?:slide|tela)\s*(\d+)\s*[:.)\-–]?\s*(.*)$/i);
     if(m){atual={titulo:String(m[2]||"").trim().slice(0,100),apoio:"",cta:""};slides.push(atual);return}
     if(atual&&l.trim()){if(!atual.titulo)atual.titulo=l.trim().slice(0,100);else atual.apoio=(atual.apoio+" "+l.trim()).trim().slice(0,240)}
   });
@@ -96,11 +96,11 @@ function reaArteDesenhar(box,a,img){
   const d=REA_ART_FORMATOS[a.formato]||REA_ART_FORMATOS.feed,w=d.w,h=d.h;
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;canvas.style.aspectRatio=w+" / "+h}
   const ctx=canvas.getContext("2d");if(!ctx)return;
-  const slide=a.slides[a.slide]||{},u=1,m=86,fg=a.texto,ac=a.acento;
+  const slide=a,m=86,fg=a.texto,ac=a.acento;
   const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,a.fundo);grad.addColorStop(1,"#171411");
   ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
   if(img&&a.modelo==="foto")reaArteCobrir(ctx,img,0,0,w,h);
-  else if(img){ctx.save();reaArteCobrir(ctx,img,m,h*.56,w-m*2,h*.23);ctx.restore()}
+  else if(img){ctx.save();reaArteCobrir(ctx,img,m,h*.17,w-m*2,h*.20);ctx.restore()}
   if(img&&a.modelo==="foto"){ctx.fillStyle="rgba(10,9,8,.58)";ctx.fillRect(0,0,w,h)}
   ctx.globalAlpha=.20;ctx.fillStyle=ac;ctx.beginPath();ctx.arc(w*.84,h*.17,Math.min(w,h)*.22,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
   ctx.fillStyle=ac;ctx.fillRect(m,m,Math.max(82,Math.min(220,w*.2)),7);
@@ -109,11 +109,10 @@ function reaArteDesenhar(box,a,img){
   const center=a.modelo==="tipografico",x=center?w/2:m,align=center?"center":"left",max=w-m*2;
   ctx.fillStyle=fg;
   const fs=center?96:(h>1500?88:82),lh=Math.round(fs*1.13);
-  const y0=h*(h>1500?.34:.32);
+  const y0=h*(h>1500?0.42:(img&&a.modelo!=="foto"?0.42:0.32));
   const usado=reaArteLinhas(ctx,slide.titulo,x,y0,max,"700 "+fs+"px Sora, Inter, system-ui, sans-serif",lh,3,align,fg);
   let y=y0+usado+36;
   if(slide.apoio){y+=reaArteLinhas(ctx,slide.apoio,x,y,max,"400 36px Inter, system-ui, sans-serif",52,4,align,fg)+32}
-  if(img&&a.modelo!=="foto")y=Math.max(y,h*.56+ (h*.23) + 44);
   if(slide.cta){
     const wtxt=ctx.measureText(slide.cta).width,pw=wtxt+56,ph=72,px=center?(w-pw)/2:m,py=Math.min(y+20,h*.82);
     ctx.fillStyle=ac;ctx.fillRect(px,py,pw,ph);ctx.fillStyle=a.fundo;ctx.font="700 27px Inter, system-ui, sans-serif";ctx.textAlign="center";ctx.fillText(slide.cta,px+pw/2,py+46,pw-24);
