@@ -106,7 +106,10 @@ export async function authRoute(req,env,route){
  if(route==='password'&&method==='PUT'){
   if(!actor?.id)return fail(401,'Entre na sua conta.');
   let b;try{b=await readJson(req,4000)}catch(e){return fail(400,'Dados inválidos.')}
-  const pw=String(b.password||'');if(pw.length<12||pw.length>128)return fail(400,'Use uma senha de 12 a 128 caracteres.');
+  const pw=String(b.password||''),current=String(b.current_password||'');
+  if(pw.length<12||pw.length>128)return fail(400,'Use uma senha de 12 a 128 caracteres.');
+  const record=await env.DB.prepare('SELECT password_salt,password_hash FROM users WHERE id=?').bind(actor.id).first();
+  if(!record||current.length>128||await derive(current,record.password_salt)!==record.password_hash)return fail(401,'Senha atual incorreta.');
   const s=salt(),hash=await derive(pw,s);
   await env.DB.prepare('UPDATE users SET password_salt=?,password_hash=?,must_change_password=0 WHERE id=?').bind(s,hash,actor.id).run();
   await env.DB.prepare('DELETE FROM sessions WHERE user_id=?').bind(actor.id).run();
