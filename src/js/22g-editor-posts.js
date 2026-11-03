@@ -231,3 +231,54 @@ function reaArteBind(el,id){
     upload.value="";
   });
 }
+
+
+/* Tela administrativa de Posts: entrada única para localizar e editar as peças. */
+const REA_POSTS_STATE={q:"",status:"todos"};
+function reaPostsItens(){
+  const saida=[];
+  getL().forEach(l=>{
+    const t=l.track;if(!t)return;
+    (t.pecas||[]).forEach(p=>{
+      const f=(t.frentes||[]).find(x=>x.id===p.fid);
+      if(f&&f.k==="social"&&["post","carrossel","stories"].includes(f.fmt))saida.push({l,p,f});
+    });
+  });
+  return saida.sort((a,b)=>(b.p.t||0)-(a.p.t||0));
+}
+function postsInner(){
+  const todos=reaPostsItens(),q=norm(REA_POSTS_STATE.q),status=REA_POSTS_STATE.status;
+  const itens=todos.filter(x=>{
+    const texto=norm([x.l.nome,x.p.titulo,x.f.rede,x.f.fmt,x.p.txt].join(" "));
+    return (!q||texto.includes(q))&&(status==="todos"||x.p.status===status);
+  });
+  const clientes=getL().filter(l=>l.track&&(l.track.frentes||[]).some(f=>f.k==="social"));
+  const sem=clientes.filter(l=>!todos.some(x=>x.l.id===l.id));
+  const contStatus=s=>todos.filter(x=>x.p.status===s).length;
+  const card=x=>'<article class="rea-post-card"><div class="rea-post-card-main"><div class="rea-post-card-top"><span class="rea-post-network">'+esc(x.f.rede||"Redes sociais")+' · '+esc(FMT[x.f.fmt]||x.f.fmt)+'</span><span class="chip '+(x.p.status==="Publicado"||x.p.status==="Aprovado"?"aprovado":x.p.status==="Ideia"?"novo":"pronto")+'">'+esc(x.p.status||"Ideia")+'</span></div><h3>'+esc(x.p.titulo||"Post sem título")+'</h3><p class="hint">'+esc(x.l.nome)+' · '+esc(perNomeT(x.l.track,x.p.per))+'</p>'+(x.p.txt?'<p class="rea-post-excerpt">'+esc(x.p.txt.slice(0,180))+'</p>':'<p class="hint">A peça ainda precisa de conteúdo.</p>')+'</div><button type="button" class="btn" data-rea-post-open="'+esc([x.l.id,x.f.id,x.p.id].join("::"))+'">Editar post</button></article>';
+  const clientCard=l=>{
+    const f=(l.track.frentes||[]).find(x=>x.k==="social"&&["post","carrossel","stories"].includes(x.fmt))||(l.track.frentes||[]).find(x=>x.k==="social");
+    return '<article class="rea-post-empty"><div><b>'+esc(l.nome)+'</b><p class="hint">Ainda não há posts gerados para este cliente.</p></div><button type="button" class="btn ghost" data-rea-post-client="'+esc([l.id,f?f.id:""].join("::"))+'">Abrir produção</button></article>';
+  };
+  return '<header class="rea-posts-head"><span class="rea-art-kicker">MINHA ÁREA · PRODUÇÃO</span><h2 class="pt">Posts</h2><p class="hint">Área administrativa para localizar, criar e editar as peças sociais dos clientes.</p></header>'+
+    '<div class="rea-posts-stats"><div class="rea-post-stat"><b>'+todos.length+'</b><span>peças sociais</span></div><div class="rea-post-stat"><b>'+contStatus("Aprovado")+'</b><span>aprovadas</span></div><div class="rea-post-stat"><b>'+contStatus("Publicado")+'</b><span>publicadas</span></div><div class="rea-post-stat"><b>'+clientes.length+'</b><span>clientes em produção</span></div></div>'+
+    '<div class="rea-posts-filters"><div><label for="rea-posts-q">Buscar post ou cliente</label><input id="rea-posts-q" value="'+esc(REA_POSTS_STATE.q)+'" placeholder="Nome, tema ou rede"></div><div><label for="rea-posts-status">Situação</label><select id="rea-posts-status">'+[['todos',"Todas"],["Ideia","Ideia"],["Em produção","Em produção"],["Aprovado","Aprovado"],["Publicado","Publicado"]].map(x=>'<option value="'+esc(x[0])+'" '+(status===x[0]?"selected":"")+'>'+esc(x[1])+'</option>').join("")+'</select></div></div>'+
+    '<div class="rea-posts-list">'+(itens.map(card).join("")||'<div class="panel hint">Nenhum post corresponde a esse filtro.</div>')+'</div>'+
+    (sem.length?'<section class="rea-posts-empty"><h3>Clientes sem posts gerados</h3><p class="hint">Abra a produção de um cliente para gerar as primeiras peças.</p>'+sem.map(clientCard).join("")+'</section>':'')+
+    (!clientes.length?'<div class="panel hint">Nenhum cliente em execução tem redes sociais no escopo ainda. Inicie o acompanhamento de um cliente aprovado para criar posts.</div>':'');
+}
+function postsBind(){
+  const busca=document.getElementById("rea-posts-q"),st=document.getElementById("rea-posts-status");
+  if(busca)busca.oninput=()=>{REA_POSTS_STATE.q=busca.value;const pos=busca.selectionStart;admin();const n=document.getElementById("rea-posts-q");if(n){n.focus();n.setSelectionRange(pos,pos)}};
+  if(st)st.onchange=()=>{REA_POSTS_STATE.status=st.value;admin()};
+  document.querySelectorAll("[data-rea-post-open]").forEach(b=>b.onclick=()=>{
+    const [id,fid,pid]=b.dataset.reaPostOpen.split("::"),l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);
+    if(!l||!p)return;
+    A.view="trk";A.sel=id;T.id=id;T.tab="prod";T.area=fid;T.peca=pid;T.msg="";T.info="";
+    T.cic=/^c\d+$/.test(p.per||"")?Number(p.per.slice(1)):null;admin();
+  });
+  document.querySelectorAll("[data-rea-post-client]").forEach(b=>b.onclick=()=>{
+    const [id,fid]=b.dataset.reaPostClient.split("::"),l=trkL(id);if(!l)return;
+    A.view="trk";A.sel=id;T.id=id;T.tab="prod";T.area=fid||null;T.peca=null;T.msg="";T.info="";T.cic=null;admin();
+  });
+}
