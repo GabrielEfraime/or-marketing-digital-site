@@ -36,7 +36,7 @@ async function ask(msgs,onChunk,o={}){
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
   const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
   let url,body;
-  const chave=keyDe(c),viaSrv=c.kind==='openai'&&!chave&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
+  const chave=keyDe(c),viaSrv=c.kind==='openai'&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
   if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+chave;
     body={model:c.model,messages:msgs,stream:true,[oa?'max_completion_tokens':'max_tokens']:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048)};if(!rs)body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
     const L=iaLim(c.model);if(L.tpm&&body.max_tokens){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
