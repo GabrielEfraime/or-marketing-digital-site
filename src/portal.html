@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Portal do cliente | OR Marketing Digital</title>
+<style>
+:root{color-scheme:dark;--bg:#0A0908;--fg:#EAE0D5;--accent:#C6AC8E;--card:#22333B;--line:#5E503F}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,Arial,sans-serif}
+header{padding:22px max(24px,calc((100vw - 1080px)/2));border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-size:29px;font-weight:800;letter-spacing:-.08em}.brand small{font-size:11px;letter-spacing:.16em;font-weight:500;margin-left:14px}
+main{max-width:1080px;margin:35px auto;padding:0 24px}h1{font-size:clamp(27px,4vw,42px);line-height:1.2}h2{font-size:19px}
+.card{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:23px;margin:16px 0}label{display:block;margin:12px 0 6px}
+input,select{display:block;width:100%;margin-top:5px;background:#0A0908;color:var(--fg);padding:12px;border:1px solid var(--accent);border-radius:8px;min-height:45px}
+button,a.action{cursor:pointer;border:0;border-radius:9px;padding:12px 17px;background:var(--accent);color:var(--bg);font-weight:700;display:inline-block;text-decoration:none;margin:8px 8px 8px 0}
+button.secondary{background:transparent;color:var(--fg);border:1px solid var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.muted{opacity:.8}.err{color:#ffb2a5;white-space:pre-line}.ok{color:#ccebc7}.entry{padding:12px 0;border-bottom:1px solid var(--line)}
+.swatches{display:flex;gap:8px;margin-top:12px}.swatches i{height:36px;width:60px;border-radius:5px;border:1px solid #999}
+[hidden]{display:none!important}img{max-width:200px;max-height:120px;object-fit:contain}
+</style>
+</head>
+<body>
+<header><div class="brand">OR <small>MARKETING DIGITAL</small></div><a class="action" href="/">Site da OR</a></header>
+<main>
+<section id="login" class="card">
+<h1>Área do cliente</h1><p>Entre com o acesso fornecido pela equipe da OR.</p>
+<form id="loginForm"><label>E-mail<input name="email" type="email" autocomplete="username" required></label>
+<label>Senha<input name="password" type="password" autocomplete="current-password" required></label>
+<button type="submit">Entrar</button></form><p id="loginError" class="err" role="alert"></p>
+</section>
+<section id="password" class="card" hidden><h1>Alterar senha inicial</h1><p>Para proteger sua conta, defina uma senha nova de pelo menos 12 caracteres.</p>
+<form id="passwordForm"><label>Senha atual<input name="current_password" type="password" autocomplete="current-password" required></label>
+<label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="12" required></label>
+<button type="submit">Salvar nova senha</button></form><p id="passwordError" class="err" role="alert"></p></section>
+<section id="dashboard" hidden>
+<div class="grid"><div><h1 id="welcome">Meu acompanhamento</h1><p class="muted" id="subtitle"></p></div><div style="text-align:right"><button class="secondary" id="logout">Sair da conta</button></div></div>
+<div id="workspace"></div>
+<div id="admin" class="card" hidden><h2>Gerenciar acessos</h2>
+<p class="muted">Cadastre clientes ou colaboradores com senha temporária. Compartilhe a senha por um canal privado. O primeiro acesso exigirá uma troca.</p>
+<form id="createUser"><label>E-mail<input name="email" type="email" required></label><label>Senha temporária<input name="password" type="password" minlength="12" required></label>
+<label>Tipo de acesso<select name="role"><option value="client">Cliente</option><option value="staff">Colaborador</option><option value="admin">Administrador</option></select></label>
+<label>ID do cliente (obrigatório para cliente)<input name="client_id" placeholder="ID do projeto"></label>
+<button type="submit">Criar acesso</button></form><p id="createResult" role="status"></p></div>
+</section>
+</main>
+<script>
+const q=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const show=id=>['login','password','dashboard'].forEach(k=>q('#'+k).hidden=k!==id);
+async function call(path,method='GET',data){
+ const r=await fetch('/api/cloud/'+path,{method,credentials:'same-origin',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(j.error?.message||'Erro '+r.status);
+ return j;
+}
+function identity(profile,name,logoUrl){
+ const p=profile||{},swatches=[p.corFundo,p.corTexto,p.corDestaque].filter(x=>/^#[0-9a-f]{6}$/i.test(x||''));
+ return '<section class="card"><h2>Identidade visual</h2><strong>'+esc(p.nomePerfil||name)+'</strong><p>'+esc(p.instagram||'Perfil não informado')+'</p>'+
+ '<div class="swatches">'+swatches.map(c=>'<i style="background:'+c+'"></i>').join('')+'</div>'+
+ (p.logo?'<img src="'+logoUrl+'" alt="Logotipo do cliente" onerror="this.hidden=true">':'')+'</section>';
+}
+function postList(posts){
+ if(!posts?.length)return '<p class="muted">Nenhum post cadastrado ainda.</p>';
+ return posts.map(p=>'<div class="entry"><strong>'+esc(p.titulo||'Post')+'</strong><div class="muted">'+esc(p.data||'Sem data')+' · '+esc(p.status||'Ideia')+'</div><p>'+esc(p.legenda||p.txt||'')+'</p></div>').join('');
+}
+async function load(){
+ let me;try{me=(await call('auth/me')).user}catch(e){show('login');return}
+ if(me.must_change_password){show('password');return}
+ show('dashboard');q('#welcome').textContent='Olá, '+me.email;
+ q('#subtitle').textContent=me.role==='client'?'Acompanhe o seu conteúdo e os materiais da sua marca.':'Visão dos clientes cadastrados no D1.';
+ q('#admin').hidden=me.role!=='admin';
+ try{
+  const clients=(await call('clients')).leads||[],box=q('#workspace');
+  if(!clients.length){box.innerHTML='<div class="card">Nenhum cliente cadastrado ainda.</div>';return}
+  box.innerHTML='<div class="grid">'+clients.map(l=>'<article class="card"><h2>'+esc(l.nome)+'</h2><p>Status: '+esc(l.status||'novo')+'</p><p>Projeto: '+esc(l.id)+'</p><button data-client="'+esc(l.id)+'">Ver conteúdo</button></article>').join('')+'</div><section id="detail"></section>';
+  box.querySelectorAll('[data-client]').forEach(b=>b.onclick=()=>openClient(clients.find(l=>l.id===b.dataset.client)));
+ }catch(e){q('#workspace').textContent='Erro ao carregar dados: '+e.message}
+}
+async function openClient(l){
+ if(!l)return;const el=q('#detail');el.innerHTML='<div class="card">Carregando…</div>';
+ try{
+  const [posts,identity,briefings]=await Promise.all([call('clients/'+l.id+'/posts'),call('clients/'+l.id+'/identity'),call('clients/'+l.id+'/briefings')]);
+  el.innerHTML='<h2>Projeto: '+esc(l.nome)+'</h2>'+identityCard(identity,l)+
+   '<section class="card"><h2>Calendário e posts</h2>'+postList(posts.posts)+'</section>'+
+   '<section class="card"><h2>Briefings recebidos</h2><p>'+((briefings.briefings||[]).length)+' briefing(s) cadastrado(s).</p></section>';
+ }catch(e){el.textContent='Erro: '+e.message}
+}
+function identityCard(data,l){
+ const logoUrl='/api/cloud/assets/'+encodeURIComponent(l.id)+'/marca';
+ return identity(data.identity||{},l.nome,logoUrl);
+}
+q('#loginForm').onsubmit=async e=>{e.preventDefault();q('#loginError').textContent='';const f=new FormData(e.target);
+ try{await call('auth/login','POST',{email:f.get('email'),password:f.get('password')});e.target.reset();await load()}catch(e){q('#loginError').textContent=e.message}};
+q('#passwordForm').onsubmit=async e=>{e.preventDefault();q('#passwordError').textContent='';const f=new FormData(e.target);
+ try{await call('auth/password','PUT',{current_password:f.get('current_password'),password:f.get('password')});alert('Senha alterada. Entre novamente.');show('login')}catch(e){q('#passwordError').textContent=e.message}};
+q('#logout').onclick=async()=>{await call('auth/logout','POST').catch(()=>{});show('login')};
+q('#createUser').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),b=Object.fromEntries(f.entries());
+ try{const data=await call('auth/users','POST',b);q('#createResult').className='ok';q('#createResult').textContent='Acesso '+data.email+' criado. Envie as credenciais temporárias com segurança.';e.target.reset()}catch(x){q('#createResult').className='err';q('#createResult').textContent=x.message}};
+load();
+</script>
+</body></html>

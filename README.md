@@ -21,7 +21,11 @@ npm run abrir:teste   # abre o build de teste em http://127.0.0.1:5173
 
 Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer HTML aberto no mesmo Chrome consegue ler as chaves e os dados da plataforma. Na primeira vez no endereço novo, clique em **Conectar pasta de backup no HD** para trazer os leads, ou importe um backup.
 
-## Publicar para teste (GitHub + Cloudflare Pages)
+## Publicar com Cloudflare D1 + R2
+
+A infraestrutura passou a utilizar D1 para clientes, briefings, posts, calendário, identidade visual e logins, e R2 para fotos e logos. Veja [o roteiro de publicação e migração](docs/CLOUDFLARE-D1-R2-DEPLOY.md) antes de configurar Pages. O bloco abaixo é a documentação da versão anterior com KV e não deve ser seguido para o backend novo.
+
+## Referência histórica de publicação (KV, desatualizada)
 
 1. **GitHub:** crie um repositório **privado** e suba esta pasta. O `.gitignore` já deixa de fora o `.env`, o `dist/` e o build de teste.
 2. **Cloudflare:** em *Workers & Pages > Create > Pages > Connect to Git*, escolha o repositório e preencha:

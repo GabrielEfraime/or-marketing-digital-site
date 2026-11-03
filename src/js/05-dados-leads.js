@@ -62,7 +62,7 @@ const cleanT=o=>{if(!o||typeof o!=='object'||Array.isArray(o)||!ID_OK.test(Strin
 const getT=()=>{try{const a=JSON.parse(sget('talentos2')||'[]');return Array.isArray(a)?a.map(cleanT).filter(Boolean):[]}catch(e){return[]}};
 const setT=a=>sset('talentos2',JSON.stringify(a.slice(0,300)));
 const getL=()=>{try{const a=JSON.parse(sget('leads2')||'[]');return Array.isArray(a)?a.map(cleanLead).filter(Boolean):[]}catch(e){return[]}};
-const setL=a=>{const j=JSON.stringify(a);sset('leads2',j);let ok=false;try{ok=STORE_OK&&localStorage.getItem('leads2')===j}catch(e){ok=false}SAVE.at=Date.now();SAVE.ok=ok;diskSaveSoon();pintaSave()};
+const setL=a=>{const j=JSON.stringify(a);sset('leads2',j);let ok=false;try{ok=STORE_OK&&localStorage.getItem('leads2')===j}catch(e){ok=false}SAVE.at=Date.now();SAVE.ok=ok;diskSaveSoon();pintaSave();if(typeof orCloudQueue==='function')orCloudQueue(a)};
 const upd=(id,p)=>{const a=getL();const l=a.find(x=>x.id===id);if(l){ativLog(l,p);Object.assign(l,p,{t:Date.now()})}setL(a)};
 const clean=t=>String(t??'').replace(/<think>[\s\S]*?(<\/think>|$)/g,'').trim();
 const htmlOf=t=>{const m=clean(t).match(/```html\s*\n([\s\S]*?)(```|$)/);return m?m[1]:''};

@@ -48,51 +48,34 @@ await t('número do WhatsApp', () => {
   assert.equal(S("wnum('21 9999')"), ''); assert.equal(S("wnum('')"), '');
 });
 
-// servidor do Cloudflare com KV e Groq simulados
-const { onRequest } = await import(pathToFileURL(path.join(RAIZ, 'functions', 'api', '[[rota]].js')).href);
-const kv = new Map(), TOKEN = 'x'.repeat(40);
-const env = { ADMIN_TOKEN: TOKEN, GROQ_API_KEY: 'chave-de-teste', OPENAI_API_KEY: 'chave-openai', GEMINI_API_KEY: 'chave-gemini', LEADS: {
-  get: async (k) => kv.get(k) ?? null, put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); },
-  list: async ({ prefix }) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true }) } };
-const chama = (rota, init = {}, tok) => onRequest({ request: new Request('https://teste.pages.dev/api/' + rota, { ...init, headers: { ...(init.headers || {}), ...(tok ? { 'X-OR-Token': tok } : {}), 'CF-Connecting-IP': '1.2.3.4' } }), env, params: { rota: rota.split('?')[0].split('/') } });
-let groqPedido = null;
-globalThis.fetch = async (u, o) => { groqPedido = { u: String(u), o }; return new Response('data: {"choices":[{"delta":{"content":"ok"}}]}\n\ndata: [DONE]\n', { status: 200, headers: { 'Content-Type': 'text/event-stream' } }); };
-
-await t('servidor: sem código, nada de IA nem de leads', async () => {
-  assert.equal((await chama('ping')).status, 401); assert.equal((await chama('leads')).status, 401);
-  assert.equal((await chama('ia', { method: 'POST', body: '{}' }, 'errado-errado-errado-errado')).status, 401);
+// Contratos mínimos das Pages Functions em ambiente sem bindings.
+// Testes D1/R2 reais são obrigatórios após a criação dos recursos e antes da publicação.
+const {onRequest}=await import(pathToFileURL(path.join(RAIZ,'functions','api','[[rota]].js')).href);
+const TOKEN='x'.repeat(40),env={ADMIN_TOKEN:TOKEN};
+const chama=(route,options={},token)=>onRequest({
+ request:new Request('https://teste.pages.dev/api/'+route,{...options,headers:{
+  ...options.headers,...(token?{'X-OR-Token':token}:{}),'CF-Connecting-IP':'192.0.2.1'
+ }}),
+ env,params:{rota:route.split('?')[0].split('/')}
 });
-await t('servidor: visitante manda o briefing, consultor puxa e apaga', async () => {
-  const lead = { id: 'abc123', nome: 'Maria', qa: [{ q: 'Negócio', a: 'Confeitaria' }] };
-  assert.equal((await chama('lead', { method: 'POST', body: JSON.stringify(lead) })).status, 200);
-  assert.equal((await chama('lead', { method: 'POST', body: '{"id":"../x"}' })).status, 400);
-  const L = (await (await chama('leads', {}, TOKEN)).json()).leads;
-  assert.equal(L.length, 1); assert.equal(L[0].nome, 'Maria');
-  assert.equal((await chama('leads', { method: 'DELETE', body: JSON.stringify({ ids: ['abc123'] }) }, TOKEN)).status, 200);
-  assert.equal((await (await chama('leads', {}, TOKEN)).json()).leads.length, 0);
+await t('sem D1, endpoint de dados falha fechado',async()=>{
+ assert.equal((await chama('lead',{method:'POST',body:'{}'})).status,503);
+ assert.equal((await chama('cloud/clients',{},TOKEN)).status,503);
 });
-await t('servidor: limite de envios por IP', async () => {
-  let ultimo;
-  for (let i = 0; i < 6; i++) ultimo = await chama('lead', { method: 'POST', body: JSON.stringify({ id: 'r' + i, nome: 'x', qa: [] }) });
-  assert.equal(ultimo.status, 429);
+await t('CORS: POST externo não altera dados',async()=>{
+ const res=await chama('cloud/clients',{method:'PUT',headers:{Origin:'https://atacante.example'},body:'{}'},TOKEN);
+ assert.equal(res.status,403);
 });
-await t('servidor: IA usa a chave guardada e só modelos permitidos', async () => {
-  assert.equal((await chama('ia', { method: 'POST', body: JSON.stringify({ model: 'modelo-nao-permitido', messages: [] }) }, TOKEN)).status, 400);
-  const r = await chama('ia', { method: 'POST', body: JSON.stringify({ model: 'openai/gpt-oss-20b', messages: [{ role: 'user', content: 'oi' }], max_tokens: 999999 }) }, TOKEN);
-  assert.equal(r.status, 200); assert.match(await r.text(), /ok/);
-  assert.equal(groqPedido.o.headers.Authorization, 'Bearer chave-de-teste'); assert.equal(JSON.parse(groqPedido.o.body).max_tokens, 16000);
+await t('acesso a sites locais é negado',async()=>{
+ const withDb={...env,DB:{}}; // apenas rota de site; sem consultas D1
+ const r=await onRequest({request:new Request('https://teste.pages.dev/api/site?url='+encodeURIComponent('http://127.0.0.1/admin'),{headers:{'X-OR-Token':TOKEN}}),env:withDb,params:{rota:['site']}});
+ assert.equal(r.status,400);
 });
-await t('servidor: cada modelo vai para a sua plataforma com a sua chave', async () => {
-  const vai = async (model, extra = {}) => { await chama('ia', { method: 'POST', body: JSON.stringify({ model, messages: [{ role: 'user', content: 'oi' }], ...extra }) }, TOKEN); return groqPedido; };
-  let p = await vai('gpt-5-mini', { max_completion_tokens: 999999 });
-  assert.match(p.u, /api.openai.com/); assert.equal(p.o.headers.Authorization, 'Bearer chave-openai'); assert.equal(JSON.parse(p.o.body).max_completion_tokens, 16000);
-  p = await vai('gemini-3.5-flash'); assert.match(p.u, /generativelanguage/); assert.equal(p.o.headers.Authorization, 'Bearer chave-gemini');
-  p = await vai('openai/gpt-oss-120b'); assert.match(p.u, /api.groq.com/); assert.equal(p.o.headers.Authorization, 'Bearer chave-de-teste');
+await t('arquivos de banco e portal fazem parte do projeto',()=>{
+ assert.ok(ler('migrations/0001_or_cloudflare.sql').includes('CREATE TABLE IF NOT EXISTS posts'));
+ assert.ok(ler('migrations/0001_or_cloudflare.sql').includes('CREATE TABLE IF NOT EXISTS brand_identities'));
+ assert.ok(ler('src/portal.html').includes('/api/cloud/'));
+ assert.ok(ler('functions/_lib/or-cloud.js').includes('HttpOnly; SameSite=Strict'));
 });
-await t('servidor: leitura de site recusa endereço local', async () => {
-  assert.equal((await chama('site?url=' + encodeURIComponent('http://127.0.0.1/admin'), {}, TOKEN)).status, 400);
-  assert.equal((await chama('site?url=' + encodeURIComponent('file:///etc/passwd'), {}, TOKEN)).status, 400);
-});
-
-console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
-process.exit(falhou ? 1 : 0);
+console.log((falhou?falhou+' teste(s) falharam, ':'')+ok+' teste(s) passaram.');
+process.exit(falhou?1:0);

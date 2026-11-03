@@ -89,6 +89,7 @@ function executar() {
   gravar(html, path.join(RAIZ, 'index.html'));
   const csp = (html.match(/Content-Security-Policy" content="([^"]+)"/) || [])[1];
   gravar('/*\n  Content-Security-Policy: ' + csp + "; frame-ancestors 'none'\n  X-Frame-Options: DENY\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Strict-Transport-Security: max-age=31536000; includeSubDomains\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()\n  Cross-Origin-Opener-Policy: same-origin\n/api/*\n  Cache-Control: no-store\n", path.join(RAIZ, 'dist', '_headers'));
+  gravar(ler('src/portal.html'), path.join(RAIZ, 'dist', 'portal.html'));
   // arquivos que só o Google lê; vão para a raiz da hospedagem junto com o site
   const S = seo();
   gravar(S.robots, path.join(RAIZ, 'dist', 'robots.txt'));

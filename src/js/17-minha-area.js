@@ -30,6 +30,7 @@ function bindShell(){
   paintDisk();pintaSave();
 }
 function admin(){
+  if(A.auth&&typeof orCloudInit==='function'&&!OR_CLOUD.started&&!OR_CLOUD.loading)queueMicrotask(orCloudInit);
   if(!A.auth){
     setApp(`<main class="pinw" tabindex="-1"><div class="pin panel"><h1 class="pinh">Minha área</h1><p class="hint">Digite o seu PIN para entrar.</p><label for="pin">PIN</label><input id="pin" type="password" autocomplete="off">
     <div class="row"><button class="btn" id="ok">Entrar</button><button class="btn ghost" data-nav="pub">Voltar ao site</button></div><p class="hint" id="er" role="alert"></p></div></main>`);
