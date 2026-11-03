@@ -30,8 +30,9 @@ function limGroq(t){t=String(t||'');const o={};const m=t.match(/try again in ([0
   const li=t.match(/Limit (\d+)/);if(li)o.limite=+li[1];const pe=t.match(/Requested (\d+)/);if(pe)o.pedido=+pe[1];return o}
 const tempoTxt=s=>s<90?Math.ceil(s)+' s':s<5400?Math.ceil(s/60)+' min':Math.round(s/3600)+' h';
 function iaAviso(msg){let e=document.getElementById('iaaviso');if(!msg){if(e)e.remove();return}if(!e){e=document.createElement('div');e.id='iaaviso';e.setAttribute('role','status');document.body.appendChild(e)}e.textContent=msg}
-const esperaAb=(ms,sig)=>new Promise((res,rej)=>{const k=setTimeout(res,ms);if(sig)sig.addEventListener('abort',()=>{clearTimeout(k);rej(new Error('abortado'))},{once:true})});
+const esperaAb=(ms,sig)=>new Promise((res,rej)=>{if(sig?.aborted){rej(new DOMException('Chamada interrompida.','AbortError'));return}const abort=()=>{clearTimeout(k);rej(new DOMException('Chamada interrompida.','AbortError'))},k=setTimeout(()=>{sig?.removeEventListener('abort',abort);res()},ms);if(sig)sig.addEventListener('abort',abort,{once:true})});
 async function ask(msgs,onChunk,o={}){
+  if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
   const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
@@ -57,7 +58,7 @@ async function ask(msgs,onChunk,o={}){
   iaAviso('');clearTimeout(tmo);
   throw new Error(nm+' ('+c.model+'): '+(g.porDia?'o limite do dia deste modelo acabou'+(g.espera?' (volta em '+tempoTxt(g.espera)+')':''):'limite da plataforma atingido (erro '+r.status+')'+(g.espera?', libera em '+tempoTxt(g.espera):''))+'.');
   }
-  if(!r.ok){let t='';try{t=(await r.text()).slice(0,160)}catch(e){}
+  if(!r.ok){clearTimeout(tmo);let t='';try{t=(await r.text()).slice(0,160)}catch(e){}
     if(r.status===404&&/model/i.test(t))throw new Error(nm+' ('+c.model+'): este modelo não existe ou a sua chave não tem acesso a ele. Abra a tela "IAs", clique em "Ver modelos disponíveis" e escolha outro.');
     if(r.status===401||r.status===403)throw new Error(nm+' ('+c.model+'): a chave da API foi recusada (erro '+r.status+'). Confira a chave da API (menu IAs).');
     throw new Error(nm+' ('+c.model+'): erro '+r.status+' '+t)}
@@ -73,9 +74,10 @@ const sameCfg=(a,b)=>a.kind===b.kind&&a.url===b.url&&a.model===b.model;
 async function askF(msgs,cb,o){
   try{return await ask(msgs,cb,o)}
   catch(e){
-    const atual=CFG[o.slot||'ia1'],erros=[e];
-    const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&(c.key||srvOn())&&!sameCfg(c,atual));
-    for(const c of cands){try{cb('');return await ask(msgs,cb,{...o,cfg:c})}catch(e2){erros.push(e2)}}
+    if(o.signal?.aborted||e.name==='AbortError')throw e;
+    const atual=o.cfg||CFG[o.slot||'ia1'],erros=[e];
+    const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&(keyDe(c)||srvOn())&&!sameCfg(c,atual));
+    for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');try{cb('');return await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2)}}
     if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');
     throw e;
   }

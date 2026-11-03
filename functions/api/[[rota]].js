@@ -126,12 +126,64 @@ async function baixaSite(url) {
   return json({ status: r.status, final: u.href, https: u.protocol === 'https:', cabecalhos: cab, html });
 }
 
+
+/* Canva opcional: apenas gera novas imagens; não lista nem importa artes da conta. */
+async function canvaPedido(env, caminho, init = {}) {
+  return fetch('https://api.canva.com/rest/v1/' + caminho, {
+    ...init, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.CANVA_ACCESS_TOKEN },
+    redirect: 'error', signal: AbortSignal.timeout(30000)
+  });
+}
+async function canvaRota(req, env, rota) {
+  if (!env.CANVA_ACCESS_TOKEN) return erro(503, 'Canva não configurado no servidor. A conexão do chat não conecta o site. Use o editor interno enquanto a integração é autorizada.');
+  if (rota === 'canva/gerar' && req.method === 'POST') {
+    let b;
+    try { b = JSON.parse(await lerTexto(req, 40000)); } catch (e) { return erro(400, 'Briefing de arte inválido.'); }
+    if (!b || typeof b.prompt !== 'string' || !b.prompt.trim() || b.prompt.length > 10000 ||
+        typeof b.chave !== 'string' || !/^[a-zA-Z0-9_-]{16,100}$/.test(b.chave)) return erro(400, 'Informe o briefing e a identificação da nova demanda.');
+    const formatos = { feed: 'portrait_4_5', quadrado: 'square', story: 'portrait' };
+    const r = await canvaPedido(env, 'image-generations', { method: 'POST', body: JSON.stringify({
+      prompt: b.prompt, idempotency_key: b.chave, aspect_ratio: formatos[b.formato] || 'portrait_4_5',
+      asset_upload: { type: 'none' }
+    }) });
+    if (!r.ok) return erro(r.status, r.status === 402 ? 'Os créditos de IA do Canva acabaram.' : r.status === 401 ? 'A autorização do Canva expirou. Renove a conexão no servidor.' : 'O Canva recusou a geração. Confira as permissões de geração de imagem da integração.');
+    const o = await r.json();
+    return json({ job: { id: o.job?.id, status: o.job?.status } });
+  }
+  const m = rota.match(/^canva\/(tarefa|imagem)\/([A-Za-z0-9_-]{1,200})$/);
+  if (!m || req.method !== 'GET') return erro(404, 'Rota do Canva não encontrada.');
+  const r = await canvaPedido(env, 'image-generations/' + encodeURIComponent(m[2]));
+  if (!r.ok) return erro(r.status, 'Não foi possível consultar esta geração do Canva.');
+  const o = await r.json(), job = o.job;
+  if (m[1] === 'tarefa') return json({ job: { id: job?.id, status: job?.status, error: job?.error ? 'O Canva não conseguiu gerar esta imagem.' : undefined } });
+  if (job?.status !== 'success' || !job.result?.image?.url) return erro(409, 'A imagem ainda não está pronta.');
+  let url;
+  try { url = new URL(job.result.image.url); } catch (e) { return erro(502, 'O Canva devolveu um endereço inválido.'); }
+  if (url.protocol !== 'https:' || !sitePublico(url)) return erro(502, 'O Canva devolveu um endereço inválido.');
+  const image = await fetch(url.href, { redirect: 'error', signal: AbortSignal.timeout(30000) });
+  const tipo = image.headers.get('Content-Type')?.split(';')[0];
+  if (!image.ok || !['image/png', 'image/jpeg', 'image/webp'].includes(tipo) || !image.body) return erro(502, 'O Canva não devolveu uma imagem compatível.');
+  const reader = image.body.getReader(), partes = []; let tamanho = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      tamanho += value.byteLength;
+      if (tamanho > 12 * 1024 * 1024) { await reader.cancel(); return erro(413, 'A imagem ultrapassou 12 MB.'); }
+      partes.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(tamanho);let pos = 0;
+  for (const p of partes) { bytes.set(p, pos);pos += p.length; }
+  return new Response(bytes, { headers: { 'Content-Type': tipo, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
+}
+
 export async function onRequest({ request: req, env, params }) {
   const rota = (params.rota || []).join('/'), m = req.method;
   try {
     // "return await" para o catch pegar qualquer erro das rotas
     if (rota === 'lead' && m === 'POST') return env.LEADS ? await guardaLead(req, env) : erro(500, 'KV LEADS não ligado no Cloudflare.');
     if (!(await consultor(req, env))) return erro(401, 'Código do servidor ausente ou errado.');
+    if (rota.startsWith('canva/')) return await canvaRota(req, env, rota);
     if (rota === 'ping' && m === 'GET') return json({ ok: true });
     if (rota === 'ia' && m === 'POST') return await ia(req, env);
     if (rota === 'leads' && env.LEADS && m === 'GET') return await listaLeads(env);
