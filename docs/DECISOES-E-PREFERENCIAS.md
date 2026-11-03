@@ -208,7 +208,7 @@ O dono pediu efeitos do site da Digi e deixou a escolha comigo. O código é nos
 
 ## Identidade nova: Earthen Luxe (02/11/2026)
 
-O dono mandou o kit `OR_Identidade_Completa_Earthen_Luxe_FINAL`, que traz logos, paleta, fontes, favicon, animação e manual. O laranja saiu do site todo.
+O dono mandou o kit `OR_Identidade_Completa_Earthen_Luxe_FINAL`, que traz logos, paleta, fontes, favicon, animação e manual. Uma cópia fica em `E:\SITE IA\marca\OR_Identidade_Earthen_Luxe\`, fora do repositório. O laranja saiu do site todo.
 
 **Paleta e uso** (manual, página 3):
 
