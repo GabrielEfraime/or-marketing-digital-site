@@ -1,6 +1,6 @@
 /* Sincronização online não destrutiva. Dados continuam disponíveis localmente; D1 é cópia persistente no servidor.
    Operações de rede só são feitas após autenticação do painel. */
-const OR_CLOUD={started:false,loading:false,pending:new Map(),timers:new Map(),error:'',active:false};
+const OR_CLOUD={started:false,loading:false,checked:false,pending:new Map(),timers:new Map(),error:'',active:false};
 const orCloudOn=()=>location.protocol==='https:'&&(!!srvTok()||OR_CLOUD.active);
 function orCloudHeaders(extra={}){
  const t=srvTok();return {...(t?{'X-OR-Token':t}:{}),...extra};
@@ -34,7 +34,12 @@ async function orCloudFlush(id){
  }catch(e){orCloudNotice('Não foi possível sincronizar '+l.nome+': '+e.message+'; a cópia local foi preservada.');}
 }
 async function orCloudInit(){
- if(OR_CLOUD.started||OR_CLOUD.loading||!A.auth||!orCloudOn())return;
+ if(OR_CLOUD.started||OR_CLOUD.loading||!A.auth||location.protocol!=='https:')return;
+ if(!srvTok()&&!OR_CLOUD.active){
+   if(OR_CLOUD.checked)return;
+   OR_CLOUD.checked=true;
+   try{const r=await fetch('/api/cloud/auth/me',{credentials:'same-origin'});if(!r.ok)return;OR_CLOUD.active=true}catch(e){return}
+ }
  OR_CLOUD.loading=true;
  try{
   const response=await orCloudRequest('cloud/clients');
