@@ -96,6 +96,10 @@
     {
       "arquivo": "src/css/23-identidade-earthen.css",
       "descricao": "Identidade Earthen Luxe: assinatura OR | MARKETING DIGITAL, slogan, seções claras em marfim, cartões em ardósia (vence as camadas anteriores)"
+    },
+    {
+      "arquivo": "src/css/24-editor-posts.css",
+      "descricao": "Editor visual das peças sociais: proporções, composição, cores, foto local e exportação PNG"
     }
   ],
   "js": [
@@ -210,6 +214,10 @@
     {
       "arquivo": "src/js/22d-rh.js",
       "descricao": "RH local: currículo em IndexedDB, leitura de texto, análise de IA com critérios da vaga, perguntas de entrevista, comparação"
+    },
+    {
+      "arquivo": "src/js/22g-editor-posts.js",
+      "descricao": "Editor visual de posts e carrosséis com prévia, textos, paleta, foto local e exportação PNG"
     },
     {
       "arquivo": "src/js/22f-captacao.js",
