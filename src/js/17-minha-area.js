@@ -248,7 +248,7 @@ const OR_COLUNAS=['Novas demandas','Briefing','Em produção','Revisão interna'
 function orQuadroNormalizar(x){
   if(!x||typeof x.id!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(x.id)||typeof x.titulo!=='string'||!OR_COLUNAS.includes(x.coluna))return null;
   const txt=(v,n)=>typeof v==='string'?v.slice(0,n):'';
-  const d={id:x.id,titulo:txt(x.titulo,140),descricao:txt(x.descricao,12000),coluna:x.coluna,cliente:txt(x.cliente,100),responsavel:txt(x.responsavel,100),prazo:/^\d{4}-\d\d-\d\d$/.test(x.prazo||'')?x.prazo:'',arquivada:!!x.arquivada,criado:txt(x.criado,40),atualizado:txt(x.atualizado,40),
+  const d={id:x.id,titulo:txt(x.titulo,140),descricao:txt(x.descricao,12000),coluna:x.coluna,cliente:txt(x.cliente,100),responsavel:txt(x.responsavel,100),servico:txt(x.servico,30),origem:txt(x.origem,50),prazo:/^\d{4}-\d\d-\d\d$/.test(x.prazo||'')?x.prazo:'',arquivada:!!x.arquivada,criado:txt(x.criado,40),atualizado:txt(x.atualizado,40),
     checklist:(Array.isArray(x.checklist)?x.checklist:[]).filter(v=>v&&typeof v.texto==='string').slice(0,50).map(v=>({texto:txt(v.texto,300),ok:!!v.ok})),
     historico:(Array.isArray(x.historico)?x.historico:[]).filter(h=>h&&OR_COLUNAS.includes(h.de)&&OR_COLUNAS.includes(h.para)).slice(-30).map(h=>({de:h.de,para:h.para,em:txt(h.em,40)}))};
   if(x.arte&&typeof x.arte==='object'&&!Array.isArray(x.arte))d.arte=x.arte;
@@ -321,7 +321,8 @@ function orQuadroBind(){
 }
 function orQuadroArteCliente(id){
   const d=orQuadroItem(String(id).replace(/^demanda:/,''));if(!d)return null;
-  return {id:'demanda:'+d.id,nome:d.titulo,track:{frentes:[{id:'arte',k:'social',fmt:'post'}],pecas:[{id:'arte',fid:'arte',titulo:d.titulo,txt:d.descricao,arte:d.arte}]}};
+  const cliente=orQuadroCliente(d);
+  return {id:'demanda:'+d.id,nome:cliente?.track?.identidadeVisual?.nomePerfil||'Marca a confirmar',track:{identidadeVisual:cliente?.track?.identidadeVisual||{},frentes:[{id:'arte',k:'social',fmt:'post'}],pecas:[{id:'arte',fid:'arte',titulo:d.titulo,txt:d.descricao,arte:d.arte}]}};
 }
 function orQuadroArteInner(){
   const l=orQuadroArteCliente(OR_QUADRO.aberta);

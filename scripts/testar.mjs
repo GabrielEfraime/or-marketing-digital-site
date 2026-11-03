@@ -63,11 +63,13 @@ await t('servidor: sem código, nada de IA nem de leads', async () => {
   assert.equal((await chama('ia', { method: 'POST', body: '{}' }, 'errado-errado-errado-errado')).status, 401);
 });
 await t('servidor: visitante manda o briefing, consultor puxa e apaga', async () => {
-  const lead = { id: 'abc123', nome: 'Maria', qa: [{ q: 'Negócio', a: 'Confeitaria' }] };
+  const lead = { id: 'abc123', nome: 'Maria', status:'aplicado', orc:'Preço forjado', track:{segredo:true}, qa: [{ q: 'Negócio', a: 'Confeitaria' }] };
   assert.equal((await chama('lead', { method: 'POST', body: JSON.stringify(lead) })).status, 200);
   assert.equal((await chama('lead', { method: 'POST', body: '{"id":"../x"}' })).status, 400);
   const L = (await (await chama('leads', {}, TOKEN)).json()).leads;
   assert.equal(L.length, 1); assert.equal(L[0].nome, 'Maria');
+  assert.equal(L[0].status,'novo');assert.equal(L[0].orc,undefined);assert.equal(L[0].track,undefined);
+  assert.equal((await chama('lead', {method:'POST',body:JSON.stringify(lead)})).status,409);
   assert.equal((await chama('leads', { method: 'DELETE', body: JSON.stringify({ ids: ['abc123'] }) }, TOKEN)).status, 200);
   assert.equal((await (await chama('leads', {}, TOKEN)).json()).leads.length, 0);
 });
@@ -133,7 +135,7 @@ await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funcion
 });
 await t('demandas: quadro vazio, transições validadas, histórico e isolamento de dados', () => {
   const memory = {};
-  const c=vm.createContext({setInterval(){},document:{addEventListener(){}},sget:k=>memory[k]||null,sset:(k,v)=>{memory[k]=v},STORE_OK:true,Date});
+  const c=vm.createContext({setInterval(){},document:{addEventListener(){}},getL:()=>[],qaOf:()=>[],sget:k=>memory[k]||null,sset:(k,v)=>{memory[k]=v},STORE_OK:true,Date});
   vm.runInContext(ler('src/js/17-minha-area.js'),c);
   assert.equal(vm.runInContext('OR_QUADRO.itens.length',c),0);
   vm.runInContext("OR_QUADRO.itens.push({id:'d1',titulo:'Nova arte',coluna:OR_COLUNAS[0],descricao:'Briefing',historico:[]})",c);

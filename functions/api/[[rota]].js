@@ -69,7 +69,19 @@ async function guardaLead(req, env) {
   let l;
   try { l = JSON.parse(await lerTexto(req, MAX_LEAD)); } catch (e) { return erro(400, 'Briefing inválido.'); }
   if (!l || typeof l.id !== 'string' || !/^[A-Za-z0-9]{1,24}$/.test(l.id) || typeof l.nome !== 'string' || !Array.isArray(l.qa)) return erro(400, 'Briefing incompleto.');
-  await env.LEADS.put('lead:' + l.id, JSON.stringify({ ...l, recebido: new Date().toISOString() }), { expirationTtl: LEAD_TTL });
+  if (await env.LEADS.get('lead:' + l.id)) return erro(409, 'Este briefing já foi recebido.');
+  const texto = (v, max) => typeof v === 'string' ? v.slice(0, max) : '';
+  const servicos = ['ads','meta','social','youtube','local','press','brand','site','resite','mkt','assess','guia'];
+  const recebido = new Date().toISOString();
+  const publico = {
+    id: l.id, nome: texto(l.nome, 120), whats: texto(l.whats, 30), email: texto(l.email, 160),
+    mod: servicos.includes(l.mod) ? l.mod : undefined,
+    mods: (Array.isArray(l.mods) ? l.mods : []).filter(x => servicos.includes(x)).slice(0, 12),
+    qa: l.qa.filter(x => x && typeof x === 'object' && !Array.isArray(x)).slice(0, 100).map(x => ({ q: texto(x.q, 500), a: texto(x.a, 5000), tp: texto(x.tp, 40) })),
+    consent: l.consent && typeof l.consent === 'object' ? { em: texto(l.consent.em, 40), versao: texto(l.consent.versao, 80) } : undefined,
+    status: 'novo', t: Date.now(), data: recebido, recebido
+  };
+  await env.LEADS.put('lead:' + l.id, JSON.stringify(publico), { expirationTtl: LEAD_TTL });
   return json({ ok: true });
 }
 
