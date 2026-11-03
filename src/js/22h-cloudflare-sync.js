@@ -49,7 +49,7 @@ async function orCloudInit(){
   const merged=[...map.values()].sort((a,b)=>(+b.t||0)-(+a.t||0));
   if(JSON.stringify(merged)!==JSON.stringify(local)){setL(merged);if(A.view===''||A.view==='dash'||A.view==='posts')admin();}
   OR_CLOUD.started=true;
-  for(const item of merged){if(!remote.some(x=>x.id===item.id))OR_CLOUD.pending.set(item.id,structuredClone(item))}
+  for(const item of merged){const r=remote.find(x=>x.id===item.id);if(!r||(+item.t||0)>(+r.t||0))OR_CLOUD.pending.set(item.id,structuredClone(item))}
   for(const id of OR_CLOUD.pending.keys())orCloudFlush(id);
  }catch(e){orCloudNotice('Sincronização indisponível: '+e.message+'. Sem apagar dados locais.')}
  finally{OR_CLOUD.loading=false}
