@@ -1,7 +1,9 @@
 # Pendências
 
 ## Só o dono pode resolver
-- [ ] **Revogar a chave antiga da Groq** (foi compartilhada em conversa) e gerar outra em console.groq.com/keys. Colar a nova em *Minha área > IAs*.
+- [x] **Chave antiga da Groq revogada e nova gerada** (confirmado pelo dono em 04/11/2026).
+- [ ] Em andamento com o dono (04/11/2026): pacotes e preços de Marketing digital (`mkt`) e Assessoria (`assess`); revisão de `PRECOS`, textos de serviço e rascunhos jurídicos; modelo de contrato para assinatura do cliente.
+- [ ] Número do WhatsApp (`MY_WHATS`) público no site: dono ainda não decidiu.
 - [ ] Preencher `RESPONSAVEL` em `src/js/01-config-precos.js`; `PRIV_EMAIL` e `VAGAS` (quando houver vagas) em `src/js/05-dados-leads.js`.
 - [ ] Conferir se o número `MY_WHATS` pode ficar público (ele aparece no botão de WhatsApp do site).
 - [ ] Passar os **pacotes e preços de Marketing digital (plano) e de Assessoria** (nome, entrada, mensalidade e o que inclui em Essencial, Crescimento e Completo). Até lá, o orçamento mostra "a confirmar" (02/11/2026).
@@ -115,3 +117,8 @@
 - Para publicar o teste (passo a passo no README): repositório privado no GitHub; Cloudflare Pages com build `node scripts/montar.mjs` e saída `dist`; segredos `GROQ_API_KEY` (chave nova) e `ADMIN_TOKEN` (32+ caracteres); KV ligado como `LEADS`.
 - Antes do lançamento de verdade: login real no lugar do PIN (o PIN protege só a tela), domínio próprio com `url` em `src/seo.json`, `RESPONSAVEL` e `PRIV_EMAIL`, política de privacidade citando o armazenamento no Cloudflare, revogar as chaves da Groq antigas.
 - Os dados que estavam no file:// não aparecem sozinhos no 127.0.0.1: conecte a pasta de backup ou importe um backup na primeira vez.
+
+## Aguardando servidor (decidido em 04/11/2026)
+- [ ] Upload de imagem de identidade visual direto no briefing publico (cliente envia do proprio aparelho): so faz sentido com servidor (Fase 2, Supabase). Hoje o consultor sobe as imagens no lead (`22i-referencias-visuais.js`). Quando houver servidor: guardar a imagem em armazenamento privado, repetir a conferencia de "so material de marca" no servidor, limitar tamanho, quantidade e frequencia, e exigir consentimento.
+- [ ] Testar a leitura de imagens com chave e imagem reais do Gemini (e confirmar que o modelo configurado aceita imagem).
+- [ ] Geracao dos posts no Canva sem colar o prompt: exige servidor e OAuth do Canva (Fase 2).

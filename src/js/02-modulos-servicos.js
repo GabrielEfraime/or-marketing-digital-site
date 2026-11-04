@@ -211,7 +211,10 @@ const TAREFAS={
 /* Produção recebe os materiais e as restrições no briefing inicial, sem pedir senhas. */
 MODS.social.qs.push(
  ['formatosarte','Quais formatos fazem sentido para o seu negócio?',['Posts de imagem','Carrosséis','Stories','Reels ou vídeos curtos','Quero uma recomendação'],1,'formato|post|carross|stories|reels'],
- ['identidadebase','Quais cores, fontes e elementos da sua marca devemos usar nas artes?','Informe os que já são oficiais. Se não houver identidade definida, escreva "preciso de orientação".',0,'cor|fonte|marca|arte|identidade']
+ ['temident','Você já tem identidade visual (logo, cores e fontes)?',['Sim, tenho logo, cores e fontes definidos','Tenho só o logo','Não tenho, quero criar junto com a OR'],0,'identidade|logo|cores|fontes|visual|marca'],
+ ['identidadebase','Quais cores, fontes e elementos da sua marca devemos usar nas artes?','Informe os que já são oficiais. Depois do briefing, a OR vai pedir uma imagem do seu logo ou de um post antigo para usar como referência.',0,'cor|fonte|marca|arte|identidade',A=>!/n[aã]o tenho/i.test(A.temident||'')],
+ ['identidadeestilo','Que estilo visual combina com o seu negócio?',['Moderno e minimalista','Colorido e divertido','Elegante e sofisticado','Artesanal e acolhedor','Ousado e marcante'],1,'estilo|visual|combina|aparênc',A=>/n[aã]o tenho/i.test(A.temident||'')],
+ ['identidadecores','Tem cores que você gosta, quer evitar ou perfis de referência que admira?','Ex.: gosto de verde, não quero vermelho, admiro o perfil @exemplo. Pode escrever "sem preferência".',0,'cor|evitar|referên|perfil|admira',A=>/n[aã]o tenho/i.test(A.temident||'')]
 );
 const Q_PRODUCAO=[
  ['materiaisbase','Quais materiais próprios e autorizados você já tem para usarmos?','Logo, manual de marca, fotos, vídeos ou catálogo. Pode informar links públicos; não envie senhas ou chaves.',0,'material|logo|foto|vídeo|catálogo|autoriz'],

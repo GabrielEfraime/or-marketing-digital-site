@@ -187,7 +187,7 @@ function detail(l){
   const tabs=[['brief','Briefing'],['ficha','Resumo'+(l.ficha?' ✓':'')],['orc','Orçamentos'+(l.orc?' ✓':'')],['msg','Mensagem'+(l.msg?' ✓':'')]];
   if(!tabs.some(([k])=>k===A.tab))A.tab='orc';
   return `<div class="panel dt"><div class="dthead"><div><h3>${esc(l.nome)} <span class="chip ${l.status}">${stl(l.status)}</span></h3>
-  <p class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.whats)}${(l.envios||[]).length?' · <b>orçamento enviado '+(l.envios.slice(-1)[0].via==='email'?'por e-mail':'no WhatsApp')+' em '+esc(l.envios.slice(-1)[0].quando)+'</b>':''} ${l.email?'· '+esc(l.email):''}</p>${planosCards(l)}${briefPainel(l)}${l.guia?'<p class="hint"><b>Veio do roteiro "ainda não sei o que preciso".</b> Os serviços foram sugeridos pelo app; confirme com o cliente antes de enviar o orçamento.</p>':''}</div>
+  <p class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.whats)}${(l.envios||[]).length?' · <b>orçamento enviado '+(l.envios.slice(-1)[0].via==='email'?'por e-mail':'no WhatsApp')+' em '+esc(l.envios.slice(-1)[0].quando)+'</b>':''} ${l.email?'· '+esc(l.email):''}</p>${planosCards(l)}${briefPainel(l)}${rvPainel(l)}${l.guia?'<p class="hint"><b>Veio do roteiro "ainda não sei o que preciso".</b> Os serviços foram sugeridos pelo app; confirme com o cliente antes de enviar o orçamento.</p>':''}</div>
   <div class="row" style="margin:0">${!l.orc&&l.status!=='recusado'?`<button class="btn hl" id="gall" ${anyBusy()?'disabled':''}>${l.ficha?'Gerar o orçamento com a IA':'Gerar resumo e orçamento com a IA'}</button>`:''}${l.msg?`<button class="btn wa" id="wsend">${WAI} Enviar orçamento no WhatsApp</button><button class="btn ghost" id="emsend">Enviar por e-mail</button>`:''}${(l.entrega||l.orc)&&!['aprovado','aplicado','recusado'].includes(l.status)?'<button class="btn ok" id="ap">Aprovar</button><button class="btn ghost" id="rec">Marcar como recusado</button>':''}${l.status==='recusado'?'<button class="btn ghost" id="reab">Reabrir</button>':''}<button class="btn ghost" id="lgx">Exportar dados (LGPD)</button><button class="btn ghost" id="lgd">Apagar cliente</button></div></div>
   <div class="tabs" role="tablist">${tabs.map(([k,t])=>`<button class="tab ${A.tab===k?'on':''}" data-t="${k}" role="tab" aria-selected="${A.tab===k}">${t}</button>`).join('')}</div>
   <p class="hint plsel"><label>Plano escolhido pelo cliente <select id="plsel"><option value="">ainda não escolheu</option>${Object.entries(PLANO_NOME).map(([k,t])=>`<option value="${k}" ${l.plano===k?'selected':''}>${t}</option>`).join('')}</select></label>${l.planoEm?' · registrado em '+esc(dHora(Date.parse(l.planoEm)||Date.now())):''}</p>
@@ -200,7 +200,7 @@ const fimLead=l=>['novo','pronto','aprovado'].includes(l.status)?'<div class="df
 function bind(l){
   const g=id=>document.getElementById(id),rp=()=>{paintList();paintDet()};
   document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{A.tab=b.dataset.t;A.edit=false;paintDet()});
-  bindExec(l);
+  bindExec(l);rvBind(l);
   if(g('fic'))g('fic').onchange=()=>upd(l.id,{ficha:g('fic').value.trim(),fichaOk:true});
   if(g('ficgo'))g('ficgo').onclick=()=>ficha(l.id);
   if(g('gall'))g('gall').onclick=()=>gerarTudo(l.id);
