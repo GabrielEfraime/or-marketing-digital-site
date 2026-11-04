@@ -14,11 +14,11 @@ const pagina = teste ? path.resolve(RAIZ, '..', 'estudio-ia-TESTE.html') : path.
 if (!fs.existsSync(pagina)) { console.error('Ainda não existe ' + pagina + '. Rode: npm run ' + (teste ? 'montar:teste' : 'montar')); process.exit(1); }
 const PORTA = Number(process.env.PORTA) || 5173, url = 'http://127.0.0.1:' + PORTA + '/';
 
-// Chaves do .env (OPENAI_API_KEY, GEMINI_API_KEY, GROQ_API_KEY): entram só na página servida aqui (127.0.0.1), nunca no dist/ nem no git.
+// Chaves do .env (OPENAI_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, POLLINATIONS_KEY): entram só na página servida aqui (127.0.0.1), nunca no dist/ nem no git.
 // Só valem quando este navegador ainda não tem chaves salvas; ao abrir, o site cifra as chaves. A chave que você salvar na tela IAs continua valendo.
 function chaves() {
   const f = path.join(RAIZ, '.env'), t = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '';
-  return ['OPENAI_API_KEY', 'GEMINI_API_KEY', 'GROQ_API_KEY'].map((n) => ((t.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim());
+  return ['OPENAI_API_KEY', 'GEMINI_API_KEY', 'GROQ_API_KEY', 'POLLINATIONS_KEY'].map((n) => ((t.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim());
 }
 function comChave(html, k) {
   const js = `/* npm run abrir: chaves do .env (só local). */
@@ -26,7 +26,7 @@ function comChave(html, k) {
   const K=${JSON.stringify(k)};
   if(localStorage.getItem('ikeys2'))return;
   let a=[];try{a=JSON.parse(localStorage.getItem('ikeys')||'[]')}catch(e){}
-  const n=[a[0]||K[2],a[1]||K[2],a[2]||K[2],a[3]||K[1]]; // IA 1 a 3 na Groq; imagens no Gemini
+  const n=[a[0]||K[2],a[1]||K[2],a[2]||K[2],a[3]||K[1],a[4]||K[3]]; // IA 1 a 3 na Groq; Gemini de reserva; Pollinations nas imagens
   if(n.some(Boolean))localStorage.setItem('ikeys',JSON.stringify(n));
 }catch(e){}})();
 `;

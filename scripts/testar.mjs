@@ -128,7 +128,11 @@ await t('servidor: sem cota de imagem no Gemini, a arte sai pelo Workers AI do C
 });
 await t('site: imagem da IA lê a resposta do Gemini e explica o plano gratuito', () => {
   const fonte = ler('src/js/22h-ia-imagem.js'), ctx = { atob: (s) => Buffer.from(s, 'base64').toString('latin1'), Blob, location: { protocol: 'http:' }, srvOn: () => false };
-  vm.runInNewContext(fonte + ';this.iaImgBlob=iaImgBlob;this.iaImgErro=iaImgErro;this.iaImgPrompt=iaImgPrompt;', ctx);
+  vm.runInNewContext(fonte + ';this.iaImgBlob=iaImgBlob;this.iaImgErro=iaImgErro;this.iaImgPrompt=iaImgPrompt;this.iaPolUrl=iaPolUrl;this.iaPolErro=iaPolErro;', ctx);
+  const u = new URL(ctx.iaPolUrl('Bread on a table, no text', 'story', 'tongyi-mai/z-image-turbo'));
+  assert.equal(u.origin + u.pathname, 'https://gen.pollinations.ai/image/Bread%20on%20a%20table%2C%20no%20text');
+  assert.equal(u.searchParams.get('model'), 'tongyi-mai/z-image-turbo'); assert.equal(u.searchParams.get('width'), '720'); assert.equal(u.searchParams.get('height'), '1280'); assert.equal(u.searchParams.get('key'), null);
+  assert.match(ctx.iaPolErro(402), /créditos/); assert.match(ctx.iaPolErro(401), /recusou a chave/);
   const png = Buffer.from([137, 80, 78, 71]).toString('base64');
   const blob = ctx.iaImgBlob({ candidates: [{ content: { parts: [{ text: 'x' }, { inlineData: { mimeType: 'image/png', data: png } }] } }] });
   assert.equal(blob.type, 'image/png'); assert.equal(blob.size, 4);
@@ -180,6 +184,10 @@ await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funcion
   vm.runInContext("chamadas=0;ask=async()=>{chamadas++;if(chamadas===1)throw new Error('limite');return 'reserva'}",c);
   assert.equal(await vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),'reserva');
   assert.equal(vm.runInContext('chamadas',c),2);
+  /* Groq toda fora: o Gemini do cartão de reserva responde por último */
+  vm.runInContext("CFG.img={kind:'openai',url:'https://generativelanguage.googleapis.com/v1beta/openai',model:'x',key:'chave-gemini'};var GEMINI_URL=CFG.img.url,IA_DEF={img:{model:'gemini-3.5-flash'}};chamadas=0;var usados=[];ask=async(m,cb,o)=>{chamadas++;const c=o.cfg||CFG[o.slot];usados.push(c.model);if(!/googleapis/.test(c.url))throw new Error('Groq fora');return 'gemini'}",c);
+  assert.equal(await vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),'gemini');
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(usados)',c)),['a','b','c','gemini-3.5-flash']);
 });
 await t('IA: parâmetros da Groq por modelo (prompt mestre), chave compartilhada e chave do Gemini só para imagens', async () => {
   const pedidos = [];

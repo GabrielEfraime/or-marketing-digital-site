@@ -23,7 +23,7 @@ if (/\*(?![:\s;])/.test(csp.replace(/localhost:\*|127\.0\.0\.1:\*/g, ''))) ruim(
 
 // 2. Nenhum recurso de terceiros carregado sozinho (só chamadas pedidas pelo usuário)
 const PERMITIDOS = ['wa.me', 'web.whatsapp.com', 'api.groq.com', 'api.openai.com', 'api.anthropic.com', 'openrouter.ai', 'api.cerebras.ai',
-  'generativelanguage.googleapis.com', 'www.googleapis.com', 'places.googleapis.com', 'overpass-api.de', 'overpass.kumi.systems', 'openstreetmap.org', 'googleusercontent.com', 'instagram.com', 'console.cloud.google.com', 'schema.org', 'ads.google.com', 'facebook.com', 'landdding.com', 'dopaminestudio.io', 'bar-topas.ch', 'pradiplabs.dev', 'dark-moon.org', 'www.w3.org', 'localhost', '127.0.0.1'];
+  'generativelanguage.googleapis.com', 'gen.pollinations.ai', 'enter.pollinations.ai', 'pollinations.ai', 'www.googleapis.com', 'places.googleapis.com', 'overpass-api.de', 'overpass.kumi.systems', 'openstreetmap.org', 'googleusercontent.com', 'instagram.com', 'console.cloud.google.com', 'schema.org', 'ads.google.com', 'facebook.com', 'landdding.com', 'dopaminestudio.io', 'bar-topas.ch', 'pradiplabs.dev', 'dark-moon.org', 'www.w3.org', 'localhost', '127.0.0.1'];
 const hosts = new Set();
 for (const m of html.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)) hosts.add(m[1].toLowerCase());
 const fora = [...hosts].filter((h) => !PERMITIDOS.some((p) => h === p || h.endsWith('.' + p)));

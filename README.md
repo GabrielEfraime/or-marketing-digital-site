@@ -28,8 +28,9 @@ O site publica sozinho a cada envio para o `main`: o GitHub Actions (`.github/wo
 O GitHub Pages não tem servidor. Por isso a IA usa chaves guardadas no navegador de quem usa a Minha área:
 1. Abra o site publicado, entre na Minha área e vá em **IAs**.
 2. Cole a chave da Groq (console.groq.com/keys) em uma das três IAs; as outras usam a mesma. IA 1 = Qwen 3.8 27B (criação), IA 2 e IA 3 = GPT-OSS 120B (estratégia, atendimento e captação).
-3. Para "Criar imagem com IA", cole a chave do Gemini (aistudio.google.com/apikey) no cartão **Imagens das artes**. No plano gratuito do Google a imagem não sai: é preciso ativar o faturamento da chave.
-4. Clique em **Salvar** e em **Testar** em cada IA. As chaves ficam cifradas só naquele navegador e nunca vão para o GitHub. Em outro computador, cole de novo.
+3. Para "Criar imagem com IA", crie uma conta em enter.pollinations.ai (entra com o GitHub), gere uma chave secreta (`sk_...`) e cole no cartão **Imagens das artes · Pollinations**. Cada imagem custa frações de centavo em Pollen, e a conta nova ganha créditos.
+4. Opcional, mas recomendado: cole a chave do Gemini (aistudio.google.com/apikey) no cartão **Reserva de emergência · Gemini**. Se a Groq falhar ou estiver sem chave, o texto sai pelo Gemini, com aviso na tela; se o Pollinations falhar, o site tenta a imagem pelo Gemini (imagem só com faturamento ativo).
+5. Clique em **Salvar** e em **Testar** em cada IA. As chaves ficam cifradas só naquele navegador e nunca vão para o GitHub. Em outro computador, cole de novo.
 
 Nunca coloque chave no código, no `.env.example` ou no GitHub: a página é pública.
 

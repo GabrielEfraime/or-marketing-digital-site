@@ -5,15 +5,15 @@ const $=s=>document.querySelector(s),app=$('#app');
 const MEM={};let STORE_OK=true;
 const sget=k=>{if(k in MEM)return MEM[k];try{return localStorage.getItem(k)}catch(e){STORE_OK=false;return null}};
 const sset=(k,v)=>{try{localStorage.setItem(k,v);delete MEM[k]}catch(e){STORE_OK=false;MEM[k]=v}};
-const GROQ_URL='https://api.groq.com/openai/v1',GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/openai',OPENAI_URL='https://api.openai.com/v1',IAS=['ia1','ia2','ia3'],IA_CHAVES=[...IAS,'img'];
+const GROQ_URL='https://api.groq.com/openai/v1',GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/openai',OPENAI_URL='https://api.openai.com/v1',IAS=['ia1','ia2','ia3'],IA_CHAVES=[...IAS,'img','pol'];
 /* Funções (pedido do dono em 04/11/2026, prompt mestre da Groq): IA 1 = criação (posts, legendas, roteiros, artes, mensagens) no Qwen 3.8 27B;
    IA 2 = estratégia e atendimento (calendário, campanhas, briefing, orçamento, relatórios) no GPT-OSS 120B; IA 3 = captação no GPT-OSS 120B.
-   As três usam a mesma chave da Groq. "img" guarda só a chave do Gemini para as imagens das artes (a Groq não gera imagem). */
-const IA_DEF={ia1:{url:GROQ_URL,model:'qwen/qwen3.8-27b'},ia2:{url:GROQ_URL,model:'openai/gpt-oss-120b'},ia3:{url:GROQ_URL,model:'openai/gpt-oss-120b'},img:{url:GEMINI_URL,model:'gemini-3.1-flash-image'}},IA0=s=>({kind:'openai',...IA_DEF[s],key:''});
+   As três usam a mesma chave da Groq. "img" = Gemini, reserva de emergência do texto (e das imagens); "pol" = Pollinations, gerador das imagens das artes. */
+const IA_DEF={ia1:{url:GROQ_URL,model:'qwen/qwen3.8-27b'},ia2:{url:GROQ_URL,model:'openai/gpt-oss-120b'},ia3:{url:GROQ_URL,model:'openai/gpt-oss-120b'},img:{url:GEMINI_URL,model:'gemini-3.5-flash'},pol:{url:'https://gen.pollinations.ai',model:'tongyi-mai/z-image-turbo'}},IA0=s=>({kind:'openai',...IA_DEF[s],key:''});
 const theme=()=>document.documentElement.dataset.theme==='light'?'light':'dark';
 const setTheme=()=>{document.documentElement.dataset.theme='dark'};
 setTheme();
-const CFG={kb:{sobre:'',regras:'',exemplos:'',licoes:[]},brand:BRAND,precos:PRECOS,pin:ADMIN_PIN,whats:MY_WHATS,t:0,ia1:IA0('ia1'),ia2:IA0('ia2'),ia3:IA0('ia3'),img:IA0('img')};
+const CFG={kb:{sobre:'',regras:'',exemplos:'',licoes:[]},brand:BRAND,precos:PRECOS,pin:ADMIN_PIN,whats:MY_WHATS,t:0,ia1:IA0('ia1'),ia2:IA0('ia2'),ia3:IA0('ia3'),img:IA0('img'),pol:IA0('pol')};
 const semChave=()=>{const o={...CFG};IA_CHAVES.forEach(s=>{o[s]={...CFG[s],key:''}});return o};
 const saveCfg=()=>{sset('cfg2',JSON.stringify(semChave()));keysSave()};
 /* Chaves das IAs: cifradas com AES-GCM. A chave de cifra é gerada no navegador, fica no IndexedDB como "não exportável" (o JavaScript usa, mas não consegue ler o valor)

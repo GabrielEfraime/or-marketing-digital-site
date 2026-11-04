@@ -77,8 +77,10 @@ async function askF(msgs,cb,o){
     if(o.signal?.aborted||e.name==='AbortError')throw e;
     const atual=o.cfg||CFG[o.slot||'ia1'],erros=[e];
     const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&(keyDe(c)||srvOn())&&!sameCfg(c,atual));
+    /* reserva de emergência: o Gemini (cartão da tela IAs), por último e sempre com aviso */
+    if(!o.cfg&&CFG.img&&keyDe(CFG.img)&&!/googleapis[.]com/.test(atual.url||''))cands.push({kind:'openai',url:GEMINI_URL,model:IA_DEF.img.model,key:keyDe(CFG.img)});
     for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');let out;try{cb('');out=await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2);continue}
-      try{iaAviso('A IA principal ('+atual.model+') falhou; quem respondeu foi '+c.model+'. Revise com atenção.');setTimeout(()=>iaAviso(''),8000)}catch(x){} // troca nunca silenciosa
+      try{iaAviso('A IA principal ('+atual.model+') não respondeu; quem respondeu foi '+c.model+(/googleapis[.]com/.test(c.url||'')?' (reserva de emergência)':'')+'. Revise com atenção.');setTimeout(()=>iaAviso(''),8000)}catch(x){} // troca nunca silenciosa
       return out}
     if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');
     throw e;
