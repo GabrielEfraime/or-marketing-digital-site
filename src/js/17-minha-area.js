@@ -109,7 +109,7 @@ function admin(){
   if(A.view==='dash'){setApp(admShell(dashInner()));bindShell();return bindDash()}
   if(A.view==='tal'){A.view='vagas';A.vgTab='db';A.vgc=null;A.vg=null}
   if(A.view==='vagas'){setApp(admShell(vagasInner()));bindShell();return bindVagas()}
-  if(A.view==='posts'){setApp(admShell(postsInner()));bindShell();return postsBind()}
+  if(A.view==='posts'){setApp(admShell(postsInner()));bindShell();return reaPostsBind()}
   if(A.view==='trk'){setApp(admShell('<div id="trk"></div>'));bindShell();return trkPaint()}
   if(A.view==='cap'){setApp(admShell('<div id="cap"></div>'));bindShell();return capPaint()}
   if(A.view==='kb'){setApp(admShell(kbInner()));bindShell();return bindKb()}
@@ -294,7 +294,7 @@ function orQuadroInner(){
     '<div class="or-quadro" aria-label="Quadro de demandas">'+OR_COLUNAS.map((col,i)=>'<section class="or-coluna" data-or-col="'+i+'" aria-label="'+esc(col)+'"><h3>'+esc(col)+' <span>'+L.filter(d=>d.coluna===col).length+'</span></h3>'+L.filter(d=>d.coluna===col).map(d=>'<article class="or-cartao" draggable="true" data-or-card="'+esc(d.id)+'"><button class="btn ghost" data-or-abrir="'+esc(d.id)+'">'+esc(d.titulo)+'</button>'+(d.prazo?'<p>Prazo: '+esc(d.prazo)+'</p>':'')+(d.responsavel?'<p>'+esc(d.responsavel)+'</p>':'')+'<label>Etapa<select data-or-mover="'+esc(d.id)+'">'+OR_COLUNAS.map((c,j)=>'<option value="'+j+'" '+(c===d.coluna?'selected':'')+'>'+esc(c)+'</option>').join('')+'</select></label></article>').join('')+'</section>').join('')+'</div>'+
     (d?'<section class="panel or-demanda"><h3>'+esc(d.titulo)+'</h3>'+orQuadroFonteHtml(d)+'<form id="or-q-editar"><label for="or-q-edit-titulo">Título</label><input id="or-q-edit-titulo" maxlength="140" required value="'+esc(d.titulo)+'"><label for="or-q-edit-cliente">Cliente</label><select id="or-q-edit-cliente" required>'+clienteOp(d.cliente)+'</select><label for="or-q-edit-desc">Briefing</label><textarea id="or-q-edit-desc" maxlength="12000">'+esc(d.descricao||'')+'</textarea><div class="fr"><div><label for="or-q-resp">Responsável</label><input id="or-q-resp" maxlength="100" value="'+esc(d.responsavel||'')+'"></div><div><label for="or-q-prazo">Prazo</label><input type="date" id="or-q-prazo" value="'+esc(d.prazo||'')+'"></div></div><label for="or-q-check">Checklist (um item por linha)</label><textarea id="or-q-check" maxlength="4000">'+esc((d.checklist||[]).map(x=>x.texto).join('\n'))+'</textarea><button type="submit" class="btn">Salvar demanda</button></form>'+
     '<ul class="or-checklist">'+(d.checklist||[]).map((x,i)=>'<li><label><input type="checkbox" data-or-check="'+i+'" '+(x.ok?'checked':'')+'> '+esc(x.texto)+'</label></li>').join('')+'</ul>'+
-    '<div class="row"><button class="btn" id="or-q-arte">Abrir editor de arte</button><button class="btn ghost" id="or-q-ia" '+(q.ocupado?'disabled':'')+'>Criar layout com IA</button><button class="btn ghost" id="or-q-canva" '+(q.ocupado?'disabled':'')+'>Gerar imagem nova com Canva</button><button class="btn ghost" id="or-q-arquivar">'+(d.arquivada?'Restaurar':'Arquivar')+'</button></div><p class="hint">Salve as alterações do briefing antes de pedir o layout à IA. Textos, cores e composição continuam editáveis; fotos são adicionadas por você.</p>'+
+    '<div class="row"><button class="btn" id="or-q-arte">Abrir editor de arte</button><button class="btn ghost" id="or-q-ia" '+(q.ocupado?'disabled':'')+'>Criar layout com IA</button><button class="btn ghost" id="or-q-img" '+(q.ocupado?'disabled':'')+'>Criar imagem com IA</button><button class="btn ghost" id="or-q-canva" '+(q.ocupado?'disabled':'')+'>Gerar imagem nova com Canva</button><button class="btn ghost" id="or-q-arquivar">'+(d.arquivada?'Restaurar':'Arquivar')+'</button></div><p class="hint">Salve as alterações do briefing antes de pedir o layout ou a imagem à IA. Textos, cores e composição continuam editáveis; a imagem da IA entra como fundo, sem texto.</p>'+
     '<details><summary>Histórico de etapas</summary><ul>'+(d.historico||[]).map(h=>'<li>'+esc(h.de)+' → '+esc(h.para)+' · '+esc(h.em)+'</li>').join('')+'</ul></details></section>':'');
 }
 function orQuadroBind(){
@@ -317,6 +317,7 @@ function orQuadroBind(){
   $('#or-q-arquivar').onclick=()=>{d.arquivada=!d.arquivada;q.aberta='';orQuadroSalvar();admin()};
   $('#or-q-arte').onclick=()=>{A.view='arte-demanda';admin()};
   $('#or-q-ia').onclick=()=>orQuadroArteIA(d.id);
+  $('#or-q-img').onclick=()=>orQuadroImagemIA(d.id);
   $('#or-q-canva').onclick=()=>orQuadroCanva(d.id);
 }
 function orQuadroArteCliente(id){
@@ -340,6 +341,21 @@ async function orQuadroArteIA(id){
     const l=orQuadroArteCliente(id),p=l.track.pecas[0];p.arte={formato:'feed',modelo:j.modelo,fundo:j.fundo,texto:j.texto,acento:j.acento,slides:[{titulo:j.titulo,apoio:j.apoio,cta:j.cta}]};
     d.arte=reaArtePreparar(p,l.track.frentes[0],l);orQuadroSalvar();q.msg='Layout criado. Abra o editor e revise a arte.';
   }catch(e){q.msg=e.message||'Não foi possível criar o layout.'}finally{q.ocupado=false;if(A.auth&&A.view==='demandas')admin()}
+}
+
+/* imagem de fundo pelo Gemini (22h-ia-imagem.js), a partir do briefing vinculado e do texto da arte; o texto segue editável no editor */
+async function orQuadroImagemIA(id){
+  const q=OR_QUADRO,d=orQuadroItem(id);if(!d||q.ocupado)return;
+  const cliente=orQuadroCliente(d);if(!cliente){q.msg='Vincule um briefing inicial preenchido antes de criar a imagem.';admin();return}
+  q.ocupado=true;q.msg='A IA está lendo o briefing e descrevendo a imagem…';admin();
+  try{
+    const l=orQuadroArteCliente(d.id),p=l.track.pecas[0],a=reaArtePreparar(p,l.track.frentes[0],l),s=a.slides[a.slide]||{};
+    const blob=await iaImgCriar({cliente,titulo:s.titulo||d.titulo,apoio:s.apoio,texto:d.descricao,formato:a.formato,cores:[a.fundo,a.acento,a.texto]},m=>{q.msg=m;const e=document.getElementById('or-q-msg');if(e)e.textContent=m});
+    const key=reaArteKey('demanda:'+d.id,'arte');await arqPut(key,blob);
+    const cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
+    d.arte={...a,foto:true,modelo:'foto'};d.atualizado=new Date().toISOString();orQuadroSalvar();
+    q.msg='Imagem criada pela IA e salva neste navegador. Abra o editor de arte para revisar o texto por cima e baixar. Nada foi publicado.';
+  }catch(e){q.msg=e.message||'Não foi possível criar a imagem.'}finally{q.ocupado=false;if(A.auth&&A.view==='demandas')admin()}
 }
 
 async function orQuadroCanva(id){

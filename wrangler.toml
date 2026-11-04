@@ -1,0 +1,17 @@
+# Configuração do projeto no Cloudflare Pages (or-marketing-digital-site).
+# Com este arquivo, o Cloudflare usa daqui a pasta publicada e as ligações (bindings); o painel só mostra esses campos.
+# Os SEGREDOS continuam no painel (Settings > Variables and Secrets): GEMINI_API_KEY e ADMIN_TOKEN.
+# Nunca coloque chave de API neste arquivo: ele vai para o GitHub.
+name = "or-marketing-digital-site"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"
+
+# Workers AI: gera as imagens das artes quando o Gemini não tem cota de imagem (grátis até o limite diário da conta).
+[ai]
+binding = "AI"
+
+# Briefings enviados pelos visitantes (/api/lead). Para ligar: crie um KV namespace no painel
+# (Storage & Databases > KV), copie o ID e tire o "#" das três linhas abaixo, trocando o ID.
+# [[kv_namespaces]]
+# binding = "LEADS"
+# id = "COLE_AQUI_O_ID_DO_KV"

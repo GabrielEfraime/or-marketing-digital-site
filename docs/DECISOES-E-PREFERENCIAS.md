@@ -258,3 +258,11 @@ O dono quer o site **clean, minimalista, 3D e moderno**. Ele mandou como referê
 - Canva pode ser integrado se gerar as novas demandas de posts a partir desse briefing. A conexão do chat não equivale à autorização do site. Geração externa é opcional, com revisão humana e sem publicação automática.
 - Quadro interno começa vazio. Novo planejamento pelo briefing é explícito, por botão; não disparar IA ao abrir o painel.
 - Implementação e limites da branch: docs/REVISAO-DEMANDAS-IA.md.
+
+## IA junto do editor de artes (03/11/2026)
+- O dono pediu a IA "em tudo", junto com as artes. As três IAs seguem no Gemini (a chave que ele tem). O texto da arte, o layout, o plano editorial e as legendas já usavam a IA; agora a imagem também: "Criar imagem com IA" no editor de arte e nas Demandas.
+- A IA cria só o fundo, sem texto, a partir do briefing vinculado e do texto da peça. Título, apoio, CTA e assinatura continuam como camadas editáveis no canvas; a composição passa para "Foto em foco". Só no clique, e o consultor revisa antes de enviar.
+- Modelos de imagem: `gemini-3.1-flash-image`, com `gemini-2.5-flash-image` de reserva. No plano gratuito do Google a cota de imagem é zero (testado em 03/11/2026). Por isso, no site publicado, `/api/imagem` cai para o Workers AI do Cloudflare (`flux-2-klein-4b`, reserva `flux-1-schnell`), grátis até o limite diário da conta. No teste local não há Workers AI: o site avisa.
+- Antes da imagem, a IA de texto lê o briefing e descreve a cena em inglês (os geradores entendem melhor). Se esse passo falhar, vai o pedido em português.
+- Cloudflare: `wrangler.toml` no repositório (pasta `dist` e binding `AI`) e `dist/` versionada, para a publicação não depender do comando de build do painel. Segredos ficam só no painel.
+- O botão do Canva continua (opcional). Ele só funciona com uma autorização própria do Canva no Cloudflare (`CANVA_ACCESS_TOKEN`), que ainda não existe.

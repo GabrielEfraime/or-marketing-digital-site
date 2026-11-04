@@ -1,12 +1,13 @@
 // Servidor do site no Cloudflare Pages (Pages Functions). Tudo em /api/*:
 //   GET    /api/ping           consultor: confere o código do servidor
 //   POST   /api/ia             consultor: repassa o pedido para a OpenAI, o Gemini ou a Groq (conforme o modelo) com a chave guardada aqui (o navegador não vê a chave)
-//   POST   /api/lead           visitante: guarda o briefing (no máximo 30 dias), com limite por IP
+//   POST   /api/imagem         consultor: imagem de fundo de uma arte (sem texto): Gemini com a GEMINI_API_KEY e, se ele recusar, Workers AI (binding AI)
+//   POST   /api/lead          visitante: guarda o briefing (no máximo 30 dias), com limite por IP
 //   GET    /api/leads          consultor: lista os briefings guardados
 //   DELETE /api/leads          consultor: apaga os briefings já puxados para a Minha área
 //   GET    /api/site?url=...   consultor: baixa o HTML do site atual de um cliente para a análise do "Refazer site"
 // Variáveis no Cloudflare (Settings > Variables and Secrets): OPENAI_API_KEY, GEMINI_API_KEY e GROQ_API_KEY (secretas), ADMIN_TOKEN (secreta, 32+ caracteres).
-// Binding: LEADS (KV namespace). Sem dependências.
+// Bindings (no wrangler.toml): AI (Workers AI, imagens das artes) e LEADS (KV namespace, briefings dos visitantes). Sem dependências.
 
 const GROQ = 'https://api.groq.com/openai/v1/chat/completions';
 const OPENAI = 'https://api.openai.com/v1/chat/completions';
@@ -14,6 +15,8 @@ const GEMINI = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/com
 const MODELOS = /^(gpt-5|gpt-4[.]1|gpt-4o|o[0-9])[A-Za-z0-9.-]*$/;
 const MODELOS_OUTROS = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-lite-latest'];
 const MAX_PEDIDO = 400_000, MAX_LEAD = 64_000, MAX_SITE = 1_500_000, LEAD_TTL = 30 * 86400;
+const GEMINI_NATIVO = 'https://generativelanguage.googleapis.com/v1beta/models/';
+const MODELOS_IMAGEM = ['gemini-3.1-flash-image', 'gemini-2.5-flash-image'], PROPORCOES = ['1:1', '4:5', '9:16'];
 
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 const erro = (status, msg) => json({ error: { message: msg } }, status);
@@ -61,6 +64,62 @@ async function ia(req, env) {
   const r = await fetch(alvo[1], { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + chave }, body: JSON.stringify(b) });
   // repassa o corpo como veio (streaming e mensagens de limite 429/413, que o site lê para esperar ou encolher)
   return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'text/plain', 'Cache-Control': 'no-store' } });
+}
+
+// imagem de arte: 1) Gemini (melhor qualidade; exige faturamento na chave, o plano gratuito tem cota zero de imagem);
+// 2) Workers AI do Cloudflare (binding AI, sem chave; grátis até o limite diário da conta). Só proporções do editor e texto curto.
+// A resposta sai sempre no formato do Gemini (JSON com a imagem em base64): a do Gemini passa direto, sem ser lida (não gasta CPU da função).
+const WAI_IMAGEM = '@cf/black-forest-labs/flux-2-klein-4b', WAI_RESERVA = '@cf/black-forest-labs/flux-1-schnell';
+const TAMANHOS = { '1:1': [1024, 1024], '4:5': [1024, 1280], '9:16': [720, 1280] };
+async function imagemWorkersAI(env, prompt, proporcao) {
+  const [w, h] = TAMANHOS[proporcao], texto = prompt.slice(0, 2000);
+  let out;
+  try {
+    const form = new FormData();
+    form.append('prompt', texto); form.append('width', String(w)); form.append('height', String(h));
+    const corpo = new Response(form); // serializa o multipart e gera o Content-Type com o boundary
+    out = await env.AI.run(WAI_IMAGEM, { multipart: { body: corpo.body, contentType: corpo.headers.get('Content-Type') } });
+  } catch (e) {
+    if (/3036|allocation|neurons/i.test(String(e && e.message))) throw e;
+    out = await env.AI.run(WAI_RESERVA, { prompt: texto, steps: 6 });
+  }
+  const b64 = out && out.image;
+  if (typeof b64 !== 'string' || b64.length < 100) throw new Error('sem imagem');
+  return b64;
+}
+async function imagem(req, env) {
+  let b;
+  try { b = JSON.parse(await lerTexto(req, 20_000)); } catch (e) { return erro(413, 'Pedido grande demais ou inválido.'); }
+  if (!b || (b.model !== undefined && !MODELOS_IMAGEM.includes(b.model)) || !PROPORCOES.includes(b.proporcao) || typeof b.prompt !== 'string' || !b.prompt.trim() || b.prompt.length > 12_000) return erro(400, 'Pedido de imagem inválido.');
+  if (!env.GEMINI_API_KEY && !env.AI) return erro(500, 'Imagem: nenhum gerador ligado no Cloudflare. Crie o segredo GEMINI_API_KEY ou ligue o Workers AI (binding AI).');
+  let falhaGemini = null;
+  if (env.GEMINI_API_KEY) {
+    for (const model of b.model ? [b.model] : MODELOS_IMAGEM) {
+      let r;
+      try {
+        r = await fetch(GEMINI_NATIVO + model + ':generateContent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+          body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: b.prompt }] }], generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: b.proporcao } } }), signal: AbortSignal.timeout(120_000) });
+      } catch (e) { falhaGemini = { status: 504, msg: 'O Gemini não respondeu a tempo.' }; break; }
+      if (r.ok) return new Response(r.body, { status: 200, headers: { 'Content-Type': r.headers.get('Content-Type') || 'application/json', 'Cache-Control': 'no-store' } });
+      let msg = '';
+      try { msg = String((JSON.parse(await lerTexto(r, 20_000)).error || {}).message || ''); } catch (e) {}
+      falhaGemini = { status: r.status, msg: msg.slice(0, 600) || 'O Gemini recusou o pedido.' };
+      if (![403, 404, 429].includes(r.status)) break; // sem cota ou modelo indisponível: tenta o próximo e depois o Workers AI
+    }
+  }
+  if (env.AI) {
+    try {
+      const b64 = await imagemWorkersAI(env, b.prompt, b.proporcao);
+      const tipo = b64.startsWith('/9j/') ? 'image/jpeg' : b64.startsWith('UklGR') ? 'image/webp' : 'image/png';
+      return new Response('{"motor":"workers-ai","candidates":[{"content":{"parts":[{"inlineData":{"mimeType":"' + tipo + '","data":"' + b64 + '"}}]}}]}', { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    } catch (e) {
+      const t = String(e && e.message);
+      if (/3036|allocation|neurons/i.test(t)) return erro(429, 'Imagem: acabou o limite gratuito de imagens do dia no Cloudflare. Ele volta às 21h (horário de Brasília), ou ative o faturamento do Gemini.');
+      if (/3040|capacity/i.test(t)) return erro(503, 'Imagem: o gerador de imagens do Cloudflare está sem capacidade agora. Tente de novo em instantes.');
+      return erro(502, 'Imagem: o gerador de imagens do Cloudflare falhou. Tente de novo.');
+    }
+  }
+  return erro(falhaGemini.status, falhaGemini.msg);
 }
 
 async function guardaLead(req, env) {
@@ -198,6 +257,7 @@ export async function onRequest({ request: req, env, params }) {
     if (rota.startsWith('canva/')) return await canvaRota(req, env, rota);
     if (rota === 'ping' && m === 'GET') return json({ ok: true });
     if (rota === 'ia' && m === 'POST') return await ia(req, env);
+    if (rota === 'imagem' && m === 'POST') return await imagem(req, env);
     if (rota === 'leads' && env.LEADS && m === 'GET') return await listaLeads(env);
     if (rota === 'leads' && env.LEADS && m === 'DELETE') return await apagaLeads(req, env);
     if (rota === 'site' && m === 'GET') return await baixaSite(new URL(req.url).searchParams.get('url') || '');

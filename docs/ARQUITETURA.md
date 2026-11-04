@@ -40,6 +40,8 @@ Um **único escopo global de JavaScript**, sem módulos e sem build de verdade: 
 | 22b | `dashboards` | Dashboard principal (dados reais, filtros, funil, tarefas, atividades), aba Métricas por projeto, registro de atividades (`ativ2`), indicador de salvamento |
 | 22e | `acompanhamento-producao` | Acompanhamento: o que vamos fazer (escopo do pacote), produção por ciclo semanal/mensal com IA, campanhas com exemplos (arquivos no IndexedDB `or-arquivos`), Meta Ads (CSV), imprensa (pautas e clipping), acesso rápido e versões do código do site, mensagens prontas de WhatsApp |
 | 22f | `captacao` | (também busca grátis no OpenStreetMap, `capBuscarOSM`, quando não há chave do Google)  Captar clientes: busca no Google (Places API, chave do consultor em `gplaces`), sinais de oportunidade (sem site, só Instagram, celular), prévia do site (IA 1) com fotos e avaliações reais montadas pelo app, mensagem de abordagem (IA 2), etapas até virar lead. Lista em `prosp1` (entra no backup); prévias e fotos no IndexedDB `or-arquivos` (`cap:<id>`, `capf:<id>`) |
+| 22g | `editor-posts` | Posts por briefing (`postsInner`/`reaPostsBind`): plano editorial, calendário, galeria, identidade visual e o editor de arte em canvas (`reaArte*`: texto, cores, fontes, slides, foto e PNG) |
+| 22h | `ia-imagem` | Imagem com IA (`iaImagem`, `iaImgPrompt`): o Gemini cria só o fundo da arte, sem texto; local com a chave da tela IAs, publicado por `/api/imagem`. Botão "Criar imagem com IA" no editor e nas Demandas |
 | 23 | `whatsapp-ias-final` | Janela de WhatsApp, tela IAs, banco de talentos, inicialização (`render()`) |
 
 ## Fluxo de um lead
@@ -111,7 +113,7 @@ Cascata em camadas: o que vem depois vence. `01-base-e-minha-area.css` tem os to
 
 ## Servidor (Cloudflare Pages Functions) e testes
 
-- `functions/api/[[rota]].js`: `/api/ping`, `/api/ia` (repassa para a Groq com `GROQ_API_KEY`; só modelos permitidos; `max_tokens` até 16000), `/api/lead` (público, até 64 KB, 5 por minuto e 30 por dia por IP, guarda 30 dias no KV `LEADS`), `/api/leads` (GET e DELETE), `/api/site` (baixa o HTML de um site público para a análise). Tudo, menos `/api/lead`, exige o cabeçalho `X-OR-Token` igual ao `ADMIN_TOKEN`.
+- `functions/api/[[rota]].js`: `/api/ping`, `/api/ia` (repassa para a OpenAI, o Gemini ou a Groq conforme o modelo, com a chave de cada um; só modelos permitidos; `max_tokens` até 16000), `/api/imagem` (imagem de arte pelo Gemini com `GEMINI_API_KEY`; só modelos de imagem e proporções 1:1, 4:5 e 9:16; repassa a resposta sem ler), `/api/canva/*` (opcional, com `CANVA_ACCESS_TOKEN`), `/api/lead` (público, até 64 KB, 5 por minuto e 30 por dia por IP, guarda 30 dias no KV `LEADS`), `/api/leads` (GET e DELETE), `/api/site` (baixa o HTML de um site público para a análise). Tudo, menos `/api/lead`, exige o cabeçalho `X-OR-Token` igual ao `ADMIN_TOKEN`.
 - No navegador: `srvOn()`/`srvTok()` (08) decidem quando a IA vai pelo servidor (site em https, código salvo e IA na Groq sem chave local). `puxarLeads()` (17) traz os briefings. `submit()` (15) manda o lead para `/api/lead`.
 - `scripts/montar.mjs` também grava `dist/index.html` e `dist/_headers` (CSP com `frame-ancestors 'none'`, HSTS, nosniff, Referrer-Policy, Permissions-Policy).
 - `scripts/abrir.mjs`: servidor local só da página, em 127.0.0.1:5173 (`--teste` serve o build de teste).

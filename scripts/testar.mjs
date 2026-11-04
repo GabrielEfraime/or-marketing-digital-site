@@ -91,6 +91,54 @@ await t('servidor: cada modelo vai para a sua plataforma com a sua chave', async
   p = await vai('gemini-3.5-flash'); assert.match(p.u, /generativelanguage/); assert.equal(p.o.headers.Authorization, 'Bearer chave-gemini');
   p = await vai('openai/gpt-oss-120b'); assert.match(p.u, /api.groq.com/); assert.equal(p.o.headers.Authorization, 'Bearer chave-de-teste');
 });
+await t('servidor: imagem da arte vai ao Gemini com a chave do servidor e só com modelo e proporção permitidos', async () => {
+  const pede = (b, tok = TOKEN) => chama('imagem', { method: 'POST', body: JSON.stringify(b) }, tok);
+  const ok = { model: 'gemini-3.1-flash-image', prompt: 'Fundo para post de confeitaria, sem texto', proporcao: '4:5' };
+  assert.equal((await pede(ok, null)).status, 401);
+  assert.equal((await pede({ ...ok, model: 'gpt-image-1' })).status, 400);
+  assert.equal((await pede({ ...ok, proporcao: '21:9' })).status, 400);
+  assert.equal((await pede({ ...ok, prompt: '' })).status, 400);
+  const r = await pede(ok);
+  assert.equal(r.status, 200);
+  assert.equal(groqPedido.u, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent');
+  assert.equal(groqPedido.o.headers['x-goog-api-key'], 'chave-gemini'); assert.equal(groqPedido.o.headers.Authorization, undefined);
+  const b = JSON.parse(groqPedido.o.body);
+  assert.deepEqual(b.generationConfig, { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: '4:5' } });
+  assert.equal(b.contents[0].parts[0].text, ok.prompt);
+  const chave = env.GEMINI_API_KEY; delete env.GEMINI_API_KEY;
+  try { assert.equal((await pede(ok)).status, 500); } finally { env.GEMINI_API_KEY = chave; }
+});
+await t('servidor: sem cota de imagem no Gemini, a arte sai pelo Workers AI do Cloudflare', async () => {
+  const pede = (b) => chama('imagem', { method: 'POST', body: JSON.stringify(b) }, TOKEN);
+  const anterior = globalThis.fetch, modelos = [], rodou = [];
+  globalThis.fetch = async (u) => { modelos.push(String(u).split('/models/')[1]); return new Response(JSON.stringify({ error: { code: 429, message: 'Quota exceeded for metric: generate_content_free_tier_requests, limit: 0' } }), { status: 429, headers: { 'Content-Type': 'application/json' } }); };
+  env.AI = { run: async (model, input) => { rodou.push({ model, tipo: input.multipart ? input.multipart.contentType : 'json' }); return { image: 'iVBORw0KGgo' + 'A'.repeat(200) }; } };
+  try {
+    const r = await pede({ prompt: 'Coffee cup on a wooden table, no text', proporcao: '9:16' });
+    assert.equal(r.status, 200);
+    assert.deepEqual(modelos, ['gemini-3.1-flash-image:generateContent', 'gemini-2.5-flash-image:generateContent']);
+    assert.equal(rodou[0].model, '@cf/black-forest-labs/flux-2-klein-4b'); assert.match(rodou[0].tipo, /multipart\/form-data; boundary=/);
+    const j = await r.json(); assert.equal(j.motor, 'workers-ai'); assert.equal(j.candidates[0].content.parts[0].inlineData.mimeType, 'image/png');
+    const chave = env.GEMINI_API_KEY; delete env.GEMINI_API_KEY; modelos.length = 0;
+    try { assert.equal((await pede({ prompt: 'x', proporcao: '1:1' })).status, 200); assert.equal(modelos.length, 0); } finally { env.GEMINI_API_KEY = chave; }
+    env.AI = { run: async () => { throw new Error('3036: daily free allocation of 10,000 neurons used'); } };
+    const lim = await pede({ prompt: 'x', proporcao: '4:5' });
+    assert.equal(lim.status, 429); assert.match((await lim.json()).error.message, /^Imagem: acabou o limite gratuito/);
+  } finally { globalThis.fetch = anterior; delete env.AI; }
+});
+await t('site: imagem da IA lê a resposta do Gemini e explica o plano gratuito', () => {
+  const fonte = ler('src/js/22h-ia-imagem.js'), ctx = { atob: (s) => Buffer.from(s, 'base64').toString('latin1'), Blob, location: { protocol: 'http:' } };
+  vm.runInNewContext(fonte + ';this.iaImgBlob=iaImgBlob;this.iaImgErro=iaImgErro;this.iaImgPrompt=iaImgPrompt;', ctx);
+  const png = Buffer.from([137, 80, 78, 71]).toString('base64');
+  const blob = ctx.iaImgBlob({ candidates: [{ content: { parts: [{ text: 'x' }, { inlineData: { mimeType: 'image/png', data: png } }] } }] });
+  assert.equal(blob.type, 'image/png'); assert.equal(blob.size, 4);
+  assert.throws(() => ctx.iaImgBlob({ promptFeedback: { blockReason: 'SAFETY' } }), /SAFETY/);
+  assert.match(ctx.iaImgErro(429, 'Quota exceeded for metric: generate_content_free_tier_requests, limit: 0'), /plano gratuito/);
+  assert.match(ctx.iaImgErro(401, '{"error":{"message":"Código do servidor ausente ou errado."}}'), /código do servidor/);
+  assert.equal(ctx.iaImgErro(429, '{"error":{"message":"Imagem: acabou o limite gratuito de imagens do dia no Cloudflare."}}'), 'acabou o limite gratuito de imagens do dia no Cloudflare.');
+  const p = ctx.iaImgPrompt({ titulo: 'Bolo de pote', formato: 'story', cores: ['#0A0908'] });
+  assert.match(p, /9:16/); assert.match(p, /nenhum texto/); assert.match(p, /Bolo de pote/);
+});
 await t('servidor: leitura de site recusa endereço local', async () => {
   assert.equal((await chama('site?url=' + encodeURIComponent('http://127.0.0.1/admin'), {}, TOKEN)).status, 400);
   assert.equal((await chama('site?url=' + encodeURIComponent('file:///etc/passwd'), {}, TOKEN)).status, 400);

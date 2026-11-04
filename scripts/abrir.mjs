@@ -45,6 +45,7 @@ http.createServer((req, res) => {
 }).listen(PORTA, '127.0.0.1', () => {
   console.log('Plataforma' + (teste ? ' (build de TESTE)' : '') + ' em ' + url + '  (Ctrl+C para parar)');
   if (!teste) console.log(chaves().some(Boolean) ? 'Chaves do .env ligadas nas IAs (só neste endereço local).' : 'Sem chaves no .env: cole as chaves em Minha área > IAs.');
+  if (process.argv.includes('--sem-navegador')) return; // usado pelo painel de prévia do Claude, que abre a página sozinho
   const [cmd, args] = process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]] : process.platform === 'darwin' ? ['open', [url]] : ['xdg-open', [url]];
   spawn(cmd, args, { detached: true, stdio: 'ignore' }).unref();
 });

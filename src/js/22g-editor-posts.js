@@ -55,7 +55,7 @@ function reaArteHtml(l,f,p){
   const a=reaArtePreparar(p,f,l),s=a.slides[a.slide],multi=a.slides.length>1;
   const op=(v,n,cur)=>'<option value="'+v+'" '+(cur===v?"selected":"")+'>'+n+"</option>";
   return '<section class="rea-art" data-rea-art data-rea-id="'+esc(l.id)+'" data-rea-pid="'+esc(p.id)+'" data-rea-slide="'+a.slide+'" data-rea-foto="'+(a.foto?"1":"0")+'" data-rea-font-title="'+esc(a.fonteTitulo)+'" data-rea-font-text="'+esc(a.fonteTexto)+'">'+
-    '<div class="rea-art-head"><div><span class="rea-art-kicker">EDITOR DE ARTE</span><h3>Monte a peça visual</h3><p class="hint">A IA cria o conteúdo; ajuste o texto e o layout aqui. A foto escolhida fica neste navegador.</p></div>'+
+    '<div class="rea-art-head"><div><span class="rea-art-kicker">EDITOR DE ARTE</span><h3>Monte a peça visual</h3><p class="hint">A IA escreve o texto e cria a imagem de fundo; ajuste tudo aqui. Fotos e imagens ficam neste navegador.</p></div>'+
     (multi?'<div class="rea-art-pages"><button type="button" class="btn ghost" data-rea-art-page="-1" aria-label="Slide anterior">‹</button><span data-rea-art-count>Slide '+(a.slide+1)+' de '+a.slides.length+'</span><button type="button" class="btn ghost" data-rea-art-page="1" aria-label="Próximo slide">›</button></div>':'')+'</div>'+
     '<div class="rea-art-grid"><div class="rea-art-controls">'+
     '<div class="rea-art-row"><div><label for="rea-art-format">Formato</label><select id="rea-art-format" data-rea-art-field="formato">'+op("feed","Feed · 4:5",a.formato)+op("quadrado","Quadrado · 1:1",a.formato)+op("story","Story · 9:16",a.formato)+'</select></div>'+
@@ -70,6 +70,7 @@ function reaArteHtml(l,f,p){
     '<div class="rea-art-colors"><label>Fundo <input type="color" aria-label="Cor de fundo" data-rea-art-field="fundo" value="'+a.fundo+'"></label><label>Cor de destaque <input type="color" aria-label="Cor de destaque" data-rea-art-field="acento" value="'+a.acento+'"></label><label>Texto <input type="color" aria-label="Cor do texto" data-rea-art-field="texto" value="'+a.texto+'"></label></div>'+
     '<div class="rea-art-upload-row"><label class="btn ghost rea-art-upload">Adicionar foto<input type="file" accept="image/png,image/jpeg,image/webp" data-rea-art-upload aria-label="Selecionar foto PNG, JPEG ou WebP"></label>'+
     (a.foto?'<button type="button" class="btn ghost" data-rea-art-action="remover">Remover foto</button>':'')+
+    '<button type="button" class="btn ghost" data-rea-art-action="imagem">Criar imagem com IA</button>'+
     '<button type="button" class="btn ghost" data-rea-art-action="sugerir">Sugerir texto com IA</button></div>'+
     '<div class="rea-art-status" data-rea-art-status role="status" aria-live="polite"></div></div>'+
     '<div class="rea-art-preview"><div class="rea-art-preview-top"><b>PRÉVIA</b><span data-rea-art-dims>1080 × 1350 px</span></div>'+
@@ -241,28 +242,53 @@ function reaArteBind(el,id){
   box.querySelectorAll("[data-rea-art-page]").forEach(b=>b.addEventListener("click",()=>reaArteTrocarSlide(box,id,pid,Number(b.dataset.reaArtPage)||0)));
   const suggest=box.querySelector('[data-rea-art-action="sugerir"]');if(suggest)suggest.addEventListener("click",()=>reaArteSugerir(box,id,pid));
   const download=box.querySelector('[data-rea-art-action="baixar"]');if(download)download.addEventListener("click",()=>reaArteBaixar(box,id,pid));
-  const remove=box.querySelector('[data-rea-art-action="remover"]');if(remove)remove.addEventListener("click",async()=>{
-    const key=reaArteKey(id,pid),cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
-    await arqDel(key);box.dataset.reaFoto="0";
-    const p=reaArteCliente(id).track.pecas.find(x=>x.id===pid);if(p&&p.arte){p.arte.foto=false;reaArteUpd(id,{track:reaArteCliente(id).track})}
-    const row=box.querySelector(".rea-art-upload-row");if(row){remove.remove();box.querySelector('[data-rea-art-upload]').value=""}
-    reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.");
-  });
+  const remove=box.querySelector('[data-rea-art-action="remover"]');if(remove)remove.addEventListener("click",()=>reaArteRemoverFoto(box,id,pid,remove));
+  const gerarImg=box.querySelector('[data-rea-art-action="imagem"]');if(gerarImg)gerarImg.addEventListener("click",()=>reaArteImagemIA(box,id,pid));
   const upload=box.querySelector("[data-rea-art-upload]");if(upload)upload.addEventListener("change",async()=>{
     const file=upload.files&&upload.files[0];if(!file)return;
     if(!["image/png","image/jpeg","image/webp"].includes(file.type)){reaArteAviso(box,"Escolha uma foto PNG, JPEG ou WebP.");upload.value="";return}
     if(file.size>8*1024*1024){reaArteAviso(box,"A foto precisa ter até 8 MB.");upload.value="";return}
-    const key=reaArteKey(id,pid);
-    try{
-      await arqPut(key,new Blob([file],{type:file.type}));
-      const cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
-      box.dataset.reaFoto="1";const p=reaArteCliente(id).track.pecas.find(x=>x.id===pid);if(p){p.arte=p.arte||{};p.arte.foto=true;reaArteUpd(id,{track:reaArteCliente(id).track})}
-      const row=box.querySelector(".rea-art-upload-row");
-      if(row&&!row.querySelector('[data-rea-art-action="remover"]')){const b=document.createElement("button");b.type="button";b.className="btn ghost";b.dataset.reaArtAction="remover";b.textContent="Remover foto";row.insertBefore(b,box.querySelector('[data-rea-art-action="sugerir"]'));b.addEventListener("click",async()=>{await arqDel(key);box.dataset.reaFoto="0";const x=REA_ART_IMAGENS.get(key);if(x){URL.revokeObjectURL(x.url);REA_ART_IMAGENS.delete(key)};const q=reaArteCliente(id).track.pecas.find(y=>y.id===pid);if(q&&q.arte){q.arte.foto=false;reaArteUpd(id,{track:reaArteCliente(id).track})};b.remove();reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.")})}
-      box._reaImagem=await reaArteObterImagem(box,id,pid);reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto adicionada. Ela fica somente neste navegador.");
-    }catch(e){reaArteAviso(box,"Não consegui guardar a foto neste navegador.")}
+    try{await reaArteFotoPronta(box,id,pid,new Blob([file],{type:file.type}),"Foto adicionada. Ela fica somente neste navegador.")}
+    catch(e){reaArteAviso(box,"Não consegui guardar a foto neste navegador.")}
     upload.value="";
   });
+}
+/* foto da arte (enviada pelo consultor ou criada pela IA): guarda no IndexedDB, marca a peça e redesenha */
+async function reaArteFotoPronta(box,id,pid,blob,msg,modelo){
+  const key=reaArteKey(id,pid);
+  await arqPut(key,blob);
+  const cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);
+  if(p){p.arte=p.arte||{};p.arte.foto=true;if(modelo)p.arte.modelo=modelo;reaArteUpd(id,{track:l.track})}
+  if(!box.isConnected)return;
+  box.dataset.reaFoto="1";
+  if(modelo){const s=box.querySelector('[data-rea-art-field="modelo"]');if(s)s.value=modelo}
+  const row=box.querySelector(".rea-art-upload-row");
+  if(row&&!row.querySelector('[data-rea-art-action="remover"]')){
+    const b=document.createElement("button");b.type="button";b.className="btn ghost";b.dataset.reaArtAction="remover";b.textContent="Remover foto";
+    row.insertBefore(b,row.querySelector('[data-rea-art-action="imagem"]'));b.addEventListener("click",()=>reaArteRemoverFoto(box,id,pid,b));
+  }
+  box._reaImagem=await reaArteObterImagem(box,id,pid);reaArteAtualizar(box,id,pid);reaArteAviso(box,msg);
+}
+async function reaArteRemoverFoto(box,id,pid,btn){
+  const key=reaArteKey(id,pid),cached=REA_ART_IMAGENS.get(key);if(cached){URL.revokeObjectURL(cached.url);REA_ART_IMAGENS.delete(key)}
+  await arqDel(key);box.dataset.reaFoto="0";box._reaImagem=null;
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(p&&p.arte){p.arte.foto=false;reaArteUpd(id,{track:l.track})}
+  if(btn)btn.remove();const up=box.querySelector("[data-rea-art-upload]");if(up)up.value="";
+  reaArteAtualizar(box,id,pid);reaArteAviso(box,"Foto removida.");
+}
+/* "Criar imagem com IA": o Gemini cria o fundo a partir do briefing e da peça; a composição passa para "Foto em foco"
+   (imagem inteira com o texto editável por cima). Cada clique consome a cota de imagens da chave. */
+async function reaArteImagemIA(box,id,pid){
+  const b=box.querySelector('[data-rea-art-action="imagem"]');if(!b||b.disabled)return;
+  const l=reaArteCliente(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!p)return;
+  const c=reaArteCampos(box),cliente=id.startsWith("demanda:")?orQuadroCliente(orQuadroItem(id.slice(8))||{}):l;
+  b.disabled=true;b.textContent="Criando imagem…";b.setAttribute("aria-busy","true");
+  try{
+    const blob=await iaImgCriar({cliente,titulo:c.titulo||p.titulo,apoio:c.apoio,texto:p.txt,formato:c.formato,cores:[c.fundo,c.acento,c.texto]},m=>{if(box.isConnected)reaArteAviso(box,m)});
+    await reaArteFotoPronta(box,id,pid,blob,"Imagem criada pela IA, sem texto: o título e os textos seguem editáveis por cima. Revise antes de enviar ao cliente.",c.modelo!=="foto"?"foto":"");
+  }catch(e){if(box.isConnected)reaArteAviso(box,e.message||"Não consegui criar a imagem agora.")}
+  finally{if(b.isConnected){b.disabled=false;b.textContent="Criar imagem com IA";b.removeAttribute("aria-busy")}}
 }
 
 

@@ -224,6 +224,10 @@
       "descricao": "Posts administrativos por briefing: geração com IA, calendário mensal, galeria, identidade visual e editor PNG"
     },
     {
+      "arquivo": "src/js/22h-ia-imagem.js",
+      "descricao": "Imagem com IA (Gemini) para as artes: fundo sem texto, local com a chave da tela IAs ou publicado por /api/imagem"
+    },
+    {
       "arquivo": "src/js/22c-vagas.js",
       "descricao": "Vagas na Minha área: criar, editar, publicar, pausar, encerrar, arquivar, duplicar; candidatos por vaga com etapa e nota"
     },
