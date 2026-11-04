@@ -4,7 +4,8 @@ Leia primeiro: `README.md` (como rodar e editar), `docs/ARQUITETURA.md` (mapa do
 
 ## Como trabalhar
 - **Edite `src/`, nunca `dist/`.** Depois: `npm run montar` e `npm run verificar` (inclui `npm run testar`). O resultado é um arquivo único, `dist/estudio-ia.html` (e `dist/index.html` para a hospedagem). Abra com `npm run abrir` (servidor local em 127.0.0.1), não por duplo clique.
-- Servidor: `functions/api/[[rota]].js` (Cloudflare Pages Functions): `/api/ia` (OpenAI, Gemini ou Groq com a chave no servidor), `/api/imagem` (imagem das artes pelo Gemini), `/api/lead`, `/api/leads`, `/api/site`, `/api/canva/*` (opcional). Sem dependências; testado em `scripts/testar.mjs`.
+- Publicação: **GitHub Pages** (`.github/workflows/pages.yml`), sem servidor: as chaves da IA ficam cifradas no navegador (tela IAs). IA 1 = Groq Qwen 3.8 27B (criação), IA 2 e 3 = Groq GPT-OSS 120B (estratégia, atendimento, captação); imagens pelo Gemini (chave própria no cartão de imagens).
+- Servidor opcional, hoje desligado: `functions/api/[[rota]].js` (Cloudflare Pages Functions): `/api/ia` (OpenAI, Gemini ou Groq com a chave no servidor), `/api/imagem` (imagem das artes pelo Gemini), `/api/lead`, `/api/leads`, `/api/site`, `/api/canva/*` (opcional). Sem dependências; testado em `scripts/testar.mjs`.
 - Sem dependências npm. Node 18+.
 - JavaScript em **um único escopo global**, concatenado na ordem de `src/ordem.json`. Não repita nomes entre arquivos. Arquivo novo: inclua em `ordem.json`.
 - No CSS, o que vem depois vence. Há muitos `!important` herdados; procure o uso de uma classe antes de apagar regra.

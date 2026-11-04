@@ -21,19 +21,20 @@ npm run abrir:teste   # abre o build de teste em http://127.0.0.1:5173
 
 Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer HTML aberto no mesmo Chrome consegue ler as chaves e os dados da plataforma. Na primeira vez no endereço novo, clique em **Conectar pasta de backup no HD** para trazer os leads, ou importe um backup.
 
-## Publicar para teste (GitHub + Cloudflare Pages)
+## Publicar (GitHub Pages)
 
-O projeto no Cloudflare se chama `or-marketing-digital-site` e publica sozinho a cada envio para o `main` do GitHub. O `wrangler.toml` deixa no código a pasta publicada (`dist`, que vai junto para o GitHub) e a ligação com o Workers AI (imagens das artes). O painel do Cloudflare mostra esses campos, mas não deixa editá-los.
+O site publica sozinho a cada envio para o `main`: o GitHub Actions (`.github/workflows/pages.yml`) roda `npm run montar` e `npm run verificar` e publica a pasta `dist` em https://gabrielefraime.github.io/or-marketing-digital-site/ .
 
-1. **Build:** em *Workers & Pages > or-marketing-digital-site > Settings > Build*, o comando de build é `npm run build`.
-2. **Segredos:** em *Settings > Variables and Secrets*, crie (tipo **Secret**, não texto simples):
-   - `GEMINI_API_KEY` (obrigatória): aistudio.google.com/apikey. As três IAs rodam no Gemini. No plano gratuito do Google o texto funciona e a imagem não; no site publicado a imagem cai para o Workers AI do Cloudflare (grátis até o limite do dia).
-   - `ADMIN_TOKEN`: o código do servidor (32 caracteres ou mais). Há um pronto no seu `.env` local, na linha `ADMIN_TOKEN=`. É o mesmo que você cola em Minha área > IAs > Servidor.
-   - Opcionais, só se trocar a plataforma na tela IAs: `OPENAI_API_KEY` e `GROQ_API_KEY`. Gere chaves **novas** antes de publicar.
-3. **Briefings dos visitantes (opcional):** crie um KV namespace em *Storage & Databases > KV* e coloque o ID dele no `wrangler.toml` (instruções no próprio arquivo).
-4. Rode o deploy de novo (*Deployments > Retry deployment*). Abra `https://or-marketing-digital-site.pages.dev`, entre na Minha área, troque o PIN, cole o `ADMIN_TOKEN` em **IAs > Servidor (Cloudflare)** e clique em **Testar o servidor**.
+O GitHub Pages não tem servidor. Por isso a IA usa chaves guardadas no navegador de quem usa a Minha área:
+1. Abra o site publicado, entre na Minha área e vá em **IAs**.
+2. Cole a chave da Groq (console.groq.com/keys) em uma das três IAs; as outras usam a mesma. IA 1 = Qwen 3.8 27B (criação), IA 2 e IA 3 = GPT-OSS 120B (estratégia, atendimento e captação).
+3. Para "Criar imagem com IA", cole a chave do Gemini (aistudio.google.com/apikey) no cartão **Imagens das artes**. No plano gratuito do Google a imagem não sai: é preciso ativar o faturamento da chave.
+4. Clique em **Salvar** e em **Testar** em cada IA. As chaves ficam cifradas só naquele navegador e nunca vão para o GitHub. Em outro computador, cole de novo.
 
-O GitHub Pages também publica o site, mas lá não existe servidor (`/api/*`): a IA publicada só funciona pelo endereço do Cloudflare.
+Nunca coloque chave no código, no `.env.example` ou no GitHub: a página é pública.
+
+### Servidor no Cloudflare (opcional, desligado)
+`functions/` e `wrangler.toml` continuam no repositório para quando houver servidor (chaves no servidor, briefings dos visitantes, imagens grátis pelo Workers AI). Hoje o site não usa: o projeto `or-marketing-digital-site` no Cloudflare não publicou nenhuma versão (o build falha) e pode ser desligado no painel.
 
 O que o servidor faz (`functions/api/[[rota]].js`):
 - `/api/ia`: chama a OpenAI, o Gemini ou a Groq (conforme o modelo) com a chave guardada no Cloudflare. Só aceita quem tem o código e só os modelos permitidos.

@@ -171,7 +171,7 @@ async function gen(id,extra){
   const msgs=[{role:'system',content:svcs(l).map(k=>MODS[k].sys).join(' ')+' Use SOMENTE informações do briefing; nunca troque o assunto nem o negócio do cliente; se faltar algo, escreva "a confirmar". '+' '+escopoTxt(svcs(l))+'\n\n'+PM_CORE+'\n\n'+especialista(svcs(l))+(kb('plano',l)?'\n\n'+kb('plano',l):'')},{role:'user',content:brief(l)+(isSite(l)?lpBloco(l)+saBloco(l):'')+'\n\nIMPORTANTE: o trabalho é para o negócio e o objetivo descritos acima. Use só informações do briefing e não mude de assunto.'}];
   if(extra&&l.entrega)msgs.push({role:'assistant',content:l.entrega},{role:'user',content:'CORREÇÃO DO CONSULTOR (obrigatória, siga à risca; a resposta anterior errou neste ponto): '+extra+'. Refaça corrigindo isso e mantendo o que estava certo.'+(isSite(l)?'. Devolva o HTML completo atualizado em um único bloco ```html.':'')});
   Object.assign(J.plano,{on:true,id,live:'',t0:Date.now()});A.err='';A.edit=false;A.sel=id;paintList();paintDet();
-  try{const out=await askF(msgs,t=>live('plano',clean(t)),{slot:'ia1',max:isSite(l)?9000:svcs(l).length>1?8000:6000,temp:0.6});upd(id,{entrega:out,...(l.status==='novo'?{status:'pronto'}:{})})}
+  try{const out=await askF(msgs,t=>live('plano',clean(t)),{slot:'ia2',max:isSite(l)?9000:svcs(l).length>1?8000:6000,temp:0.6});upd(id,{entrega:out,...(l.status==='novo'?{status:'pronto'}:{})})}
   catch(e){A.err=e.message}
   J.plano.on=false;paintList();paintDet();
 }

@@ -7,18 +7,18 @@
 const IA_IMG_MODELOS=['gemini-3.1-flash-image','gemini-2.5-flash-image'];
 const IA_IMG_PROPORCAO={feed:'4:5',quadrado:'1:1',story:'9:16'};
 const IA_IMG_REGRAS='Photorealistic, high quality, natural light, professional advertising look. Absolutely no text, letters, numbers, logos, signage, labels or watermarks anywhere in the image. Leave calm, uncluttered negative space in the upper third for a headline.';
-const iaImgChave=()=>{const c=IAS.map(s=>CFG[s]).find(x=>x&&x.kind==='openai'&&/generativelanguage\.googleapis\.com/.test(x.url||'')&&keyDe(x));return c?keyDe(c):''};
+const iaImgChave=()=>keyDe(CFG.img); // cartão "Imagens das artes" da tela IAs
 const iaImgCorpo=(prompt,proporcao)=>({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseModalities:['IMAGE'],imageConfig:{aspectRatio:proporcao}}});
-function iaImgErro(status,txt){
+function iaImgErro(status,txt,chaveLocal){
   txt=String(txt||'');
   let msg='';try{msg=String((JSON.parse(txt).error||{}).message||'')}catch(e){}
   if(/^Imagem: /.test(msg))return msg.slice(8); // mensagem pronta do servidor (Workers AI)
   const t=msg||txt;
   if(/Código do servidor/i.test(t))return 'O código do servidor está ausente ou errado. Confira em Minha área > IAs > Servidor.';
   if(/GEMINI_API_KEY/.test(t))return 'Falta o segredo GEMINI_API_KEY no Cloudflare (Settings > Variables and Secrets).';
-  if(status===429&&/free.?tier/i.test(t))return location.protocol==='https:'
+  if(status===429&&/free.?tier/i.test(t))return srvOn()&&!chaveLocal
     ?'A chave do Gemini está no plano gratuito, que não gera imagens, e o Workers AI não está ligado no Cloudflare. Confira o arquivo wrangler.toml do projeto ou ative o faturamento da chave no Google AI Studio.'
-    :'No teste local a imagem sai pelo Gemini, e a sua chave está no plano gratuito, que não gera imagens. No site publicado no Cloudflare ela sai grátis pelo Workers AI. Para gerar aqui também, ative o faturamento da chave no Google AI Studio.';
+    :'A chave do Gemini está no plano gratuito, que não gera imagens. Ative o faturamento da chave no Google AI Studio (aistudio.google.com) e tente de novo. Os textos com IA continuam funcionando.';
   if(status===429)return 'O limite de imagens foi atingido agora. Espere alguns minutos e tente de novo.';
   if(status===401||status===403)return 'A chave do Gemini foi recusada (erro '+status+'). Confira a chave na tela IAs'+(location.protocol==='https:'?' ou o segredo no Cloudflare':'')+'.';
   if(status===404)return 'Nenhum modelo de imagem do Gemini está liberado para esta chave.';
@@ -34,7 +34,7 @@ function iaImgBlob(j){
 }
 async function iaImagem(prompt,formato){
   const proporcao=IA_IMG_PROPORCAO[formato]||'4:5',chave=iaImgChave();
-  if(!chave&&!srvOn())throw new Error(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs para criar imagens com IA.':'Falta a chave do Gemini: abra Minha área > IAs, cole a chave e clique em Salvar.');
+  if(!chave&&!srvOn())throw new Error('Falta a chave do Gemini para as imagens: abra Minha área > IAs, cole a chave no cartão "Imagens das artes" e clique em Salvar.');
   /* local: um modelo do Gemini por vez; publicado: um pedido só, e o servidor escolhe o gerador */
   const pedidos=chave?IA_IMG_MODELOS.map(model=>()=>fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':chave},body:JSON.stringify(iaImgCorpo(prompt,proporcao)),signal:AbortSignal.timeout(120000)}))
     :[()=>fetch('/api/imagem',{method:'POST',headers:{'Content-Type':'application/json','X-OR-Token':srvTok()},body:JSON.stringify({prompt,proporcao}),signal:AbortSignal.timeout(150000)})];
@@ -45,7 +45,7 @@ async function iaImagem(prompt,formato){
     catch(e){throw new Error(e&&e.name==='TimeoutError'?'O gerador demorou mais de 2 minutos para criar a imagem. Tente de novo.':'O gerador de imagem não respondeu. Confira a internet.')}
     if(r.ok){let j;try{j=await r.json()}catch(e){throw new Error('O gerador devolveu uma resposta inválida.')}return iaImgBlob(j)}
     let t='';try{t=await r.text()}catch(e){}
-    ultimo=new Error(iaImgErro(r.status,t));
+    ultimo=new Error(iaImgErro(r.status,t,!!chave));
     if(r.status!==404&&r.status!==429)break; // modelo indisponível ou sem cota: tenta o próximo; outros erros param aqui
   }
   throw ultimo;

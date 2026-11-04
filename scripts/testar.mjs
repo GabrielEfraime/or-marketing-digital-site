@@ -127,7 +127,7 @@ await t('servidor: sem cota de imagem no Gemini, a arte sai pelo Workers AI do C
   } finally { globalThis.fetch = anterior; delete env.AI; }
 });
 await t('site: imagem da IA lê a resposta do Gemini e explica o plano gratuito', () => {
-  const fonte = ler('src/js/22h-ia-imagem.js'), ctx = { atob: (s) => Buffer.from(s, 'base64').toString('latin1'), Blob, location: { protocol: 'http:' } };
+  const fonte = ler('src/js/22h-ia-imagem.js'), ctx = { atob: (s) => Buffer.from(s, 'base64').toString('latin1'), Blob, location: { protocol: 'http:' }, srvOn: () => false };
   vm.runInNewContext(fonte + ';this.iaImgBlob=iaImgBlob;this.iaImgErro=iaImgErro;this.iaImgPrompt=iaImgPrompt;', ctx);
   const png = Buffer.from([137, 80, 78, 71]).toString('base64');
   const blob = ctx.iaImgBlob({ candidates: [{ content: { parts: [{ text: 'x' }, { inlineData: { mimeType: 'image/png', data: png } }] } }] });
@@ -172,7 +172,7 @@ await t('servidor: limites contam bytes e recusam HTML excessivo', async () => {
 
 await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funciona', async () => {
   const c = vm.createContext({ OPENAI_URL:'https://api.openai.com/v1', sget:()=>null, sset(){}, location:{protocol:'http:'}, DOMException, setTimeout, clearTimeout });
-  vm.runInContext("const IAS=['ia1','ia2','ia3'],CFG={ia1:{kind:'openai',url:'u',model:'a',key:'teste'},ia2:{kind:'openai',url:'u',model:'b',key:''},ia3:{kind:'openai',url:'u',model:'c',key:''}};",c);
+  vm.runInContext("const IAS=['ia1','ia2','ia3'],IA_CHAVES=[...IAS],CFG={ia1:{kind:'openai',url:'u',model:'a',key:'teste'},ia2:{kind:'openai',url:'u',model:'b',key:''},ia3:{kind:'openai',url:'u',model:'c',key:''}};",c);
   vm.runInContext(ler('src/js/08-ia-chamadas.js'),c);
   vm.runInContext("var chamadas=0;ask=async()=>{chamadas++;throw new DOMException('Parado','AbortError')}",c);
   await assert.rejects(vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),e=>e.name==='AbortError');
@@ -180,6 +180,22 @@ await t('IA: cancelar não dispara a IA de reserva e chave compartilhada funcion
   vm.runInContext("chamadas=0;ask=async()=>{chamadas++;if(chamadas===1)throw new Error('limite');return 'reserva'}",c);
   assert.equal(await vm.runInContext("askF([],()=>{},{slot:'ia1'})",c),'reserva');
   assert.equal(vm.runInContext('chamadas',c),2);
+});
+await t('IA: parâmetros da Groq por modelo (prompt mestre), chave compartilhada e chave do Gemini só para imagens', async () => {
+  const pedidos = [];
+  const c = vm.createContext({ OPENAI_URL: 'https://api.openai.com/v1', sget: () => null, sset() {}, location: { protocol: 'https:', hostname: 'gabrielefraime.github.io' }, DOMException, setTimeout, clearTimeout, TextDecoder, AbortController, Response, clean: (x) => x,
+    fetch: async (u, o) => { pedidos.push({ u, b: JSON.parse(o.body), h: o.headers }); return new Response('data: {"choices":[{"delta":{"content":"ok"}}]}\n\ndata: [DONE]\n', { headers: { 'Content-Type': 'text/event-stream' } }); } });
+  vm.runInContext("const G='https://api.groq.com/openai/v1',IAS=['ia1','ia2','ia3'],IA_CHAVES=[...IAS,'img'],CFG={brand:'OR',ia1:{kind:'openai',url:G,model:'qwen/qwen3.8-27b',key:'chave-groq'},ia2:{kind:'openai',url:G,model:'openai/gpt-oss-120b',key:''},ia3:{kind:'openai',url:G,model:'openai/gpt-oss-120b',key:''},img:{kind:'openai',url:'https://generativelanguage.googleapis.com/v1beta/openai',model:'gemini-3.1-flash-image',key:'chave-gemini'}};", c);
+  vm.runInContext(ler('src/js/08-ia-chamadas.js'), c);
+  assert.equal(await vm.runInContext("ask([{role:'user',content:'oi'}],()=>{},{slot:'ia1',max:1000})", c), 'ok');
+  let p = pedidos[0];
+  assert.equal(p.u, 'https://api.groq.com/openai/v1/chat/completions'); assert.equal(p.h.Authorization, 'Bearer chave-groq');
+  assert.equal(p.b.temperature, 0.6); assert.equal(p.b.top_p, 0.95); assert.equal(p.b.reasoning_format, 'hidden'); assert.equal(p.b.max_tokens, 1000); assert.equal(p.b.reasoning_effort, undefined);
+  await vm.runInContext("ask([{role:'user',content:'oi'}],()=>{},{slot:'ia2',max:1000,temp:.3})", c);
+  p = pedidos[1];
+  assert.equal(p.h.Authorization, 'Bearer chave-groq'); assert.equal(p.b.model, 'openai/gpt-oss-120b');
+  assert.equal(p.b.temperature, 1); assert.equal(p.b.top_p, 1); assert.equal(p.b.reasoning_effort, 'medium'); assert.equal(p.b.include_reasoning, false); assert.equal(p.b.reasoning_format, undefined); assert.equal(p.b.max_tokens, 2800);
+  assert.equal(vm.runInContext('keyDe(CFG.img)', c), 'chave-gemini'); assert.equal(vm.runInContext('keyDe(CFG.ia3)', c), 'chave-groq');
 });
 await t('demandas: quadro vazio, transições validadas, histórico e isolamento de dados', () => {
   const memory = {};

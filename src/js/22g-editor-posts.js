@@ -521,7 +521,7 @@ async function reaPostsGerarPlano(id,fid,y,m){
   T.id=id;T.cic=null;T.busy="posts-plano:"+id;REA_POSTS_STATE.year=y;REA_POSTS_STATE.month=m;REA_POSTS_STATE.client=id;REA_POSTS_STATE.front=fid;REA_POSTS_STATE.notice="A IA está lendo o briefing e montando as pautas do mês…";admin();
   let plano;
   try{
-    const raw=clean(await askF(msgs,s=>{const e=document.querySelector(".rea-post-notice");if(e)e.textContent="A IA está montando o plano editorial… "+s.length+" caracteres"},{slot:"ia1",max:2200,temp:.55}));
+    const raw=clean(await askF(msgs,s=>{const e=document.querySelector(".rea-post-notice");if(e)e.textContent="A IA está montando o plano editorial… "+s.length+" caracteres"},{slot:"ia2",max:2200,temp:.55}));
     plano=reaPostsExtrairPlano(raw,datas);
   }catch(e){T.busy="";REA_POSTS_STATE.notice=e.message||"A IA não conseguiu criar a pauta.";admin();return}
   const per=perSel(l.track),chunk=Math.max(1,Math.min(LOTE[f.fmt]||4,6));let criadas=0;

@@ -6,7 +6,7 @@ const LABEL={ia1:'IA 1',ia2:'IA 2',ia3:'IA 3'};
 const srvTok=()=>sget('ortoken')||'';
 const srvOn=()=>location.protocol==='https:'&&!!srvTok();
 /* três IAs na mesma plataforma dividem a chave: quem está sem chave usa a de outra IA com o mesmo endereço */
-const keyDe=c=>c.key||(IAS.map(s=>CFG[s]).find(x=>x.url===c.url&&x.key)||{}).key||'';
+const keyDe=c=>c.key||(IA_CHAVES.map(s=>CFG[s]).find(x=>x&&x.url===c.url&&x.key)||{}).key||'';
 const sameIA=()=>{const a=CFG.ia1,b=CFG.ia2;return a.kind===b.kind&&a.url===b.url};
 /* Núcleo da IA (SHARED CORE do dono): vai na frente de TODA chamada à IA do site. As instruções da tarefa vêm depois e somam a ele. */
 const IA_NUCLEO=()=>['# SHARED CORE','','## Identity','You are the AI core of '+(CFG.brand||'OR Marketing Digital')+', a Brazilian digital marketing agency. On this platform you always operate in PIPELINE MODE: every request comes from the agency\'s internal platform and asks for one task (briefing questions, briefing summary, client profile, strategy, execution kits, content pieces, budget message, client follow-up, recruiting support). The operator (the agency team) reviews everything before anything reaches a client.','',
@@ -35,20 +35,20 @@ async function ask(msgs,onChunk,o={}){
   if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
-  const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
+  const oa=/api[.]openai[.]com/.test(c.url||''),rs=oa&&/^(gpt-5|o[0-9])/i.test(c.model||''),oss=rs||/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),gq=/api\.groq\.com/.test(c.url||''),gox=gq&&/gpt-oss/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'},sys=msgs.filter(m=>m.role==='system').map(m=>m.content).join('\n'),rest=msgs.filter(m=>m.role!=='system');
   let url,body;
   const chave=keyDe(c),viaSrv=c.kind==='openai'&&!chave&&srvOn()&&/api[.]openai[.]com|api\.groq\.com|generativelanguage\.googleapis\.com/.test(c.url||'');
   if(c.kind==='openai'){url=viaSrv?'/api/ia':(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';if(viaSrv)hd['X-OR-Token']=srvTok();else hd.Authorization='Bearer '+chave;
-    body={model:c.model,messages:msgs,stream:true,[oa?'max_completion_tokens':'max_tokens']:oss?Math.round((o.max||2048)*1.4+300):(o.max||2048)};if(!rs)body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden';if(o.json)body.response_format={type:'json_object'};
+    body={model:c.model,messages:msgs,stream:true,[oa?'max_completion_tokens':'max_tokens']:gox?Math.min(65536,Math.round((o.max||2048)*1.6+1200)):oss?Math.round((o.max||2048)*1.4+300):gq&&qw?Math.min(16384,o.max||2048):(o.max||2048)};if(gq&&qw){body.temperature=0.6;body.top_p=0.95;body.reasoning_format='hidden'}else if(gox){body.temperature=1;body.top_p=1;body.reasoning_effort=/safeguard/i.test(c.model||'')?'low':'medium';body.include_reasoning=false}else{if(!rs)body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden'}if(o.json)body.response_format={type:'json_object'};
     const L=iaLim(c.model);if(L.tpm&&body.max_tokens){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
   else{url='https://api.anthropic.com/v1/messages';Object.assign(hd,{'x-api-key':chave,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
     body={model:c.model,messages:rest,stream:true,max_tokens:o.max||2048,temperature:o.temp??0.5};if(sys)body.system=sys}
-  if(!chave&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. '+(location.protocol==='https:'?'Coloque o código do servidor em Minha área > IAs.':'Abra Minha área > IAs, cole a chave dessa IA e clique em Salvar. Ela fica cifrada só neste navegador.'));
+  if(!chave&&!viaSrv)throw new Error(nm+' ('+c.model+'): falta a chave da IA. Abra Minha área > IAs, cole a chave '+(gq?'da Groq':'dessa IA')+' e clique em Salvar. Ela fica cifrada só neste navegador.');
   let r;
   const tc=new AbortController(),lim=o.timeout||150000,tmo=setTimeout(()=>{tc.porTempo=1;tc.abort()},lim);if(o.signal){if(o.signal.aborted)tc.abort();else o.signal.addEventListener('abort',()=>tc.abort())}
   const go=()=>fetch(url,{method:'POST',signal:tc.signal,headers:hd,body:JSON.stringify(body)});
   for(let tent=0;;){
-  try{r=await go();if(r.status===400&&(body.reasoning_effort||body.response_format||body.reasoning_format)){delete body.reasoning_effort;delete body.response_format;delete body.reasoning_format;r=await go()}}
+  try{r=await go();if(r.status===400&&(body.reasoning_effort||body.response_format||body.reasoning_format||'include_reasoning' in body||'top_p' in body)){['reasoning_effort','response_format','reasoning_format','include_reasoning','top_p'].forEach(k=>delete body[k]);r=await go()}}
   catch(e){iaAviso('');clearTimeout(tmo);if(tc.porTempo)throw new Error(nm+' ('+c.model+') demorou mais de '+Math.max(1,Math.round(lim/1000))+' segundos e a chamada foi interrompida. Tente de novo.');throw new Error(nm+' ('+c.model+') não respondeu. '+'Confira a internet e a chave da API.')}
   if(r.status!==429&&r.status!==413)break;
   let tl='';try{tl=await r.text()}catch(e){}
@@ -77,7 +77,9 @@ async function askF(msgs,cb,o){
     if(o.signal?.aborted||e.name==='AbortError')throw e;
     const atual=o.cfg||CFG[o.slot||'ia1'],erros=[e];
     const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&(keyDe(c)||srvOn())&&!sameCfg(c,atual));
-    for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');try{cb('');return await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2)}}
+    for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');let out;try{cb('');out=await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2);continue}
+      try{iaAviso('A IA principal ('+atual.model+') falhou; quem respondeu foi '+c.model+'. Revise com atenção.');setTimeout(()=>iaAviso(''),8000)}catch(x){} // troca nunca silenciosa
+      return out}
     if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');
     throw e;
   }

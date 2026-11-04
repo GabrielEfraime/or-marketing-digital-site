@@ -6,4 +6,5 @@ Thumbs.db
 .env
 .dev.vars
 .wrangler/
+dist/
 estudio-ia-TESTE.html

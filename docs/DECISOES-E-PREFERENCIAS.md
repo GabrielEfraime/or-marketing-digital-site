@@ -266,3 +266,12 @@ O dono quer o site **clean, minimalista, 3D e moderno**. Ele mandou como referê
 - Antes da imagem, a IA de texto lê o briefing e descreve a cena em inglês (os geradores entendem melhor). Se esse passo falhar, vai o pedido em português.
 - Cloudflare: `wrangler.toml` no repositório (pasta `dist` e binding `AI`) e `dist/` versionada, para a publicação não depender do comando de build do painel. Segredos ficam só no painel.
 - O botão do Canva continua (opcional). Ele só funciona com uma autorização própria do Canva no Cloudflare (`CANVA_ACCESS_TOKEN`), que ainda não existe.
+
+## IA na Groq e site só no GitHub (04/11/2026)
+- O dono mandou um prompt mestre para usar três modelos da Groq por função e, depois, pediu: "coloca só no github, faz funcionar la". O site publica só no GitHub Pages; o Cloudflare ficou de lado (o build lá falhava e o log exige login no painel).
+- Sem servidor, a IA usa a chave da Groq colada na tela IAs, cifrada só no navegador. A chave nunca vai para o código: a página é pública.
+- Funções: IA 1 = Qwen 3.8 27B (posts, legendas, roteiros, textos das artes, kits, mensagens; temperatura 0,6, top_p 0,95, raciocínio escondido). IA 2 = GPT-OSS 120B (calendário editorial, demandas, estratégia, briefing, orçamento, perfil, anúncios, relatórios; temperatura 1, top_p 1, raciocínio médio, sem devolver o raciocínio). IA 3 = GPT-OSS 120B (captação). Parâmetros conferidos na documentação da Groq em 04/11/2026.
+- Se uma IA falhar, o site tenta as outras e mostra um aviso com o modelo que respondeu (nunca troca em silêncio).
+- Imagens das artes: Gemini, com chave própria no cartão "Imagens das artes" (só gera com faturamento ativo). As configurações antigas migram uma vez: a chave do Google, que servia às três IAs, vai para esse cartão.
+- Ficou para depois (precisa de servidor): GPT-OSS Safeguard (moderação), painel Gerenciamento de IA com consumo real, D1 e R2. Os bancos `or-marketing-db(-preview)` e os armazenamentos `or-marketing-assets(-preview)` já existem no Cloudflare, vazios.
+
