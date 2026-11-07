@@ -1,8 +1,9 @@
 /* AI-Driven: esfera de água + painel JARVIS */
-.v-ai-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:clamp(24px,5vw,88px);align-items:center}
-.v-ai-h{font-size:clamp(60px,12vw,190px)!important;letter-spacing:-.055em!important;line-height:.88!important;max-width:none!important;color:#EAE0D5}
+.v-ai-in{display:grid;grid-template-columns:minmax(min-content,1fr) minmax(0,1fr);gap:clamp(24px,5vw,88px) clamp(16px,2vw,32px);align-items:center}
+body.pub .v-ai-t>p{max-width:min(100%,36rem)}
+.v-ai-h{font-size:clamp(60px,11.4vw,180px)!important;letter-spacing:-.055em!important;line-height:.88!important;max-width:none!important;color:#EAE0D5}
 .v-ai-t .v-btn{margin-top:clamp(24px,3vw,40px)}
-.v-ai-stage{position:relative;aspect-ratio:1;width:100%;justify-self:center}
+.v-ai-stage{position:relative;aspect-ratio:1;width:100%;justify-self:end}
 .v-ai-stage canvas{position:absolute;display:block}
 .v-ai-stage .aif-canvas{inset:17%;width:66%;height:66%;opacity:1;filter:none;mix-blend-mode:normal}
 .v-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,48px)!important;margin-top:clamp(48px,7vw,104px)}

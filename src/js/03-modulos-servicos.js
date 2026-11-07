@@ -223,7 +223,6 @@ const Q_PRODUCAO=[
 ];
 ['social','meta','brand','site','resite','youtube'].forEach(k=>{if(MODS[k])MODS[k].qs.push(...Q_PRODUCAO)});
 const COMUM=[['prazo','Para quando você precisa?',['O quanto antes','Em até 2 semanas','Em até 1 mês','Sem pressa']],
- ['inv','Quanto pretende investir no nosso trabalho?','Pode ser uma faixa. Por exemplo: de R$ 1.000 a R$ 2.000 por mês. A verba de anúncios, se houver, você já informou antes.',0],
  ['pgto','Como prefere contratar?',['Pagamento único','Mensal recorrente','Quero ver as opções']]];
 Object.values(MODS).forEach(m=>m.qs.push(...COMUM));
 // Direcionamento do "Descobrir o que eu preciso": perguntas fixas que dependem da 1ª resposta (empresa)
