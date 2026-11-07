@@ -12,14 +12,14 @@ const ler = (rel) => fs.readFileSync(path.join(RAIZ, rel), 'utf8');
 const escH = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // SEO do site público: tudo invisível para o visitante e igual ao conteúdo da página (sem texto escondido, que o Google pune).
-// Lê src/seo.json, a marca e o WhatsApp de 01-config-precos.js e os serviços da vitrine (nome e descrição) de 12-conteudo-servicos.js.
+// Lê src/seo.json, a marca e o WhatsApp de 01-config-precos.js e os serviços da vitrine (nome e descrição) de 15-conteudo-servicos.js.
 export function seo() {
   const s = JSON.parse(ler('src/seo.json'));
-  const cfg = ler('src/js/01-config-precos.js'), vit = ler('src/js/12-conteudo-servicos.js');
+  const cfg = ler('src/js/01-config-precos.js'), vit = ler('src/js/15-conteudo-servicos.js');
   const marca = (cfg.match(/const BRAND='([^']+)'/) || [])[1] || 'OR Marketing Digital';
   const whats = (cfg.match(/const MY_WHATS='(\d+)'/) || [])[1] || '';
   const servicos = [...vit.matchAll(/\{k:'[a-z]+',name:'([^']+)',mods:\[[^\]]*\],desc:'([^']+)'\}/g)].map((m) => ({ nome: m[1], desc: m[2] }));
-  if (!servicos.length) throw new Error('montar: não achei os serviços de VITRINE em 12-conteudo-servicos.js');
+  if (!servicos.length) throw new Error('montar: não achei os serviços de VITRINE em 15-conteudo-servicos.js');
   const url = /^https:\/\/[^\s"'<>]+\/$/.test(s.url || '') ? s.url : '';
   const tel = whats.length === 13 ? '+' + whats.slice(0, 2) + '-' + whats.slice(2, 4) + '-' + whats.slice(4, 9) + '-' + whats.slice(9) : '';
   const negocio = {
@@ -83,12 +83,8 @@ function gravar(html, destino) {
 function executar() {
   const html = montar();
   gravar(html, path.join(RAIZ, 'dist', 'estudio-ia.html'));
-  // hospedagem (Cloudflare Pages): a página como index.html e os cabeçalhos de segurança que a meta tag não consegue dar
+  // hospedagem (GitHub Pages): a página como index.html; a publicação oficial é só o dist/ pelo Actions (.github/workflows/pages.yml)
   gravar(html, path.join(RAIZ, 'dist', 'index.html'));
-  // GitHub Pages (Deploy from a branch > main > /root) serve este index.html da raiz do repositório; ele vai commitado
-  gravar(html, path.join(RAIZ, 'index.html'));
-  const csp = (html.match(/Content-Security-Policy" content="([^"]+)"/) || [])[1];
-  gravar('/*\n  Content-Security-Policy: ' + csp + "; frame-ancestors 'none'\n  X-Frame-Options: DENY\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Strict-Transport-Security: max-age=31536000; includeSubDomains\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()\n  Cross-Origin-Opener-Policy: same-origin\n/api/*\n  Cache-Control: no-store\n", path.join(RAIZ, 'dist', '_headers'));
   // arquivos que só o Google lê; vão para a raiz da hospedagem junto com o site
   const S = seo();
   gravar(S.robots, path.join(RAIZ, 'dist', 'robots.txt'));

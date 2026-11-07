@@ -1,19 +1,57 @@
+/* ===== Identidade Earthen Luxe + tokens da marca (fundido de 14-marca-or e 23-identidade-earthen em 06/11/2026) =====
+   Parte 1 = antigo 14 (fontes, tokens de estado/espaço/tipografia, ícones, utilitários u-*, toast); parte 2 = antigo 23 (paleta, assinatura OR | MARKETING DIGITAL, slogan, seções claras). */
+
+/* ---------- parte 1: marca e tokens (antigo 14-marca-or) ---------- */
+/* Marca OR Marketing Digital: paleta #0A0908 / #C6AC8E / #EAE0D5 / #8A8A8A, Sora (títulos) e Inter (interface).
+   As fontes não são carregadas da internet (a CSP bloqueia); entram se estiverem instaladas, senão cai na fonte do sistema. */
+/* Tokens de estado (único lugar). Contraste como texto sobre #0A0908: ok 8,86; err 6,96; warn 9,26; info 8,92 (WCAG 2.x). */
+:root[data-theme=dark],.dark,body.pub{--bg:#0A0908;--fg:#EAE0D5;--accent:#C6AC8E;--link:#C6AC8E;--g1:#C6AC8E30;--g2:#C6AC8E1a;--g3:#C6AC8E12}
+body.pub h1,body.pub h2,body.pub h3,.v-h1,.v-h2,.v-h3,.svp-h{font-family:var(--fd)}
+body.pub :focus-visible,.shell :focus-visible,:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.vlogo{display:block;height:30px;width:auto}
+.wmw .wm,.wmw .wt{font:400 10px var(--fd);letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9;line-height:var(--lh-t)}
+body.pub .wmw .wt{font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9}
+.v-hero-3d{position:relative;aspect-ratio:1;width:100%;max-width:min(640px,100%);justify-self:end;display:flex;align-items:center;justify-content:center}
+.v-or-hero{width:78%;max-width:460px;height:auto;display:block;filter:drop-shadow(0 24px 60px #C6AC8E33)}
+@media(prefers-reduced-motion:no-preference){.v-or-hero{animation:orflut 7s ease-in-out infinite}@keyframes orflut{50%{transform:translateY(-8px)}}}
+@media(prefers-reduced-motion:no-preference){}
+body.pub .nav .vlogo{height:34px}
+@media(max-width:860px){.v-hero-3d{max-width:340px;justify-self:start;order:-1;aspect-ratio:auto!important;justify-content:flex-start;padding:0 2px}.v-or-hero{width:70%;max-width:260px;margin:0}}
+/* Ícones de linha (IC em 10-app-navegacao-icones.js) e texto só para leitor de tela */
+svg.ic{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em}
+svg.ic .fill{fill:currentColor}
+.icf{display:inline-flex;margin-left:6px;vertical-align:middle}
+.icstars{display:inline-flex;gap:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Utilitários que substituem estilos inline do JS (22e, 22f). !important para manter o peso do style="" que existia. */
+.u-err{color:var(--err)!important}.u-lbl{margin:0!important;cursor:pointer}.u-mb8{margin:0 0 8px!important}.u-mb6{margin:0 0 6px!important}.u-m0{margin:0}.u-mt8{margin-top:8px!important}
+.u-m64{margin:6px 0 4px!important}.u-m48{margin:4px 0 8px!important}.u-m40{margin:4px 0 0!important}
+.u-mh220{min-height:220px}.u-mh200{min-height:200px}.u-mh170{min-height:170px}.u-mh110{min-height:110px}
+.u-span2{grid-column:span 2}.u-flex1{flex:1}.u-mw220{max-width:220px}.u-imgfit{max-width:100%;border-radius:12px}
+.u-code{width:100%;min-height:55vh;font:13px/1.45 ui-monospace,Consolas,monospace}.u-pv{width:100%;height:70vh;border:0;border-radius:12px;background:#fff}
+/* Aviso breve de cópia e plano B manual (00-util.js) */
+.toast{position:fixed;left:50%;bottom:24px;z-index:var(--z-toast);transform:translate(-50%,12px);max-width:calc(100% - 32px);padding:10px 18px;border-radius:999px;background:var(--panel);color:var(--fg);border:1px solid var(--ctl);font-size:var(--t-sm);opacity:0;pointer-events:none;transition:opacity var(--dur-2) var(--ease),transform var(--dur-2) var(--ease)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.copy-tmp{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0}
+.copy-man{width:100%;min-height:140px}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* ---------- parte 2: identidade (antigo 23-identidade-earthen) ---------- */
 /* ===== Identidade Earthen Luxe (kit de 02/11/2026) =====
    Obsidiana #0A0908 (fundos), azul ardósia #22333B (profundidade e blocos secundários), marfim quente #EAE0D5
    (fundos claros e texto no escuro), areia natural #C6AC8E (acento, linhas e detalhes), terra profunda #5E503F (apoio).
    As cores antigas (laranja) foram trocadas nos arquivos; aqui ficam os ajustes que vencem as camadas anteriores. */
-:root{--or-obsidiana:#0A0908;--or-ardosia:#22333B;--or-marfim:#EAE0D5;--or-areia:#C6AC8E;--or-terra:#5E503F;--vc-solid:#13110F}
+:root{--fd:'Sora','Inter','Segoe UI Variable Display','Segoe UI',system-ui,sans-serif;--fb:'Inter','Segoe UI Variable Text','Segoe UI',system-ui,sans-serif;--focus:#C6AC8E;--muted:var(--fg2);--fm:var(--fb);--ok:#93B59F;--err:#E8786F;--warn:#D9A95B;--info:#8FB3C4;--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;--sp-6:32px;--sp-7:48px;--nav-h:68px;--lh-t:1.2;--lh-ui:1.5;--lh-body:1.6;--t-xs:12px;--t-sm:14px;--t-md:16px;--t-lg:20px;--t-xl:28px;--t-2xl:40px;--dur-1:120ms;--dur-2:200ms;--dur-3:320ms;--ease:cubic-bezier(.2,.7,.2,1);--z-base:1;--z-nav:50;--z-modal:100;--z-toast:200;--z-topo:300;--vc-blur:16px;--vc-hi:inset 0 1px 0 rgba(255,255,255,.28);--vc-sh:0 10px 26px -16px rgba(0,0,0,.7);--or-obsidiana:#0A0908;--or-ardosia:#22333B;--or-marfim:#EAE0D5;--or-areia:#C6AC8E;--or-terra:#5E503F;--vc-solid:var(--panel)}
 /* fundo do site: profundidade em ardósia e terra, como os arcos da prancha */
 body.pub{--g1:#22333B99;--g2:#5E503F55;--g3:#22333B66}
-
 /* assinatura do topo e do rodapé: OR + divisor em areia + MARKETING DIGITAL (manual, página 2) */
 body.pub .nav .wmw,.wmw{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;align-self:center;gap:3px;margin-left:2px;padding-left:14px;min-height:34px;border-left:1.5px solid var(--or-areia)}
-.wmw .wm,body.pub .wmw .wm{font:500 10.5px/1 var(--fb);letter-spacing:.34em;text-transform:uppercase;color:var(--fg);opacity:1;margin:0}
+.wmw .wm,body.pub .wmw .wm{font:500 12px/1 var(--fb);letter-spacing:.34em;text-transform:uppercase;color:var(--fg);opacity:1;margin:0}
 @media(max-width:359px){body.pub .nav .wmw{display:none}}
-.v-slogan{margin:14px 0 0!important;font:500 11.5px/1.5 var(--fb);letter-spacing:.3em;text-transform:uppercase;color:var(--or-areia)!important;opacity:1!important}
+.v-slogan{margin:14px 0 0;font:500 12px/var(--lh-ui) var(--fb);letter-spacing:.3em;text-transform:uppercase;color:var(--or-areia)!important;opacity:1}
 
 /* seções claras: marfim com texto obsidiana */
-.v-ink{background-color:var(--or-marfim)!important;color:var(--or-obsidiana)}
+.v-ink{background-color:var(--or-marfim);color:var(--or-obsidiana)}
 .v-ink :focus-visible,.v-lime :focus-visible{outline-color:var(--or-obsidiana)!important}
 .step b{color:var(--or-areia)}
 

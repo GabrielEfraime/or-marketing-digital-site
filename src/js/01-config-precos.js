@@ -1,8 +1,6 @@
 const BRAND='OR Marketing Digital',BUILD='__BUILD__';
 const ADMIN_PIN='1234';
-const MODEL='deepseek-r1:8b';
 const LEAD_WEBHOOK='';
-const MOSTRAR_PRECOS=false;
 const FOTO='';
 const RESPONSAVEL='';
 const MY_WHATS='5521966054711';

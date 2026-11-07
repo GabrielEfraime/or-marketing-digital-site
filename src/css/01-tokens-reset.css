@@ -1,0 +1,47 @@
+/* ===== Tokens e reset (antigo 01-base-e-minha-area, parte 1) =====
+   :root, reset, tipografia base, botão, foco e movimento reduzido global. Tokens de estado, espaço e tipografia: 23-identidade-earthen.css. */
+:root{--pink:#5E503F;--blue:#C6AC8E;--vio:#5E503F}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:17px/var(--lh-body) var(--fb),system-ui,sans-serif;min-height:100dvh;color:var(--fg);background:var(--bg)}
+main{margin:0}
+.wrap{max-width:min(1180px,100%);margin:auto;padding:0 clamp(18px,4vw,48px)}
+h1,h2,h3{font-family:var(--fd),system-ui,sans-serif;margin:0;letter-spacing:-.025em}
+button,input,textarea,select{font-family:inherit}
+.brandb{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font:800 18px var(--fd),sans-serif}
+.brandb:focus-visible{outline:2px solid var(--focus)}
+.lnk{all:unset;cursor:pointer;font-size:var(--t-sm);padding:8px 16px;border:1px solid var(--ctl);border-radius:999px;color:var(--fg)}
+.lnk:hover{background:var(--surf)}
+.lnk:focus-visible{outline:2px solid var(--focus)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;align-items:center}
+.btn{background:#C6AC8E;color:#0A0908;border:0;font:700 16px var(--fb),sans-serif;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s}
+.btn.ghost{background:transparent;color:var(--fg);border:2px solid currentColor;box-shadow:none;opacity:.9}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+@keyframes sh{to{background-position:-200% 0}}
+.plink{all:unset;cursor:pointer;color:var(--link);text-decoration:underline;display:inline-block;min-height:24px;min-width:24px;line-height:24px;box-sizing:border-box}
+.plink:focus-visible{outline:2px solid var(--focus)}
+.err2{color:var(--err);font-size:15px;margin-top:14px;min-height:22px;font-weight:700}
+.warn{background:var(--warn);color:var(--bg);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+.hint{color:var(--fg2);font-size:var(--t-sm)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+.btn.wa,body.adm .btn.wa{background:#25D366;color:#06371c;box-shadow:none;display:inline-flex;align-items:center;gap:8px}
+.btn.wa:hover{filter:brightness(1.05)}
+.wai{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wsent{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:var(--t-xs);font-weight:700;color:#25D366}
+.wsent .wai{width:13px;height:13px}
+.btn{box-shadow:none}
+.btn:hover{transform:none;filter:brightness(1.08)}
+.okc{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;margin-bottom:24px;background:#C6AC8E}
+.okc path{stroke:#0A0908}
+.dark{--fg2:#EAE0D5b8;--bd:#ffffff24;--surf:#ffffff0d;color:#EAE0D5;color-scheme:dark}
+.btn.ghost{border-width:1.5px}
+.wrap.sec{padding-left:clamp(18px,4vw,48px);padding-right:clamp(18px,4vw,48px)}
+.dark,.home .band.dark{--bg:#0A0908;--panel:#141414;background:#0A0908}
+.brandb.static{cursor:default}
+:root[data-theme=dark] .mnav button:hover{color:#C6AC8E}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+@keyframes aur{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(4%,-5%,0) scale(1.1)}100%{transform:translate3d(-5%,4%,0) scale(1.04)}}
+@keyframes wv{to{transform:translateX(-50%)}}
+@keyframes flt{0%,100%{transform:rotate(1.4deg) translateY(0)}50%{transform:rotate(-.6deg) translateY(-14px)}}
+@keyframes shim{to{background-position:-220% 0}}
+@keyframes cta{0%,100%{box-shadow:0 10px 26px #0006,0 0 0 0 #C6AC8E55}50%{box-shadow:0 10px 26px #0006,0 0 0 12px #C6AC8E00}}

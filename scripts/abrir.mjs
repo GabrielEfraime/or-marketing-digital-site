@@ -14,11 +14,12 @@ const pagina = teste ? path.resolve(RAIZ, '..', 'estudio-ia-TESTE.html') : path.
 if (!fs.existsSync(pagina)) { console.error('Ainda não existe ' + pagina + '. Rode: npm run ' + (teste ? 'montar:teste' : 'montar')); process.exit(1); }
 const PORTA = Number(process.env.PORTA) || 5173, url = 'http://127.0.0.1:' + PORTA + '/';
 
-// Chaves do .env (OPENAI_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, POLLINATIONS_KEY): entram só na página servida aqui (127.0.0.1), nunca no dist/ nem no git.
+// Chaves do .env (GROQ_API_KEY, GEMINI_API_KEY, POLLINATIONS_API_KEY): entram só na página servida aqui (127.0.0.1), nunca no dist/ nem no git.
 // Só valem quando este navegador ainda não tem chaves salvas; ao abrir, o site cifra as chaves. A chave que você salvar na tela IAs continua valendo.
 function chaves() {
   const f = path.join(RAIZ, '.env'), t = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '';
-  return ['OPENAI_API_KEY', 'GEMINI_API_KEY', 'GROQ_API_KEY', 'POLLINATIONS_KEY'].map((n) => ((t.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim());
+  const pega = (n) => ((t.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim();
+  return [pega('GROQ_API_KEY'), pega('GEMINI_API_KEY'), pega('POLLINATIONS_API_KEY') || pega('POLLINATIONS_KEY')];
 }
 function comChave(html, k) {
   const js = `/* npm run abrir: chaves do .env (só local). */
@@ -26,7 +27,7 @@ function comChave(html, k) {
   const K=${JSON.stringify(k)};
   if(localStorage.getItem('ikeys2'))return;
   let a=[];try{a=JSON.parse(localStorage.getItem('ikeys')||'[]')}catch(e){}
-  const n=[a[0]||K[2],a[1]||K[2],a[2]||K[2],a[3]||K[1],a[4]||K[3]]; // IA 1 a 3 na Groq; Gemini de reserva; Pollinations nas imagens
+  const n=[a[0]||K[0],a[1]||K[0],a[2]||K[0],a[3]||K[1],a[4]||K[2]]; // IA 1 a 3 na Groq; Gemini de reserva; Pollinations nas imagens
   if(n.some(Boolean))localStorage.setItem('ikeys',JSON.stringify(n));
 }catch(e){}})();
 `;
@@ -35,8 +36,11 @@ function comChave(html, k) {
 }
 
 http.createServer((req, res) => {
+  // Protege contra DNS rebinding: só atende quem chega como 127.0.0.1:PORTA ou localhost:PORTA (as chaves do .env saem por aqui).
+  const host = String(req.headers.host || '').toLowerCase();
+  if (host !== '127.0.0.1:' + PORTA && host !== 'localhost:' + PORTA) { res.writeHead(421, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Endereço não permitido.'); }
   const p = new URL(req.url, url).pathname;
-  // só a página; as rotas /api/* existem apenas no Cloudflare
+  // só a página (não há rotas de servidor)
   if (p !== '/' && p !== '/index.html') { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Não encontrado.'); }
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY' });
   const k = teste ? [] : chaves();

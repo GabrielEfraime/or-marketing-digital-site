@@ -1,9 +1,7 @@
 /* Abertura com a assinatura animada do kit Earthen Luxe (02/11/2026): o contorno do OR se desenha em areia,
    o OR aparece em marfim, o divisor cresce, MARKETING DIGITAL surge do divisor, depois o slogan e o botão Entrar. */
-#or-intro{--obs:#0A0908;--areia:#C6AC8E;--marfim:#EAE0D5;--ardosia:#22333B;font-family:var(--fb,Inter,system-ui,sans-serif);color:var(--marfim)}
 #or-intro *{box-sizing:border-box}
-#or-intro{position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .9s ease,visibility .9s;
-  background:radial-gradient(120% 80% at 0% 0%,#22333B66,transparent 55%),radial-gradient(90% 70% at 100% 100%,#5E503F40,transparent 60%),var(--obs)}
+#or-intro{--obs:#0A0908;--areia:#C6AC8E;--marfim:#EAE0D5;--ardosia:#22333B;font-family:var(--fb,Inter,system-ui,sans-serif);color:var(--marfim);position:fixed;inset:0;z-index:99999;overflow:hidden;transition:opacity .9s ease,visibility .9s;background:radial-gradient(120% 80% at 0% 0%,#22333B66,transparent 55%),radial-gradient(90% 70% at 100% 100%,#5E503F40,transparent 60%),var(--obs)}
 #or-intro.done{opacity:0;visibility:hidden;pointer-events:none}
 .or-ass{position:absolute;left:50%;top:42%;width:min(84vw,820px);height:auto;transform:translate(-50%,-50%);overflow:visible}
 .or-traco{fill:none;stroke:var(--areia);stroke-width:11;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
@@ -34,7 +32,7 @@
 .or-actions{margin-top:26px;pointer-events:auto;opacity:0;transition:opacity .8s ease .5s}
 #or-intro.txt .or-actions{opacity:1}
 .or-btn{font:inherit;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--marfim);background:transparent;border:1px solid #EAE0D559;border-radius:999px;padding:12px 28px;min-height:44px;cursor:pointer;transition:all .25s}
-.or-btn:hover,.or-btn:focus-visible{border-color:var(--areia);background:var(--areia);color:var(--obs);outline:none}
+.or-btn:hover,.or-btn:focus-visible{border-color:var(--areia);background:var(--areia);color:var(--obs);outline:2px solid var(--focus);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){
   .or-traco{display:none}
   .or-marca,.or-wm{opacity:1}

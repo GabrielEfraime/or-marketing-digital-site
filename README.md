@@ -4,18 +4,18 @@ Plataforma em **um único arquivo HTML**, montado a partir de `src/`:
 
 1. **Site público:** abertura, home, páginas de serviço, vagas e o briefing guiado.
 2. **Minha área** (painel do consultor): leads, Captar clientes, resumo, estratégia, kits de Ads, redes e site, orçamentos, mensagem de WhatsApp, acompanhamento, Base da IA e IAs.
-3. **IAs (OpenAI na criação, Gemini no atendimento, Groq na captação):** só roda quando o consultor clica. No site publicado, a chave fica no servidor do Cloudflare, e nunca no navegador. A Groq continua disponível na tela IAs.
+3. **IAs (todas na Groq):** a IA 1 (Qwen 3.8 27B) cria; a IA 2 e a IA 3 (GPT-OSS 120B) cuidam de estratégia, atendimento e captação. As imagens das artes saem pelo Pollinations, e o Gemini é a reserva de emergência (texto e imagem), sempre com aviso na tela. Só roda quando o consultor clica. Sem servidor: as chaves ficam cifradas no navegador de quem usa a Minha área (tela IAs). O tema é só o escuro.
 
 Sem dependências npm. Precisa só de [Node.js 18+](https://nodejs.org).
 
 ## Comandos
 
 ```bash
-npm run montar        # gera dist/ (index.html, estudio-ia.html, _headers, robots.txt)
+npm run montar        # gera dist/ (index.html, estudio-ia.html, robots.txt)
 npm run verificar     # segurança, SEO e testes automáticos
-npm run testar        # só os testes (preços, data, WhatsApp, servidor)
-npm run abrir         # abre a plataforma em http://127.0.0.1:5173 (com a chave Gemini do .env, só local)
-npm run montar:teste  # build local com a chave do .env (OpenAI, Gemini e Groq; NUNCA publicar)
+npm run testar        # só os testes (preços, data, WhatsApp, imagem da IA, chamadas à IA, demandas, editor)
+npm run abrir         # abre a plataforma em http://127.0.0.1:5173 (injeta no navegador as chaves do .env, só local; recusa qualquer cabeçalho Host que não seja 127.0.0.1 ou localhost)
+npm run montar:teste  # build local com a chave Gemini do .env (gera ../estudio-ia-TESTE.html; NUNCA publicar)
 npm run abrir:teste   # abre o build de teste em http://127.0.0.1:5173
 ```
 
@@ -23,7 +23,7 @@ Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer
 
 ## Publicar (GitHub Pages)
 
-O site publica sozinho a cada envio para o `main`: o GitHub Actions (`.github/workflows/pages.yml`) roda `npm run montar` e `npm run verificar` e publica a pasta `dist` em https://gabrielefraime.github.io/or-marketing-digital-site/ .
+O site publica sozinho a cada envio para o `main`: o GitHub Actions (`.github/workflows/pages.yml`) roda `npm run montar` e `npm run verificar` e publica só a pasta `dist` (não existe mais `index.html` na raiz do projeto: o build só grava em `dist/`) em https://gabrielefraime.github.io/or-marketing-digital-site/ .
 
 O GitHub Pages não tem servidor. Por isso a IA usa chaves guardadas no navegador de quem usa a Minha área:
 1. Abra o site publicado, entre na Minha área e vá em **IAs**.
@@ -34,21 +34,11 @@ O GitHub Pages não tem servidor. Por isso a IA usa chaves guardadas no navegado
 
 Nunca coloque chave no código, no `.env.example` ou no GitHub: a página é pública.
 
-### Servidor no Cloudflare (opcional, desligado)
-`functions/` e `wrangler.toml` continuam no repositório para quando houver servidor (chaves no servidor, briefings dos visitantes, imagens grátis pelo Workers AI). Hoje o site não usa: o projeto `or-marketing-digital-site` no Cloudflare não publicou nenhuma versão (o build falha) e pode ser desligado no painel.
-
-O que o servidor faz (`functions/api/[[rota]].js`):
-- `/api/ia`: chama a OpenAI, o Gemini ou a Groq (conforme o modelo) com a chave guardada no Cloudflare. Só aceita quem tem o código e só os modelos permitidos.
-- `/api/lead`: recebe o briefing do visitante, com limite por IP, e guarda por até 30 dias. Na Minha área, os briefings chegam pelo botão "Buscar briefings do site" (e sozinhos ao abrir Leads) e saem do servidor depois de salvos.
-- `/api/imagem`: cria a imagem de fundo de uma arte (sem texto; os textos ficam editáveis no editor). Tenta o Gemini com a `GEMINI_API_KEY` e, sem cota de imagem, usa o Workers AI do Cloudflare (binding `AI`).
-- `/api/site`: baixa o HTML do site atual do cliente para a análise do "Refazer site".
-- `dist/_headers`: cabeçalhos de segurança (CSP com `frame-ancestors 'none'`, HSTS, nosniff, Referrer-Policy e Permissions-Policy).
-
 Quando tiver o domínio, preencha `url` e `googleVerificacao` em `src/seo.json` para gerar o canonical e o `sitemap.xml`.
 
 ## Como editar
 
-1. Edite `src/` (nunca o `dist/`). A ordem dos arquivos está em `src/ordem.json`. O JavaScript tem um único escopo global, e no CSS o que vem depois vence.
+1. Edite `src/` (nunca o `dist/`). A ordem dos arquivos está em `src/ordem.json`. O JavaScript tem um único escopo global, e no CSS o que vem depois vence. Os arquivos de `src/js` são numerados pela ordem real de carga (00 a 49, um por responsabilidade); o mapa de cada um e a tabela de renomeações do Lote 3A estão em `docs/ARQUITETURA.md`. Arquivo novo ou dividido: registre em `ordem.json`, renumere os seguintes e atualize a tabela.
 2. Rode `npm run montar` e depois `npm run verificar`.
 3. Para saber onde mexer em cada coisa, veja `docs/ARQUITETURA.md`. As decisões do dono estão em `docs/DECISOES-E-PREFERENCIAS.md` e o que falta está em `docs/PENDENCIAS.md`.
 
@@ -56,5 +46,5 @@ Quando tiver o domínio, preencha `url` e `googleVerificacao` em `src/seo.json` 
 
 - Nenhuma chave no código. O `npm run verificar` falha se achar uma.
 - Chaves coladas em conversas precisam ser **revogadas**: Groq em console.groq.com/keys, Gemini em aistudio.google.com/apikey.
-- O PIN da Minha área protege só a tela. No site publicado, os dados do servidor exigem o `ADMIN_TOKEN`.
+- O PIN da Minha área protege só a tela. Não há servidor: os dados dos leads ficam no navegador de quem usa a Minha área, e as chaves de IA ficam cifradas ali (protege contra leitura casual; não protege de quem usa o computador).
 - Relatório completo: `docs/REVISAO-SEGURANCA.md`.

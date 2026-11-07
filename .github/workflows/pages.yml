@@ -1,22 +1,44 @@
-name: Publicar GitHub Pages
+name: Verificar e publicar o site
 
+# Pull request: só verifica (monta o site e roda os testes). Push no main: verifica e, se passar, publica só a pasta dist/ no GitHub Pages.
+# O projeto não tem dependências, então não precisa de npm ci.
 on:
+  pull_request:
+    branches: ["main"]
   push:
     branches: ["main"]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: github-pages
-  cancel-in-progress: false
 
 jobs:
-  publicar:
+  verificar:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Montar o site
+        run: npm run montar
+      - name: Verificar
+        run: npm run verificar
+
+  publicar:
+    needs: verificar
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -27,8 +49,6 @@ jobs:
           node-version: "22"
       - name: Montar o site atualizado
         run: npm run montar
-      - name: Verificar antes de publicar
-        run: npm run verificar
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

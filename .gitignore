@@ -4,7 +4,14 @@ node_modules/
 Thumbs.db
 *.tmp
 .env
-.dev.vars
-.wrangler/
 dist/
 estudio-ia-TESTE.html
+/index.html
+
+# Documentos internos: ficam so no disco do dono (repositorio publico)
+docs/REVISAO-SEGURANCA.md
+docs/PLANO-LOTES-2026-11-06.md
+docs/PLANO-SUPABASE.md
+docs/REVISAO-DEMANDAS-IA.md
+docs/PENDENCIAS.md
+docs/DECISOES-E-PREFERENCIAS.md

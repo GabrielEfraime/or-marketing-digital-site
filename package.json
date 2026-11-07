@@ -8,7 +8,6 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "node scripts/montar.mjs",
     "montar": "node scripts/montar.mjs",
     "montar:copiar": "node scripts/montar.mjs --copiar",
     "observar": "node scripts/montar.mjs --watch",

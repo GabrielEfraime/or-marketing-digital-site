@@ -1,4 +1,4 @@
-/* Topo da home (02/11/2026): limpo e minimalista, com a cena 3D de tela cheia (11b-topo-3d.js) no fundo, como o vídeo
+/* Topo da home (02/11/2026): limpo e minimalista, com a cena 3D de tela cheia (14-topo-3d.js) no fundo, como o vídeo
    da referência que o dono mandou. Título em dois tamanhos: "MARKETING DIGITAL" pequeno e "sob medida." enorme.
    Sem a cena (sem WebGL), fica o degradê em ardósia sobre obsidiana. */
 /* o topo começa abaixo da faixa de avisos e do menu fixo (100 px juntos), por isso a altura desconta 100 px */
@@ -14,7 +14,7 @@ body.pub .v-t3 .v-hero-in{position:relative;z-index:2;display:block;width:100%;m
 body.pub .v-t3 .v-h1{display:flex;flex-direction:column;align-items:center;gap:.08em;max-width:none;margin:0;font-size:inherit;line-height:1;letter-spacing:0;text-transform:none}
 .v-h1a{font:500 clamp(15px,2.1vw,30px)/1.1 var(--fd);letter-spacing:.08em;text-transform:uppercase;color:var(--or-marfim)}
 .v-h1b{font:600 clamp(54px,14vw,200px)/.95 var(--fd);letter-spacing:-.045em;color:var(--or-marfim);text-wrap:balance}
-body.pub .v-t3 .v-lead{max-width:46ch;margin:clamp(18px,2.4vw,30px) auto 0;font-size:clamp(15px,1.25vw,18px);line-height:1.55;color:rgba(234,224,213,.78)}
+body.pub .v-t3 .v-lead{max-width:46ch;margin:clamp(18px,2.4vw,30px) auto 0;font-size:clamp(15px,1.25vw,18px);line-height:var(--lh-body);color:rgba(234,224,213,.78)}
 body.pub .v-t3 .v-act{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px 22px;margin-top:clamp(22px,3vw,34px)}
 /* seta de rolar desenhada à mão, como na referência */
 .v-t3s{position:absolute;z-index:2;left:50%;bottom:clamp(10px,2.5vh,28px);translate:-50% 0;display:grid;place-items:center;width:56px;height:84px;padding:0;border:0;border-radius:12px;background:none;color:var(--or-marfim);opacity:.8;cursor:pointer}

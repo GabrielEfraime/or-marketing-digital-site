@@ -1,4 +1,4 @@
-// Gera estudio-ia-TESTE.html: o mesmo site, já com as IAs ligadas (OpenAI, Gemini e Groq, com as chaves do .env).
+// Gera estudio-ia-TESTE.html: o mesmo site, já com as IAs ligadas (Groq nas IAs 1, 2 e 3; Gemini como reserva; Pollinations nas imagens), com as chaves do .env.
 // SÓ PARA TESTE LOCAL. O arquivo contém a chave: não publique, não envie e não ponha no zip.
 // O estudio-ia.html normal nunca recebe chave. Uso: npm run montar:teste
 import fs from 'node:fs';
@@ -9,9 +9,10 @@ import { montar } from './montar.mjs';
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const env = fs.existsSync(path.join(RAIZ, '.env')) ? fs.readFileSync(path.join(RAIZ, '.env'), 'utf8') : '';
 const pega = (n) => ((env.match(new RegExp('^' + n + '=(.+)', 'm')) || [])[1] || '').trim();
-const K = [pega('GEMINI_API_KEY'), pega('GEMINI_API_KEY'), pega('GEMINI_API_KEY')];
-if (!K.some(Boolean)) { console.error('ERRO: coloque GEMINI_API_KEY no arquivo .env'); process.exit(1); }
-// opcional: chave da Places API do Google para a tela Captar clientes
+// ordem de IA_CHAVES no site: ia1, ia2, ia3, img (Gemini, reserva), pol (Pollinations, imagens)
+const K = [pega('GROQ_API_KEY'), pega('GROQ_API_KEY'), pega('GROQ_API_KEY'), pega('GEMINI_API_KEY'), pega('POLLINATIONS_API_KEY')];
+if (!K.some(Boolean)) { console.error('ERRO: coloque GROQ_API_KEY (e, se quiser, GEMINI_API_KEY e POLLINATIONS_API_KEY) no arquivo .env'); process.exit(1); }
+// opcional: chave da Places API do Google para a tela Captar clientes (o site passa o valor para o cofre cifrado ao abrir)
 const gplaces = pega('GOOGLE_PLACES_KEY');
 
 const injeta = `/* BUILD DE TESTE: IAs ligadas com as chaves do .env. NÃO PUBLICAR. */

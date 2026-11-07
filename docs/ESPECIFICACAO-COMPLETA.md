@@ -1,3 +1,5 @@
+> **DOCUMENTO HISTÓRICO (aviso de 06/11/2026).** Este texto foi escrito quando a plataforma ainda se chamava VYRA e antes da identidade Earthen Luxe, da troca das IAs para a Groq e do GitHub Pages. Não reflete o código atual: quando divergir, o código vence (veja `README.md`, `docs/ARQUITETURA.md` e `docs/DECISOES-E-PREFERENCIAS.md`). A Fase 2 (servidor, login real, proxy de IA, LGPD, domínio) só se propõe; não se implementa sem a confirmação do CEO.
+
 # PROMPT PARA O CLAUDE CODE: Plataforma VYRA Marketing Digital (com IA)
 
 > **Como usar:** salve este arquivo como `CLAUDE.md` na pasta do projeto (ou cole na primeira mensagem) e peça: *"Leia o CLAUDE.md e o estudio-ia.html e execute a Fase 0."*

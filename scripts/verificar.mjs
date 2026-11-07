@@ -22,7 +22,7 @@ if (/default-src 'none'/.test(csp)) ok("CSP começa fechada (default-src 'none')
 if (/\*(?![:\s;])/.test(csp.replace(/localhost:\*|127\.0\.0\.1:\*/g, ''))) ruim('CSP com curinga (*) fora do localhost'); else ok('CSP sem curinga fora do localhost');
 
 // 2. Nenhum recurso de terceiros carregado sozinho (só chamadas pedidas pelo usuário)
-const PERMITIDOS = ['wa.me', 'web.whatsapp.com', 'api.groq.com', 'api.openai.com', 'api.anthropic.com', 'openrouter.ai', 'api.cerebras.ai',
+const PERMITIDOS = ['wa.me', 'web.whatsapp.com', 'api.groq.com',
   'generativelanguage.googleapis.com', 'gen.pollinations.ai', 'enter.pollinations.ai', 'pollinations.ai', 'www.googleapis.com', 'places.googleapis.com', 'overpass-api.de', 'overpass.kumi.systems', 'openstreetmap.org', 'googleusercontent.com', 'instagram.com', 'console.cloud.google.com', 'schema.org', 'ads.google.com', 'facebook.com', 'landdding.com', 'dopaminestudio.io', 'bar-topas.ch', 'pradiplabs.dev', 'dark-moon.org', 'www.w3.org', 'localhost', '127.0.0.1'];
 const hosts = new Set();
 for (const m of html.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)) hosts.add(m[1].toLowerCase());
@@ -40,7 +40,7 @@ html.includes('window.OR_TESTE=1') ? ruim('o build normal está com a marca do b
 for (const p of ['dist/estudio-ia-TESTE.html', 'docs/estudio-ia-TESTE.html']) if (fs.existsSync(path.join(RAIZ, p))) ruim('build de TESTE (com chave) dentro de ' + p);
 
 // 4. Sem restos de depuração e sem avaliação dinâmica de código
-/\bconsole\.(log|debug)\(/.test(html.includes('/*THREE_R159*/') ? html.slice(0, html.indexOf('/*THREE_R159*/')) + html.slice(html.indexOf('function orAberturaRodar')) : html) ? ruim('console.log esquecido') : ok('sem console.log');
+/\bconsole\.(log|debug)\(/.test(html) ? ruim('console.log esquecido') : ok('sem console.log');
 /\beval\(|new Function\(/.test(html) ? ruim('eval ou new Function no código do site') : ok('sem eval nem new Function');
 html.includes('__il') ? ruim('registro temporário de depuração (__il) ainda no código') : ok('sem registro temporário de depuração');
 
@@ -66,7 +66,7 @@ if (/const ADMIN_PIN='1234'/.test(html)) aviso("PIN padrão 1234 no código: o a
 const topo = path.resolve(RAIZ, '..', 'estudio-ia.html');
 if (fs.existsSync(topo)) { fs.readFileSync(topo, 'utf8') === html ? ok('idêntico a ../estudio-ia.html') : aviso('diferente de ../estudio-ia.html (rode "npm run montar:copiar" para atualizar)'); }
 
-// 8. Testes automáticos (contas, data, WhatsApp, servidor do Cloudflare)
+// 8. Testes automáticos (contas, data, WhatsApp, IA, demandas, editor)
 const tst = spawnSync(process.execPath, [path.join(RAIZ, 'scripts', 'testar.mjs')], { encoding: 'utf8' });
 tst.status === 0 ? ok('testes: ' + tst.stdout.trim()) : ruim('testes: ' + (tst.stdout + tst.stderr).trim().slice(0, 600));
 
