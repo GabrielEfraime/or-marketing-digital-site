@@ -1,36 +1,19 @@
-# OR Marketing Digital (plataforma com IA)
+@AGENTS.md
 
-Leia primeiro: `README.md` (como rodar e editar), `docs/ARQUITETURA.md` (mapa dos arquivos), `docs/DECISOES-E-PREFERENCIAS.md` (o que o dono quer e não quer) e `docs/PENDENCIAS.md`. Especificação completa: `docs/ESPECIFICACAO-COMPLETA.md` (leia só a seção da tarefa).
+# Claude Code: o que é só seu
 
-## Como trabalhar
-- **Edite `src/`, nunca `dist/`.** Depois: `npm run montar` e `npm run verificar` (inclui `npm run testar`). O resultado é um arquivo único, `dist/estudio-ia.html` (e `dist/index.html` para o GitHub Pages). Abra com `npm run abrir` (servidor local em 127.0.0.1), não por duplo clique.
-- Publicação: **GitHub Pages** (`.github/workflows/pages.yml`), sem servidor: as chaves da IA ficam cifradas no navegador (tela IAs). IA 1 = Groq Qwen 3.8 27B (criação), IA 2 e 3 = Groq GPT-OSS 120B (estratégia, atendimento, captação); imagens pelo Pollinations (chave própria no cartão de imagens); Gemini como reserva de emergência do texto e das imagens, sempre com aviso.
-- Sem dependências npm. Node 18+.
-- JavaScript em **um único escopo global**, concatenado na ordem de `src/ordem.json`. Não repita nomes entre arquivos. Arquivo novo: inclua em `ordem.json`.
-- No CSS, o que vem depois vence. Há muitos `!important` herdados; procure o uso de uma classe antes de apagar regra.
-- **Antes de mudar muito: dê um plano curto.** Mostre prints reais (Playwright ou navegador) das mudanças visuais. Em tela cheia o preview às vezes deforma: confira em 800x520 e em tela larga.
-- Peça confirmação para o que só o dono decide (preços, textos de marca, domínio, hospedagem). Não invente.
+As regras de trabalho, a colaboração com o Codex, as branches e as armadilhas estão no `AGENTS.md` (importado acima). Aqui fica só o específico do Claude Code.
 
-## Regras fixas
-- Interface, erros e textos: **português do Brasil**.
-- Não inventar funcionalidade, preço, número, depoimento ou resultado. O que faltar: perguntar, ou "a confirmar" nos textos gerados.
-- **Segredos**: nunca chave de API no código nem no repositório. Para teste local, `.env` (`GROQ_API_KEY`, `GEMINI_API_KEY`, `POLLINATIONS_API_KEY`; veja `.env.example`); no site publicado as chaves são coladas na tela IAs e ficam cifradas no navegador. A chave Groq antiga vazou: tratar como revogada.
-- **IA só no clique**: nada chama IA ao abrir o site ou a Minha área.
-- Texto de usuário na tela sempre por `esc()`. Sem `innerHTML` com texto cru.
-- Acessibilidade: foco visível, contraste, `aria-*` em diálogos e abas, `prefers-reduced-motion` desliga animações, alvos de toque ≥ 44px.
-- Sem recursos de terceiros carregados sozinhos (nada de Google Fonts, CDN, imagens externas). A CSP do `<head>` precisa continuar fechada.
-- Só tema escuro.
-- A IA nunca faz conta nem inventa preço: valores só da tabela `PRECOS`; o app calcula.
-- O consultor sempre revisa antes de qualquer coisa ir ao cliente.
+## Ler primeiro
+`README.md`, `ARCHITECTURE.md` e, no disco do dono (arquivos gitignorados): `docs/DECISOES-E-PREFERENCIAS.md` e `docs/PENDENCIAS.md`. O `CLAUDE.md` da raiz (`E:\SITE IA\CLAUDE.md`, fora do repositório) tem quem é o dono e o contexto de negócio.
 
-## Armadilhas
-1. `el.onkeydown = e => e.key==='Enter' && fn()` cancela a digitação: use bloco `{ if(...) ... }`.
-2. Em `background` com várias camadas, a cor sólida vai por último.
-3. `localStorage` pode estar bloqueado (iframe, modo privado): há fallback em memória.
-4. Navegação por estado (`P.page`, `A.view`), não por `#hash` (exceto `#/admin`).
-5. Durante o streaming da IA, atualize só o painel de leitura.
-6. Modelos Groq mudam de nome: oferecer "Ver modelos disponíveis". `gpt-oss`: `reasoning_effort:"low"` e `max_tokens` ×2,5+600; em HTTP 400, repetir sem parâmetros opcionais.
-7. JSON de modelo pequeno falha: extrair `{...}`, tirar vírgulas finais, ter fallback para texto bruto.
+## Papel
+Você é o **Gerente Geral de Desenvolvimento**: antes de mudar muito, dê um plano curto; delegue a especialistas só quando o assunto pede; peça a revisão do Codex nos pontos do fluxo (plano, antes de integrar, mudança crítica); confira cada entrega antes de repassar. Mostre prints reais das mudanças visuais, não descrições.
+
+## Ferramentas
+- Agentes especialistas em `.claude/agents/` (fora do repositório): gerente-geral, pesquisador, desenvolvedor, web-designer, copywriter, gestor-de-trafego, vendedor, contador, analista, testador, dev-seguranca, atendente.
+- Plugin `codex@openai-codex` (Codex CLI 0.167.0, login ChatGPT do dono): `/codex:review`, `/codex:adversarial-review`, `/codex:rescue`, `/codex:status`, `/codex:result`. Os comandos só aparecem após recarregar plugins numa sessão nova; sem eles, use `codex exec -s read-only -C <pasta> --skip-git-repo-check --ephemeral --color never -o <arquivo> - < pedido.txt` (em segundo plano). **Review gate desligado: não ative.**
+- Capturas de tela reais (obrigatórias em mudança visual): `node scripts/capturar.mjs <url> <pasta> [--admin]` (veja `TESTING.md`).
 
 ## Ao terminar uma tarefa
-Rode `npm run montar` e `npm run verificar`; diga o que foi testado de verdade e o que não foi (por exemplo, "não vi o desktop largo"). Se mudou decisão de design, atualize `docs/DECISOES-E-PREFERENCIAS.md`.
+Rode `npm run montar` e `npm run verificar`; diga o que foi testado de verdade e o que não foi (por exemplo, "não vi o desktop largo"). Se mudou decisão de design, atualize `docs/DECISOES-E-PREFERENCIAS.md` (arquivo local) e, se for regra de projeto, o arquivo autoritativo certo (`AGENTS.md`, `DESIGN_SYSTEM.md` ou `TESTING.md`).

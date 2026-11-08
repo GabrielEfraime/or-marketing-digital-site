@@ -38,9 +38,9 @@ Quando tiver o domínio, preencha `url` e `googleVerificacao` em `src/seo.json` 
 
 ## Como editar
 
-1. Edite `src/` (nunca o `dist/`). A ordem dos arquivos está em `src/ordem.json`. O JavaScript tem um único escopo global, e no CSS o que vem depois vence. Os arquivos de `src/js` são numerados pela ordem real de carga (00 a 49, um por responsabilidade); o mapa de cada um e a tabela de renomeações do Lote 3A estão em `docs/ARQUITETURA.md`. Arquivo novo ou dividido: registre em `ordem.json`, renumere os seguintes e atualize a tabela.
+1. Edite `src/` (nunca o `dist/`). A ordem dos arquivos está em `src/ordem.json`. O JavaScript tem um único escopo global, e no CSS o que vem depois vence. Os arquivos de `src/js` são numerados pela ordem real de carga (00 a 49, um por responsabilidade); o mapa de cada um e a tabela de renomeações do Lote 3A estão em `ARCHITECTURE.md`. Arquivo novo ou dividido: registre em `ordem.json`, renumere os seguintes e atualize a tabela.
 2. Rode `npm run montar` e depois `npm run verificar`.
-3. Para saber onde mexer em cada coisa, veja `docs/ARQUITETURA.md`. As decisões do dono estão em `docs/DECISOES-E-PREFERENCIAS.md` e o que falta está em `docs/PENDENCIAS.md`.
+3. Para saber onde mexer em cada coisa, veja `ARCHITECTURE.md`. As decisões do dono estão em `docs/DECISOES-E-PREFERENCIAS.md` e o que falta está em `docs/PENDENCIAS.md`.
 
 ## Segurança
 

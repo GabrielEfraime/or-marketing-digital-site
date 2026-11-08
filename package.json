@@ -15,6 +15,7 @@
     "abrir": "node scripts/abrir.mjs",
     "abrir:teste": "node scripts/abrir.mjs --teste",
     "testar": "node scripts/testar.mjs",
-    "montar:teste": "node scripts/montar-teste.mjs"
+    "montar:teste": "node scripts/montar-teste.mjs",
+    "guardar": "node scripts/guardar-privados.mjs"
   }
 }
