@@ -22,11 +22,26 @@ function ssSemExternos(h){
   s=s.replace(/url\(\s*(["']?)\s*(?:https?:)?\/\/[^)]{0,2000}\)/gi,'url("data:,")');
   return s;
 }
-/* barreira da exportação (download e impressão): lista de permissões feita no DOM, que já decodifica entidades.
-   Fica: texto, estilos e links. Sai: scripts, formulários, frames, mídia, folhas de estilo de fora, qualquer src/href que não seja imagem embutida (data:image) ou âncora.
-   O arquivo ganha uma CSP fechada, então nem o que escapar daqui consegue carregar algo de fora. */
+/* barreira da exportação (download e impressão), feita no DOM, que já decodifica entidades.
+   Elementos e atributos perigosos saem por LISTA DE BLOQUEIO; src e href seguem LISTA DE PERMISSÕES (só imagem embutida, âncora "#" e os contatos que o app aprovou em op.ok).
+   Não é um sanitizador completo por lista de permissões de tags (revisão do Codex, 08/11/2026): quem segura o que escapar é a CSP fechada que o arquivo leva.
+   No site baixado (op.faixa) o código da IA vai dentro de um iframe isolado, e a faixa "Não é o site oficial" fica no documento de fora, que o CSS da IA não alcança. */
 const SS_CSP_EXPORT='<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; img-src data:; style-src \'unsafe-inline\'; form-action \'none\'; base-uri \'none\'">';
-function ssBlindaExport(html,op){return ssBlindaUma(ssBlindaUma(html,op),op)}  /* duas passadas: o que a primeira reescrever (mXSS) a segunda limpa de novo */
+function ssBlindaExport(html,op){
+  const limpo=ssBlindaUma(ssBlindaUma(html,op),op);  /* duas passadas: o que a primeira reescrever (mXSS) a segunda limpa de novo */
+  return op&&op.faixa?ssEmbrulhaDemo(limpo,op.nome):limpo;
+}
+const ssEscAttr=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* contatos que o app aprova para o site baixado: WhatsApp, mapa e Instagram do negócio (só os que o consultor marcou) */
+const ssContatosOk=d=>[d&&d.wa?'https://wa.me/'+d.wa:'',d&&d.maps?d.maps:'',d&&d.ig?'https://www.instagram.com/'+d.ig+'/':''].filter(Boolean);
+/* documento de fora: faixa de prévia, noindex e CSP fechada; o site (já limpo) vai num iframe sem scripts. Contatos abrem em nova aba por allow-popups. */
+function ssEmbrulhaDemo(inner,nome){
+  const marca=typeof BRAND==='string'?BRAND:'OR Marketing Digital',csp=SS_CSP_EXPORT.replace("form-action","frame-src about:; form-action");
+  return '<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'+csp+'<title>Prévia: '+ssEscAttr(nome||'site demonstrativo')+'</title>'
+   +'<style>html,body{margin:0;height:100%;background:#111}body{display:grid;grid-template-rows:auto 1fr}.fx{box-sizing:border-box;padding:8px 12px;background:#111;color:#f2f2f2;font:13px/1.4 system-ui,sans-serif;text-align:center}iframe{display:block;border:0;width:100%;height:100%;min-height:0;background:#fff}</style></head>'
+   +'<body><div class="fx" role="note">Prévia feita pela '+ssEscAttr(marca)+' para '+ssEscAttr(nome||'o negócio')+'. Não é o site oficial.</div>'
+   +'<iframe title="Site demonstrativo" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="'+ssEscAttr(inner)+'"></iframe></body></html>';
+}
 function ssBlindaUma(html,op){
   const d=new DOMParser().parseFromString(String(html||''),'text/html');
   /* sai com tudo o que tem dentro: scripts, frames, mídia, folhas externas, SMIL e os recipientes que o parser lê diferente do navegador (template, noscript, xmp...) */
@@ -47,16 +62,10 @@ function ssBlindaUma(html,op){
     if(n==='srcset'||n==='poster'||n==='background'||n==='data'||n==='code'||n==='codebase'||n==='longdesc'){e.removeAttribute(a.name);return}
     if(n==='src'){if(tag==='img'){if(!img(v))e.setAttribute('src',SS_PH)}else if(!img(v))e.removeAttribute(a.name);return}
     if(n==='href'||n==='xlink:href'){
-      const ok=tag==='a'||tag==='area'?/^(#|https?:|mailto:|tel:)/.test(limpo(v))||limpo(v)==='':limpo(v)[0]==='#'||img(v);
+      const aprovado=u=>!!(op&&op.ok&&op.ok.includes(String(u).trim()));  /* só o contato que o app aprovou; qualquer outro link, inclusive tel: e e-mail, vira "#" */
+      const ok=tag==='a'||tag==='area'?limpo(v)==='' ||limpo(v)[0]==='#'||aprovado(v):limpo(v)[0]==='#'||img(v);
       if(!ok)e.setAttribute(a.name,'#');
     }})});
-  if(op&&op.faixa){
-    let fx=d.querySelector('[data-ss-faixa]');
-    if(!fx){fx=d.createElement('div');fx.setAttribute('data-ss-faixa','');fx.setAttribute('role','note');fx.textContent='Prévia feita pela '+(typeof BRAND==='string'?BRAND:'OR Marketing Digital')+'. Não é o site oficial.'}
-    fx.setAttribute('style','display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147483647!important;background:#111!important;color:#f2f2f2!important;font:13px/1.4 system-ui,sans-serif!important;text-align:center!important;padding:8px 12px!important;height:auto!important;max-height:none!important;overflow:visible!important;transform:none!important;clip-path:none!important');
-    if(d.body.firstChild!==fx)d.body.prepend(fx);
-    if(!d.querySelector('meta[name=robots]'))d.head.insertAdjacentHTML('afterbegin','<meta name="robots" content="noindex,nofollow">');
-  }
   d.head.insertAdjacentHTML('afterbegin',(d.querySelector('meta[charset]')?'':'<meta charset="utf-8">')+SS_CSP_EXPORT);
   return '<!doctype html>\n'+d.documentElement.outerHTML;
 }
@@ -78,7 +87,7 @@ function ssMonta(h,d){
   const U={'{{WHATSAPP}}':d.wa?'https://wa.me/'+d.wa:'#contato','{{MAPA}}':d.maps||'#contato','{{INSTAGRAM}}':d.ig?'https://www.instagram.com/'+d.ig+'/':'#contato'};
   for(const [k,v] of Object.entries(U))s=s.split(k).join(esc(v));
   s=s.replace(/\{\{\s*FOTO\d+\s*\}\}/g,SS_PH);
-  if(!/data-ss-faixa/.test(s)){
+  if(!d.semFaixa&&!/data-ss-faixa/.test(s)){  /* no site baixado a faixa fica no documento de fora (ssEmbrulhaDemo) */
     const faixa='<div data-ss-faixa role="note" style="position:relative;z-index:2147483647;background:#111;color:#f2f2f2;font:13px/1.4 system-ui,sans-serif;text-align:center;padding:8px 12px">Prévia feita pela '+esc(typeof BRAND==='string'?BRAND:'OR Marketing Digital')+' para '+esc(d.nome||'o negócio')+'. Não é o site oficial.</div>';
     s=/<body[^>]*>/i.test(s)?s.replace(/<body[^>]*>/i,m=>m+faixa):faixa+s;
     if(/<head[^>]*>/i.test(s))s=s.replace(/<head[^>]*>/i,m=>m+'<meta name="robots" content="noindex,nofollow">');

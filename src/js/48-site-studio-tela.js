@@ -223,7 +223,7 @@ function ssBind(el,p){
     if(k==='dev'){SS.dev=v==='pc'?'pc':'cel';SS.pedido=val('ssaj');return ssPaint()}
     if(k==='gerar'){salva();return ssRodaIA(p.id,'gerar')}
     if(k==='ajustar'){SS.pedido=val('ssaj');salva();return ssRodaIA(p.id,'ajustar',SS.pedido)}
-    if(k==='baixar'){arqGet(ssChaveV(p.id,p.vAtual)).then(h=>{if(!h){SS.err='Não achei o HTML desta versão neste navegador.';return ssPaint()}ssBaixaHtml(capSlug(p.nome)+'.html',ssBlindaExport(ssMonta(h,ssDadosSite(p)),{faixa:true}))}).catch(()=>{SS.err='Não consegui abrir a versão guardada.';ssPaint()});return}
+    if(k==='baixar'){arqGet(ssChaveV(p.id,p.vAtual)).then(h=>{if(!h){SS.err='Não achei o HTML desta versão neste navegador.';return ssPaint()}(()=>{const ds=ssDadosSite(p);ssBaixaHtml(capSlug(p.nome)+'.html',ssBlindaExport(ssMonta(h,{...ds,semFaixa:true}),{faixa:true,nome:p.nome,ok:ssContatosOk(ds)}))})()}).catch(()=>{SS.err='Não consegui abrir a versão guardada.';ssPaint()});return}
     if(k==='retry'){salva();const u=SS.ult||{tipo:'analisar'};return u.tipo==='analisar'?ssAnalisar(p.id):ssRodaIA(p.id,u.tipo,u.pedido)}
     if(k==='salvar'||k==='analisar'){salva();if(k==='analisar')return ssAnalisar(p.id);SS.msg='Dados salvos.';SS.err='';return ssPaint()}
   };

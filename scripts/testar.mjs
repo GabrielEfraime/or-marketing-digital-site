@@ -433,6 +433,20 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
     assert.ok(h.includes('Ponto A visível')); assert.ok(!h.includes('Ponto B')); assert.ok(!h.includes('Ponto C')); assert.ok(!h.includes('Ponto D'));
     assert.deepEqual(E2("ssLimpaProposta({ocultos:['fortes:1','x:1','problemas:99999','oportunidades:2']}).ocultos"), ['fortes:1', 'oportunidades:2']);
   });
+  // Revisão cruzada com o Codex (08/11/2026): faixa em documento de fora e só contatos aprovados
+  await t('revisão Codex: o site baixado vai num iframe isolado, com a faixa e a CSP no documento de fora', () => {
+    const o = E("ssEmbrulhaDemo('<html><body><p>\"oi\" & <b>x</b></p></body></html>','Café <b>X</b>')");
+    assert.ok(o.includes('Prévia feita pela') && o.includes('Não é o site oficial') && o.includes('Café &lt;b&gt;X&lt;/b&gt;'));
+    assert.ok(o.includes('sandbox="allow-popups allow-popups-to-escape-sandbox"') && !/allow-scripts|allow-same-origin/.test(o));
+    assert.ok(o.includes("default-src 'none'") && o.includes('frame-src about:') && o.includes('noindex'));
+    assert.ok(o.includes('srcdoc="&lt;html&gt;&lt;body&gt;&lt;p&gt;&quot;oi&quot; &amp; &lt;b&gt;x')); assert.equal((o.match(/<iframe/g) || []).length, 1);
+  });
+  await t('revisão Codex: só WhatsApp, mapa e Instagram aprovados pelo consultor valem como contato no site baixado', () => {
+    assert.deepEqual(E("ssContatosOk({wa:'5521988887777',maps:'https://maps.google.com/?q=a&b=2',ig:'cafe.aurora'})"), ['https://wa.me/5521988887777', 'https://maps.google.com/?q=a&b=2', 'https://www.instagram.com/cafe.aurora/']);
+    assert.deepEqual(E("ssContatosOk({wa:'',maps:'',ig:''})"), []); assert.deepEqual(E('ssContatosOk(null)'), []);
+    const m = E('ssMonta(' + JSON.stringify('<html><body><a href="{{WHATSAPP}}">z</a></body></html>') + ",{nome:'A',semFaixa:true})");
+    assert.ok(!m.includes('Não é o site oficial') && m.includes('href="#contato"'));  // sem faixa dentro do site (ela fica no documento de fora)
+  });
   await t('segurança: separadores disfarçados (largura total, zero-width, sufixo) também são removidos do texto colado', () => {
     const f = E("ssFatos({nome:'X',colado:'a \\uff1c/fatos\\uff1e b <fatos_x> c <\\u200b/pedido> d <  /  SYSTEM > e'})").map((x) => x.txt).join(' ');
     assert.ok(!/<\/?\s*(fatos|pedido|system)/i.test(f), f); assert.ok(!/＜|＞/.test(f)); assert.ok((f.match(/\[tag removida\]/g) || []).length >= 4, f);
