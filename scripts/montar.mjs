@@ -3,6 +3,7 @@
 //       node scripts/montar.mjs --copiar   -> também copia para ../estudio-ia.html (a pasta de cima)
 //       node scripts/montar.mjs --watch    -> remonta sozinho quando você salvar um arquivo de src/
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -56,6 +57,36 @@ export function seo() {
   };
 }
 
+
+// Cofre do site: as chaves de IA entram no site CIFRADAS, nunca em texto. Cifra AES-256-GCM com chave derivada da senha (PBKDF2-SHA256, 600 mil voltas),
+// no mesmo formato do backup protegido do app (bkpCifra/bkpDecifra), então o navegador abre com a função que já existe.
+// Entradas (ambiente do GitHub Actions ou arquivo .env local, gitignorado): COFRE_SENHA (mínimo 12 caracteres) e as chaves GROQ_API_KEY, GEMINI_API_KEY, POLLINATIONS_API_KEY.
+// Sem senha ou sem chave, o site sai sem cofre (null): a chave em texto nunca vai para a página.
+export function cofre(chaves, senha) {
+  if (typeof senha !== 'string' || senha.length < 12) throw new Error('COFRE_SENHA precisa ter pelo menos 12 caracteres.');
+  const it = 600000, salt = crypto.randomBytes(16), iv = crypto.randomBytes(12);
+  const chave = crypto.pbkdf2Sync(Buffer.from(senha, 'utf8'), salt, it, 32, 'sha256');
+  const c = crypto.createCipheriv('aes-256-gcm', chave, iv);
+  const ct = Buffer.concat([c.update(Buffer.from(JSON.stringify(chaves), 'utf8')), c.final(), c.getAuthTag()]);  // mesmo layout do WebCrypto: texto cifrado + etiqueta
+  return { v: 1, cripto: 'AES-GCM-256', kdf: 'PBKDF2-SHA256', it, salt: salt.toString('base64'), iv: iv.toString('base64'), dados: ct.toString('base64') };
+}
+function envLocal() {
+  const f = path.join(RAIZ, '.env'), o = {};
+  if (!fs.existsSync(f)) return o;
+  for (const l of fs.readFileSync(f, 'utf8').split(/\r?\n/)) { const m = l.match(/^([A-Z0-9_]+)=(.*)$/); if (m) o[m[1]] = m[2].trim(); }
+  return o;
+}
+export function cofreDoAmbiente() {
+  const e = { ...envLocal(), ...Object.fromEntries(Object.entries(process.env).filter(([, v]) => v)) };
+  const chaves = {};
+  if (e.GROQ_API_KEY) chaves.groq = e.GROQ_API_KEY;
+  if (e.GEMINI_API_KEY) chaves.gemini = e.GEMINI_API_KEY;
+  if (e.POLLINATIONS_API_KEY || e.POLLINATIONS_KEY) chaves.pollinations = e.POLLINATIONS_API_KEY || e.POLLINATIONS_KEY;
+  if (!Object.keys(chaves).length) return null;
+  if (!e.COFRE_SENHA) { console.log('aviso: há chaves de IA no ambiente, mas falta COFRE_SENHA: o site sai SEM cofre (a chave nunca vai em texto).'); return null; }
+  return cofre(chaves, e.COFRE_SENHA);
+}
+
 export function montar() {
   const ordem = JSON.parse(ler('src/ordem.json'));
   // fontes de src/fontes/ entram embutidas (data:), porque a CSP não deixa carregar fonte de fora
@@ -66,11 +97,13 @@ export function montar() {
   if (!molde.includes('{{CSS}}') || !molde.includes('{{JS}}')) throw new Error('O molde precisa ter {{CSS}} e {{JS}}.');
   if (!molde.includes('{{SEO}}') || !molde.includes('{{NOSCRIPT}}')) throw new Error('O molde precisa ter {{SEO}} e {{NOSCRIPT}}.');
   const S = seo();
+  const COFRE = cofreDoAmbiente();
+  if (COFRE) console.log('ok  cofre do site com as chaves de IA (cifrado)');
   // function como substituto: evita que "$&" e "$1" do código sejam interpretados
   const d = new Date(), p = (n) => String(n).padStart(2, '0'), selo = p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
-  const html = molde.replace('{{SEO}}', () => S.head).replace('{{NOSCRIPT}}', () => S.noscript).replace('{{CSS}}', () => css).replace('{{JS}}', () => js.replace('__BUILD__', selo));
+  const html = molde.replace('{{SEO}}', () => S.head).replace('{{NOSCRIPT}}', () => S.noscript).replace('{{CSS}}', () => css).replace('{{JS}}', () => js.replace('__BUILD__', selo).replace('__COFRE__', () => JSON.stringify(COFRE)));
   // erro de sintaxe no JavaScript aparece aqui, antes de abrir o navegador
-  try { new Function(js.replace('__BUILD__', 'x')); } catch (e) { throw new Error('Erro de sintaxe no JavaScript: ' + e.message); }
+  try { new Function(js.replace('__BUILD__', 'x').replace('__COFRE__', 'null')); } catch (e) { throw new Error('Erro de sintaxe no JavaScript: ' + e.message); }
   return html;
 }
 

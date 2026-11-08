@@ -1,6 +1,6 @@
 function admShell(inner){
   return `<div class="shell"><aside class="side">${window.OR_TESTE?'<p class="err" role="note" style="margin:0 0 10px">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}<button class="brandb" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
-  <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['posts','nvpost','Posts'],['demandas','nvdem','Demandas'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['assistente','nvassist','Assistente por setor'],['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
+  <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['studio','nvss','Site Studio'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['posts','nvpost','Posts'],['demandas','nvdem','Demandas'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['assistente','nvassist','Assistente por setor'],['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
   <div class="iasum">IA 1 (criação): ${esc(CFG.ia1.model)}<br>IA 2 (atendimento): ${esc(CFG.ia2.model)}<br>IA 3 (captação): ${esc(CFG.ia3.model)}</div>
   <div id="disk" class="diskbar"></div><div id="savebar" class="savebar" role="status"></div>
   <div class="dtools"><button id="csv">Exportar CSV</button><button id="bkp">Baixar backup</button><button id="impb">Importar backup</button><input type="file" id="imp" accept=".json" hidden><button id="npin">Trocar PIN</button><button id="lclean">Limpar leads antigos</button></div>
@@ -9,11 +9,11 @@ function admShell(inner){
 function bindShell(){
   $('#nvdem').onclick=()=>{A.view='demandas';admin()};
   $('#nvassist').onclick=()=>{A.view='assistente';admin()};
-  $('#nvd').onclick=()=>{A.view='dash';admin()};$('#nvl').onclick=()=>{A.view='';admin()};$('#nvt').onclick=()=>{A.view='trk';T.id=null;T.msg='';admin()};$('#nvpost').onclick=()=>{A.view='posts';admin()};$('#nvk').onclick=()=>{A.view='kb';admin()};$('#nvc').onclick=()=>{A.view='cap';CAP.id=null;CAP.err='';CAP.msg='';admin()};$('#nvi').onclick=()=>{A.view='ias';admin()};$('#nvvg').onclick=()=>{A.view='vagas';A.vgc=null;A.vgTab=null;admin()};
+  $('#nvd').onclick=()=>{A.view='dash';admin()};$('#nvl').onclick=()=>{A.view='';admin()};$('#nvt').onclick=()=>{A.view='trk';T.id=null;T.msg='';admin()};$('#nvpost').onclick=()=>{A.view='posts';admin()};$('#nvk').onclick=()=>{A.view='kb';admin()};$('#nvc').onclick=()=>{A.view='cap';CAP.id=null;CAP.err='';CAP.msg='';admin()};$('#nvss').onclick=()=>{A.view='studio';SS.id=null;SS.err='';SS.msg='';admin()};$('#nvi').onclick=()=>{A.view='ias';admin()};$('#nvvg').onclick=()=>{A.view='vagas';A.vgc=null;A.vgTab=null;admin()};
   $('#csv').onclick=()=>dl('leads.csv','nome,whatsapp,email,area,status,data\n'+getL().map(l=>[l.nome,l.whats,l.email,svcName(l),l.status,l.data].map(csvSafe).join(',')).join('\n'),'text/csv');
   $('#bkp').onclick=()=>bkpDlg();
   $('#impb').onclick=()=>$('#imp').click();
-  $('#imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0;aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''));if(!A.view){paintList();paintDet()}}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
+  $('#imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''));if(!A.view){paintList();paintDet()}}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
   paintDisk();pintaSave();
 }
 function admin(){
@@ -32,6 +32,7 @@ function admin(){
   if(A.view==='posts'){setApp(admShell(postsInner()));bindShell();return reaPostsBind()}
   if(A.view==='trk'){setApp(admShell('<div id="trk"></div>'));bindShell();return trkPaint()}
   if(A.view==='cap'){setApp(admShell('<div id="cap"></div>'));bindShell();return capPaint()}
+  if(A.view==='studio'){setApp(admShell('<div id="studio"></div>'));bindShell();return ssPaint()}
   if(A.view==='kb'){setApp(admShell(kbInner()));bindShell();return bindKb()}
   if(A.view==='ias'){setApp(admShell(iasInner()));bindShell();return bindIas()}
   setApp(admShell(`<h2 class="pt">Leads</h2><p class="hint">Quando um briefing chega, ele aparece aqui. A IA só trabalha quando você clica: abra o lead e use "Gerar tudo com a IA".</p>${storeWarn()}<div id="sts"></div>
@@ -53,7 +54,9 @@ function paintDet(){
   if(A.view==='trk'){trkPaint();return}
   const el=document.getElementById('det');if(!el)return;
   const l=getL().find(x=>x.id===A.sel);
-  el.innerHTML=l?detail(l):'<div class="panel hint">Escolha um lead na lista.</div>';if(l)bind(l);
+  const sp=l&&ssPorLead(l.id);
+  el.innerHTML=(sp?`<div class="panel row" style="margin-bottom:12px"><span class="hint">Este lead tem um projeto no Site Studio: ${esc(sp.nome)}.</span><button type="button" class="btn ghost" id="sslk">Abrir o projeto no Site Studio</button></div>`:'')+(l?detail(l):'<div class="panel hint">Escolha um lead na lista.</div>');if(l)bind(l);
+  if(sp&&document.getElementById('sslk'))document.getElementById('sslk').onclick=()=>{A.view='studio';SS.id=sp.id;SS.js='';SS.err='';SS.msg='';admin()};
 }
 function paneHtml(l,o,h){
   const wait=t=>`<p class="hint">${t}</p>`;

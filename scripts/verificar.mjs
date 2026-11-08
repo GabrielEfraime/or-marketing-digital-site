@@ -21,6 +21,11 @@ csp ? ok('política de segurança (CSP) presente') : ruim('sem CSP no <head>');
 if (/default-src 'none'/.test(csp)) ok("CSP começa fechada (default-src 'none')"); else ruim("CSP sem default-src 'none'");
 if (/\*(?![:\s;])/.test(csp.replace(/localhost:\*|127\.0\.0\.1:\*/g, ''))) ruim('CSP com curinga (*) fora do localhost'); else ok('CSP sem curinga fora do localhost');
 
+const CONNECT_OK = ['api.groq.com', 'generativelanguage.googleapis.com', 'gen.pollinations.ai', 'www.googleapis.com', 'places.googleapis.com', 'lh3.googleusercontent.com', 'lh4.googleusercontent.com', 'lh5.googleusercontent.com', 'lh6.googleusercontent.com', 'overpass-api.de', 'overpass.kumi.systems'];
+const connect = ((csp.match(/connect-src ([^;]+)/) || [])[1] || '').split(/\s+/).filter(Boolean).filter((x) => x !== "'self'").map((x) => x.replace(/^https?:\/\//, ''));
+const novos = connect.filter((h) => !CONNECT_OK.includes(h));
+novos.length ? ruim('a CSP ganhou domínio novo em connect-src (revise e atualize CONNECT_OK): ' + novos.join(', ')) : ok('connect-src da CSP só com os domínios esperados');
+
 // 2. Nenhum recurso de terceiros carregado sozinho (só chamadas pedidas pelo usuário)
 const PERMITIDOS = ['wa.me', 'web.whatsapp.com', 'api.groq.com',
   'generativelanguage.googleapis.com', 'gen.pollinations.ai', 'enter.pollinations.ai', 'pollinations.ai', 'www.googleapis.com', 'places.googleapis.com', 'overpass-api.de', 'overpass.kumi.systems', 'openstreetmap.org', 'googleusercontent.com', 'instagram.com', 'console.cloud.google.com', 'schema.org', 'ads.google.com', 'facebook.com', 'landdding.com', 'dopaminestudio.io', 'bar-topas.ch', 'pradiplabs.dev', 'dark-moon.org', 'www.w3.org', 'localhost', '127.0.0.1'];

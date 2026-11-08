@@ -104,6 +104,9 @@ Só nomes e numeração mudaram: a ordem de carga, as funções, os bancos e as 
 | `22c-vagas.js` | `46-vagas.js` |
 | `22d-rh.js` | `47-rh.js` |
 | `22f-captacao.js` | `48-captacao.js` |
+| (novo, Site Studio Etapa 1) | `48-site-studio-projetos.js` (projetos ligados a prospect e lead; só dados; chave `proj1`; ver `SPEC.md`) |
+| (novo, Site Studio Etapa 2) | `48-site-studio-analise.js` (fatos, prompt e leitura da análise da IA), `48-site-studio-tela.js` (tela `A.view==='studio'`), `css/28-site-studio.css` |
+| (novo, Site Studio Etapa 3) | `48-site-studio-site.js` (geração do site, pedidos de mudança e versões; limite e histórico em `48-site-studio-versoes.js`; proposta comercial em `48-site-studio-proposta.js`; HTML no IndexedDB `or-arquivos`, chave `ssv:<projeto>:<n>`) |
 | `23-whatsapp-ias-final.js` | `49-whatsapp-ias-inicializacao.js` |
 
 ## Fluxo de um lead

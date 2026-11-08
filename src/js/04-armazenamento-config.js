@@ -85,13 +85,16 @@ addEventListener('storage',e=>{try{
 }catch(x){}});
 /* Por ora as três IAs rodam no Gemini: configurações antigas (OpenAI, Groq ou a IA reserva) migram uma vez. A chave do Google é a única que continua valendo; as outras saem. */
 if(CFG.seededGem!=='1'){const gk=([CFG.ia1,CFG.ia2,CFG.ia3].filter(c=>c&&/googleapis[.]com/.test(c.url||'')&&c.key)[0]||{}).key||'';
-  IAS.forEach(s=>{CFG[s]={...IA0(s),key:s==='ia2'?gk:''}});
-  delete CFG.reserva;['seededNuvem','seededIA3','seededGemini','seededGemini2','seededTres'].forEach(x=>delete CFG[x]);CFG.seededGem='1';CFG.skipKeys=['ia1','ia3'];CFG.t=Date.now();saveCfg()}
+  const novo=!sget('ikeys2');  /* navegador novo: não há chave antiga a descartar; a chave da Groq que já está nas IAs (ex.: a do .env no npm run abrir) fica */
+  IAS.forEach(s=>{const k=/^gsk_/.test((CFG[s]||{}).key||'')?CFG[s].key:'';CFG[s]={...IA0(s),key:s==='ia2'?(gk||k):k}});
+  delete CFG.reserva;['seededNuvem','seededIA3','seededGemini','seededGemini2','seededTres'].forEach(x=>delete CFG[x]);CFG.seededGem='1';if(!novo)CFG.skipKeys=['ia1','ia3'];CFG.t=Date.now();saveCfg()}
 /* 04/11/2026: a IA passou para a Groq (Qwen cria; GPT-OSS 120B planeja, atende e capta). Migra uma vez: as três IAs vão para os
    modelos novos e a chave do Google, que servia às três, vai para o cartão de imagens (as imagens continuam no Gemini). */
 if(CFG.seededGroq!=='1'){const g=[CFG.ia1,CFG.ia2,CFG.ia3].map(c=>c&&/googleapis[.]com/.test(c.url||'')&&c.key).find(Boolean);
-  IAS.forEach(s=>{CFG[s]={...IA0(s)}});if(g&&!CFG.img.key)CFG.img.key=g;
-  CFG.moverGemini=true;CFG.skipKeys=[...IAS];CFG.seededGroq='1';CFG.t=Date.now();saveCfg()}
+  /* navegador novo (sem cofre de chaves): não há chave antiga do Google a descartar, então a chave da Groq que já está nas IAs (ex.: a do .env no npm run abrir) fica */
+  const novo=!sget('ikeys2');
+  IAS.forEach(s=>{const k=/^gsk_/.test((CFG[s]||{}).key||'')?CFG[s].key:'';CFG[s]={...IA0(s),...(k?{key:k}:{})}});if(g&&!CFG.img.key)CFG.img.key=g;
+  if(!novo){CFG.moverGemini=true;CFG.skipKeys=[...IAS]}CFG.seededGroq='1';CFG.t=Date.now();saveCfg()}
 /* 06/11/2026: Anthropic, OpenRouter, Cerebras e OpenAI saíram da CSP e da tela IAs. Quem ainda tem uma IA configurada com um desses provedores
    volta, só nessa IA, à configuração padrão da Groq (a chave daquele provedor sai; as demais IAs, chaves e configurações ficam como estão). */
 if(CFG.seededProv!=='1'){const velho=c=>c&&(c.kind==='anthropic'||/api[.]openai[.]com|api[.]anthropic[.]com|openrouter[.]ai|api[.]cerebras[.]ai/.test(c.url||'')),sai=IAS.filter(s=>velho(CFG[s]));

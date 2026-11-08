@@ -19,6 +19,8 @@ async function diskLoad(){
   if(t)try{const o=JSON.parse(t);merge(o.leads||o)}catch(e){}
   const pr=await rfile(DISK.dir,'prospects.json');
   if(pr)try{capMerge(JSON.parse(pr).prosp)}catch(e){}
+  const pj=await rfile(DISK.dir,'projetos.json');
+  if(pj)try{ssMerge(JSON.parse(pj).proj)}catch(e){}
   const demandas=await rfile(DISK.dir,'demandas.json');
   if(demandas)try{orQuadroImportar(JSON.parse(demandas).demandas)}catch(e){}
   await purgaPendentes();
@@ -49,6 +51,7 @@ async function diskSave(full){
     await wfile(DISK.dir,'demandas.json',JSON.stringify({v:1,demandas:OR_QUADRO.itens}));
     await wfile(DISK.dir,'config.json',JSON.stringify(cfgSafe(),null,1));
     await wfile(DISK.dir,'prospects.json',JSON.stringify({v:1,salvo:new Date().toISOString(),prosp:capLoad().L},null,1));
+    await wfile(DISK.dir,'projetos.json',JSON.stringify({v:1,salvo:new Date().toISOString(),proj:ssLoad()},null,1));
     const hd=await DISK.dir.getDirectoryHandle('historico',{create:true}),corte='leads_'+new Date(Date.now()-30*864e5).toLocaleDateString('sv-SE');
     await wfile(hd,'leads_'+stamp()+'.json',json);
     for await(const [n] of hd.entries())if(/^leads_\d{4}-\d\d-\d\d\.json$/.test(n)&&n<corte)await hd.removeEntry(n);
@@ -79,8 +82,8 @@ async function bkpCifra(obj,senha){const salt=crypto.getRandomValues(new Uint8Ar
 async function bkpDecifra(o,senha){const it=+o.it;if(!(it>=100000&&it<=5000000)||!o.salt||!o.iv||!o.dados)throw new Error('Arquivo de backup inválido.');const k=await chaveBkp(senha,unb64(o.salt),it);
   try{return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},k,unb64(o.dados))))}catch(e){throw new Error('Senha errada ou arquivo de backup corrompido.')}}
 function bkpDlg(){
-  const m=dlg('Baixar backup','<h3>Baixar backup dos leads</h3><p class="hint">O backup tem dados pessoais dos clientes. Proteja com uma senha forte e guarde a senha num gerenciador de senhas: sem ela, ninguém abre o arquivo, nem você.</p><label for="bk1">Senha (mínimo 10 caracteres)</label><input id="bk1" type="password" autocomplete="new-password"><label for="bk2">Repita a senha</label><input id="bk2" type="password" autocomplete="new-password"><p class="hint" id="bke" role="alert" style="color:var(--err)"></p><div class="row"><button type="button" class="btn" id="bkc">Baixar protegido</button><button type="button" class="btn ghost" id="bks">Baixar sem senha</button></div>');
-  const q=s=>m.querySelector(s),dados={v:1,leads:getL(),prosp:capLoad().L,demandas:OR_QUADRO.itens};
+  const m=dlg('Baixar backup','<h3>Baixar backup dos leads</h3><p class="hint">O backup tem dados pessoais dos clientes. As versões do site do Site Studio não entram nele (ficam só neste navegador): baixe os sites que quiser guardar. Proteja com uma senha forte e guarde a senha num gerenciador de senhas: sem ela, ninguém abre o arquivo, nem você.</p><label for="bk1">Senha (mínimo 10 caracteres)</label><input id="bk1" type="password" autocomplete="new-password"><label for="bk2">Repita a senha</label><input id="bk2" type="password" autocomplete="new-password"><p class="hint" id="bke" role="alert" style="color:var(--err)"></p><div class="row"><button type="button" class="btn" id="bkc">Baixar protegido</button><button type="button" class="btn ghost" id="bks">Baixar sem senha</button></div>');
+  const q=s=>m.querySelector(s),dados={v:1,leads:getL(),prosp:capLoad().L,proj:ssLoad(),demandas:OR_QUADRO.itens};
   q('#bkc').onclick=async()=>{const a=q('#bk1').value,b=q('#bk2').value;if(a.length<10){q('#bke').textContent='Use pelo menos 10 caracteres.';return}if(a!==b){q('#bke').textContent='As duas senhas não são iguais.';return}
     q('#bkc').disabled=true;q('#bkc').textContent='Protegendo…';try{dl('backup-leads-protegido.json',JSON.stringify(await bkpCifra(dados,a)),'application/json');m.remove()}catch(e){q('#bke').textContent='Não consegui proteger o arquivo neste navegador.';q('#bkc').disabled=false;q('#bkc').textContent='Baixar protegido'}};
   q('#bks').onclick=()=>confirma('Baixar o backup sem senha? Qualquer pessoa com o arquivo vê os dados dos clientes.',()=>{dl('backup-leads.json',JSON.stringify(dados,null,1),'application/json');m.remove()},{ok:'Baixar sem senha',titulo:'Backup sem proteção?'});

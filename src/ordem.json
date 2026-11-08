@@ -104,6 +104,10 @@
     {
       "arquivo": "src/css/27-editor-posts.css",
       "descricao": "Editor e painel administrativo de posts, calendário editorial, identidade visual e exportação PNG"
+    },
+    {
+      "arquivo": "src/css/28-site-studio.css",
+      "descricao": "Site Studio: lista de projetos, itens da análise e chips de modo"
     }
   ],
   "js": [
@@ -302,6 +306,34 @@
     {
       "arquivo": "src/js/48-captacao.js",
       "descricao": "Captar clientes: busca no Google (Places API) de negócios sem site, prévia do site e mensagem de abordagem com IA (só no clique), etapas até virar lead"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-projetos.js",
+      "descricao": "Site Studio, Etapa 1: projetos ligados a prospect, lead e histórico (só dados: criar, atualizar, mesclar no backup)"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-analise.js",
+      "descricao": "Site Studio, Etapa 2: fatos, prompt e leitura da análise do negócio pela IA (só no clique)"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-site.js",
+      "descricao": "Site Studio, Etapa 3: geração do site demonstrativo, chat de ajustes e versões (só no clique)"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-versoes.js",
+      "descricao": "Site Studio, Etapa 4: desfazer, refazer, abrir, comparar e limitar versões do site; registra a IA que respondeu"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-proposta.js",
+      "descricao": "Site Studio, Etapa 5: proposta comercial (documento HTML com a identidade OR, valores da tabela, conferência de somas, aviso de promessas)"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-tela.js",
+      "descricao": "Site Studio, Etapa 2: tela da Minha área (novo projeto, lista, ficha com a análise)"
+    },
+    {
+      "arquivo": "src/js/48-cofre-site.js",
+      "descricao": "Cofre do site: chaves de IA cifradas na própria página, abertas com uma senha em cada aparelho"
     },
     {
       "arquivo": "src/js/49-whatsapp-ias-inicializacao.js",

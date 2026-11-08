@@ -37,7 +37,7 @@ async function ask(msgs,onChunk,o={}){
   {url=(c.url||IADEF.openai.url).replace(/\/$/,'')+'/chat/completions';hd.Authorization='Bearer '+chave;
     body={model:c.model,messages:msgs,stream:true,max_tokens:gox?Math.min(65536,Math.round((o.max||2048)*1.6+1200)):oss?Math.round((o.max||2048)*1.4+300):gq&&qw?Math.min(16384,o.max||2048):(o.max||2048)};if(gq&&qw){body.temperature=0.6;body.top_p=0.95;body.reasoning_format='hidden'}else if(gox){body.temperature=1;body.top_p=1;body.reasoning_effort=/safeguard/i.test(c.model||'')?'low':'medium';body.include_reasoning=false}else{body.temperature=o.temp??0.5;if(oss)body.reasoning_effort='low';if(qw)body.reasoning_format='hidden'}if(o.json)body.response_format={type:'json_object'};
     const L=iaLim(c.model);if(L.tpm&&body.max_tokens){const teto=L.tpm-est-200;if(body.max_tokens>teto)body.max_tokens=Math.max(512,teto)}}
-  if(!chave)throw new Error(nm+' ('+c.model+'): falta a chave da IA. Abra Minha área > IAs, cole a chave '+(gq?'da Groq':'dessa IA')+' e clique em Salvar. Ela fica cifrada só neste navegador.');
+  if(!chave)throw new Error(nm+' ('+c.model+'): falta a chave da IA. Abra Minha área > IAs, cole a chave '+(gq?'da Groq':'dessa IA')+' e clique em Salvar'+(COFRE_SITE?' (ou digite a senha do site em "Destravar a IA")':'')+'. Ela fica cifrada só neste navegador.');
   let r;
   const tc=new AbortController(),lim=o.timeout||150000,tmo=setTimeout(()=>{tc.porTempo=1;tc.abort()},lim);if(o.signal){if(o.signal.aborted)tc.abort();else o.signal.addEventListener('abort',()=>tc.abort())}
   const go=()=>fetch(url,{method:'POST',signal:tc.signal,headers:hd,body:JSON.stringify(body)});
@@ -66,7 +66,7 @@ async function ask(msgs,onChunk,o={}){
 }
 const sameCfg=(a,b)=>a.kind===b.kind&&a.url===b.url&&a.model===b.model;
 async function askF(msgs,cb,o){
-  try{return await ask(msgs,cb,o)}
+  try{const r=await ask(msgs,cb,o);IA_QUEM=(o.cfg||CFG[o.slot||'ia1']||{}).model||'';return r}
   catch(e){
     if(o.signal?.aborted||e.name==='AbortError')throw e;
     const atual=o.cfg||CFG[o.slot||'ia1'],erros=[e];
@@ -75,7 +75,7 @@ async function askF(msgs,cb,o){
     if(!o.cfg&&CFG.img&&keyDe(CFG.img)&&!/googleapis[.]com/.test(atual.url||''))cands.push({kind:'openai',url:GEMINI_URL,model:IA_DEF.img.model,key:keyDe(CFG.img)});
     for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');let out;try{cb('');out=await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2);continue}
       try{iaAviso('A IA principal ('+atual.model+') não respondeu; quem respondeu foi '+c.model+(/googleapis[.]com/.test(c.url||'')?' (reserva de emergência)':'')+'. Revise com atenção.');setTimeout(()=>iaAviso(''),8000)}catch(x){} // troca nunca silenciosa
-      return out}
+      IA_QUEM=c.model||'';return out}
     if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');
     throw e;
   }

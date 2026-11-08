@@ -77,7 +77,7 @@ function iaCard(s,t,d){
 }
 function iasInner(){
   return `<h2 class="pt">IAs</h2><p class="hint">As IAs rodam na Groq, cada uma com uma função. A <b>IA 1</b> (Qwen 3.8 27B) cria posts, legendas, roteiros, textos das artes, kits e mensagens. A <b>IA 2</b> (GPT-OSS 120B) planeja e atende: calendário editorial, demandas, estratégia, briefing, orçamento, perfil do cliente, anúncios e relatórios. A <b>IA 3</b> (GPT-OSS 120B) cuida da captação de clientes. Cole a chave da Groq em uma delas e as outras usam a mesma. As imagens das artes saem pelo Pollinations, e o Gemini fica de reserva de emergência. Se uma IA falhar, o site tenta as outras e avisa quem respondeu.</p>
-  <p class="hint">Sem servidor (como no site do GitHub), as chaves ficam cifradas só neste navegador. Em outro computador ou navegador, cole de novo.</p>
+  <p class="hint">Sem servidor (como no site do GitHub), as chaves ficam cifradas só neste navegador.${COFRE_SITE?' Este site tem um cofre: em outro computador ou tablet, destrave com a senha do site (abaixo) em vez de colar a chave.':' Em outro computador ou navegador, cole de novo.'}</p>${cofreHtml()}
   <div class="iag">${iaCard('ia1','IA 1 · Criação','Posts, legendas, roteiros, textos das artes, kits de execução e mensagens.')}${iaCard('ia2','IA 2 · Estratégia e atendimento','Calendário editorial, demandas, estratégia, briefing, orçamento, perfil do cliente, anúncios e relatórios.')}${iaCard('ia3','IA 3 · Captação de clientes','Busca de clientes, site de prévia e mensagem de abordagem.')}
   <div class="panel iacard"><h3>Imagens das artes · Pollinations</h3><p class="hint">A Groq não gera imagem. O botão "Criar imagem com IA" usa o Pollinations: crie a conta em enter.pollinations.ai (entra com o GitHub), gere uma chave secreta (começa com sk_) e cole aqui. Cada imagem custa frações de centavo em Pollen, e a conta nova ganha créditos para começar.</p>
   <label for="polc">Chave do Pollinations</label><input id="polc" type="password" placeholder="${CFG.pol.key?'Chave salva (deixe vazio para manter)':'Cole a chave aqui'}" autocomplete="off" spellcheck="false">
@@ -100,6 +100,7 @@ function bindTal(){
   $('#tclean').onclick=()=>{const lim=Date.now()-RETENCAO_MESES*30*864e5,v=getT().filter(t=>t.t<lim);if(!v.length)return aviso('Nenhum cadastro com mais de '+RETENCAO_MESES+' meses.');confirma(v.length+' cadastro(s) serão apagados. Continuar?',()=>{v.forEach(x=>cvDel(x.id));setT(getT().filter(t=>t.t>=lim));admin()},{ok:'Apagar',titulo:'Apagar cadastros antigos?'})};
 }
 function bindIas(){
+  cofreBind(()=>{if(typeof admin==='function')admin()});
   const rd=s=>({kind:$('#'+s+'k').value,url:$('#'+s+'u').value.trim(),model:$('#'+s+'m').value.trim(),key:($('#'+s+'c')&&$('#'+s+'c').value.trim())||CFG[s].key||''});
   const test=async(c,r)=>{const t0=Date.now();r.textContent='Testando…';
     try{const out=await ask([{role:'user',content:'Responda só com a palavra: ok'}],()=>{},{cfg:c,max:30});r.textContent='Respondeu em '+((Date.now()-t0)/1000).toFixed(1)+'s ('+(out||'sem texto').slice(0,30)+').'}

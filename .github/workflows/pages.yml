@@ -48,6 +48,13 @@ jobs:
         with:
           node-version: "22"
       - name: Montar o site atualizado
+        # Cofre do site: as chaves de IA entram CIFRADAS com COFRE_SENHA (nunca em texto). Sem esses segredos, o site sai sem cofre.
+        # Configure em Settings > Secrets and variables > Actions: COFRE_SENHA (mínimo 12 caracteres), GROQ_API_KEY e, se quiser, GEMINI_API_KEY e POLLINATIONS_API_KEY.
+        env:
+          COFRE_SENHA: ${{ secrets.COFRE_SENHA }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
         run: npm run montar
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4

@@ -233,7 +233,7 @@ function capVirarLead(p,valor){
   const qa=[['Nome do negócio',p.nome],['Ramo',[p.tipo,p.nicho].filter(Boolean).join(' · ')],['Endereço ou região',p.end||p.cidade],['Instagram',p.ig?'@'+p.ig:''],
     ['Avaliação no Google',p.aval?capNota(p)+' com '+p.aval+' avaliações':''],['Link da prévia enviada',p.link],['Origem','Captar clientes: o negócio não tinha site e recebeu uma prévia.'],['Observações',p.obs]].filter(x=>x[1]).map(([q,a])=>({q,a,tp:'cap'}));
   const l={id:Date.now().toString(36),mod:'site',mods:['site'],nome:p.nome,whats:p.tel.replace(/\D/g,'').slice(0,20),email:'',qa,status:'novo',data:new Date().toLocaleString('pt-BR'),entrega:'',t:Date.now(),origem:'captacao'};
-  setL([l,...getL()]);capUpd(p.id,{etapa:'fechou',lead:l.id,...(valor>0?{valor}:{})});return l.id;
+  setL([l,...getL()]);capUpd(p.id,{etapa:'fechou',lead:l.id,...(valor>0?{valor}:{})});ssAoVirarLead(p.id,l.id);return l.id;
 }
 
 /* ---- tela ---- */
@@ -302,6 +302,7 @@ function capFicha(p){
     <div class="row"><button class="btn" data-cap="msg" ${oc?'disabled':''}>${oc&&CAP.fazendo==='msg'?esc(CAP.prog||'Escrevendo…'):p.msg?'Gerar de novo':'Gerar mensagem com IA'}</button>${p.msg?'<button class="btn ghost" data-cap="copiar">Copiar</button>':''}${wn&&p.msg?`<button class="btn wa" data-cap="wa">${WAI} Abrir no WhatsApp</button>`:''}</div>
     ${wn?'':'<p class="hint">Sem telefone válido. Coloque o WhatsApp em Dados do negócio.</p>'}
     ${CAP.waAberto===p.id&&!['contato','resp','fechou'].includes(p.etapa)?'<div class="dfim"><div><b>Mandou a mensagem?</b><span class="hint">Marque para saber quem já foi contatado.</span></div><button class="btn hl" data-cap="etapa:contato">Marcar como contatado</button></div>':''}</section>
+   ${ssPorProsp(p.id)?'<section class="esc cap-p"><h4>Site Studio</h4><p class="hint">Este prospect já tem um projeto no Site Studio.</p><div class="row"><button class="btn ghost" data-cap="studio">Abrir o projeto no Site Studio</button></div></section>':''}
    <section class="esc cap-p${p.etapa==='fechou'?' ok':''}"><h4><span class="cap-n">3</span> Fechou?</h4>
     ${p.lead?'<p class="hint">Virou cliente: o lead está na lista de Leads.</p><div class="row"><button class="btn hl" data-cap="lead">Abrir o lead</button></div>':`<p class="hint">Quando o negócio aceitar, crie o lead. Ele vai para a lista de Leads com os dados daqui e segue o fluxo de sempre (briefing, orçamento e acompanhamento).</p><label for="capval">Valor fechado (opcional, para o painel)</label><input id="capval" inputmode="decimal" value="${p.valor?esc(String(p.valor).replace('.',',')):''}" placeholder="Ex.: 1500"><div class="row"><button class="btn hl" data-cap="fechou">Fechou: criar lead</button></div>`}</section></div>
   <aside class="esc cap-d"><h4>Dados do negócio</h4>
@@ -429,5 +430,6 @@ async function capAct(k,a){
   if(k==='fechou'){const v=Number(String((g('capval')||{}).value||'').replace(/[^\d,.]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'))||0;
     return confirma('Criar o lead de '+p.nome+'? Ele vai para a lista de Leads com os dados daqui.',()=>{const id=capVirarLead(p,v);A.view='';A.sel=id;A.tab='brief';admin()},{ok:'Criar lead',titulo:'Fechou com o cliente?',perigo:false})}
   if(k==='lead'){A.view='';A.sel=p.lead;A.tab='brief';return admin()}
+  if(k==='studio'){const sp=ssPorProsp(p.id);if(!sp)return;A.view='studio';SS.id=sp.id;SS.js='';SS.err='';SS.msg='';return admin()}
 }
 try{CAP.form.cidade=localStorage.getItem('capcid')||''}catch(e){}

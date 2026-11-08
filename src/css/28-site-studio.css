@@ -1,0 +1,24 @@
+/* Site Studio: só o que as classes da Minha área e da Captação ainda não resolvem */
+#studio .ss-lista,#studio .ss-itens{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#studio .ss-itens li{line-height:1.5}
+#studio .ss-lk{all:unset;box-sizing:border-box;display:grid;gap:2px;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--ctl);border-radius:12px;cursor:pointer;color:var(--fg)}
+#studio .ss-lk:hover{border-color:rgba(198,172,142,.6)}
+#studio .ss-lk:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#studio .ss-av{background:color-mix(in srgb,var(--err,#d46) 18%,transparent)}
+#studio .ss-bruto{white-space:pre-wrap;overflow-wrap:anywhere}
+#studio .cap-chip{min-height:44px;display:inline-flex;align-items:center;gap:8px}
+#studio input,#studio select,#studio textarea{max-width:100%}
+#studio .ss-pvbox{margin:12px 0;display:flex;justify-content:center}
+#studio .ss-pv{display:block;border:1px solid var(--ctl);border-radius:14px;background:#fff;height:min(70vh,640px);width:100%}
+#studio .ss-pvbox.cel .ss-pv{width:min(100%,375px)}
+#studio .ss-vers li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--ctl)}
+#studio .ss-vers .row{margin:0}
+#studio .ss-diff{max-height:320px;overflow:auto;padding:10px;border:1px solid var(--ctl);border-radius:12px;font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+#studio .ss-diff:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#studio .ss-mais{color:var(--ok)}
+#studio .ss-menos{color:var(--err,#e07a7a)}
+#studio .ss-cks{display:grid;gap:4px}
+#studio .ss-ck{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:500;margin:0}
+#studio .ss-ck input{width:20px;height:20px;flex:none;min-height:0}
+#studio .ss-fs{border:1px solid var(--ctl);border-radius:12px;padding:10px 14px;margin:12px 0}
+#studio .ss-avl input{flex:1 1 140px;min-width:0}
