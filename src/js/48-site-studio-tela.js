@@ -37,10 +37,11 @@ function ssSiteHtml(p){
   return `<section class="panel"><h3>Site demonstrativo</h3>
    <p class="hint">Versão ${p.vAtual} de ${p.vers.length}${v?' · '+esc(dHora(v.em)):''}. As versões ficam só neste navegador e não entram no backup: baixe o site para guardar.</p>
    <div class="row" role="group" aria-label="Tamanho da prévia"><button type="button" class="cap-chip ${dev==='cel'?'on':''}" aria-pressed="${dev==='cel'}" data-ss="dev:cel">Celular</button><button type="button" class="cap-chip ${dev==='pc'?'on':''}" aria-pressed="${dev==='pc'}" data-ss="dev:pc">Computador</button>
-    <button type="button" class="btn ghost" data-ss="baixar">Baixar o site (HTML)</button><button type="button" class="btn ghost" data-ss="gerar"${SS.busy?' disabled':''}>Gerar de novo</button></div>
+    <button type="button" class="btn hl" data-ss="apresentar:site">Apresentar em tela cheia</button><button type="button" class="btn ghost" data-ss="revisar"${SS.busy?' disabled':''}>Revisar com outra IA</button><button type="button" class="btn ghost" data-ss="baixar">Baixar o site (HTML)</button><button type="button" class="btn ghost" data-ss="gerar"${SS.busy?' disabled':''}>Gerar de novo</button></div>
    <div class="row"><button type="button" class="btn ghost" data-ss="js" aria-pressed="${SS.js===p.id}">${SS.js===p.id?'Desativar o JavaScript da prévia':'Ativar o JavaScript da prévia (menus e botões do site)'}</button></div>
    <div class="ss-pvbox ${dev}"><iframe id="sspv" class="ss-pv" sandbox="${SS.js===p.id?'allow-scripts':''}" title="Prévia do site demonstrativo de ${esc(p.nome)}"></iframe></div>
    <div id="ssacess"></div>
+   ${ssRevisaoHtml(p)}
    <p class="hint">A prévia abre sem JavaScript, para um código ruim não travar a página. Ative o JavaScript quando quiser testar menus e botões. O arquivo baixado nunca leva JavaScript, formulário nem recurso de fora (regra de segurança do app).</p>
    <h4>Pedir uma mudança</h4>
    <label for="ssaj">O que mudar? Ex.: trocar as cores, adicionar uma seção de contato, refazer o topo</label>
@@ -92,7 +93,7 @@ function ssPropostaTela(p){
    <label for="ssp3">Observações (opcional)</label><textarea id="ssp3" rows="3" maxlength="1200">${esc(pr.obs)}</textarea>
    ${prom.length?`<div class="err" role="alert"><b>Cuidado com promessas:</b> o texto tem "${esc(prom.join('", "'))}". A OR não promete resultado; troque por entregas e processo. A exportação fica bloqueada até você trocar.</div>`:''}
    ${T?`<p class="hint">${T}</p>`:''}
-   <div class="row"><button type="button" class="btn ghost" data-ss="propsalvar">Salvar texto</button><button type="button" class="btn ghost" data-ss="propprev">Ver a proposta</button></div>
+   <div class="row"><button type="button" class="btn ghost" data-ss="propsalvar">Salvar texto</button><button type="button" class="btn ghost" data-ss="propprev">Ver a proposta</button><button type="button" class="btn ghost" data-ss="apresentar:proposta">Apresentar a proposta</button></div>
    <label class="ss-ck"><input type="checkbox" id="ssrev"${pr.revisada?' checked':''}> Revisei o texto e os valores desta proposta</label>
    <div class="row"><button type="button" class="btn hl" data-ss="proppdf"${pr.revisada&&!prob.length&&!prom.length?'':' disabled'}>Gerar PDF (imprimir)</button><button type="button" class="btn ghost" data-ss="prophtml"${pr.revisada&&!prob.length&&!prom.length?'':' disabled'}>Baixar proposta (HTML)</button></div>
    <p class="hint">O PDF sai pela impressão do navegador (escolha "Salvar como PDF"). Só funciona depois de marcar que você revisou.</p>
@@ -186,6 +187,19 @@ async function ssApagar(p){
   ssSave(ssLoad().filter(x=>x.id!==p.id));marcaApagado(p.id);await arqDelPref('ssv:'+p.id+':');
   SS.id=null;SS.js='';SS.err='';SS.msg='Projeto apagado.';ssPaint();
 }
+/* Apresentar: o site (a versão atual, com a faixa de prévia) ou a proposta, em tela cheia dentro do site */
+async function ssAbreApresentacao(p,que){
+  p=ssGet(p.id)||p;
+  try{
+    if(que==='site'){
+      const h=await arqGet(ssChaveV(p.id,p.vAtual));if(!h){SS.err='Não achei o HTML desta versão neste navegador. Gere o site de novo.';return ssPaint()}
+      ssApresentar('Site de '+p.nome,ssMonta(h,ssDadosSite(p)),{js:true,tamanhos:true,tam:SS.dev==='cel'?'cel':'pc'});
+    }else{
+      const q=ssSalvaProposta(p),{doc}=await ssDadosProposta(q);
+      ssApresentar('Proposta para '+q.nome,ssBlindaExport(ssPropostaHtml(doc)),{tamanhos:true,tam:'pc',imprimir:()=>ssAcaoProposta(ssGet(q.id)||q,'proppdf')});
+    }
+  }catch(e){SS.err='Não consegui abrir a apresentação: '+e.message;ssPaint()}
+}
 function ssPaint(){
   const el=document.getElementById('studio');if(!el)return;
   const L=ssLoad(),p=SS.id&&L.find(x=>x.id===SS.id);if(SS.id&&!p)SS.id=null;
@@ -218,6 +232,9 @@ function ssBind(el,p){
     if(k==='desfazer'||k==='refazer'||k==='abrirv'||k==='env'){SS.pedido=val('ssaj');SS.err='';SS.msg='';if(k!=='env')SS.js='';
       if(k==='desfazer')ssDesfazer(p.id);else if(k==='refazer')ssRefazer(p.id);else if(k==='abrirv')ssIrVersao(p.id,+v);else ssMarcaEnviada(p.id,+v);return ssPaint()}
     if(k==='comparar'){return ssComparaVersoes(p.id,+val('ssca'),+val('sscb'))}
+    if(k==='apresentar'){SS.pedido=val('ssaj');return ssAbreApresentacao(p,v)}
+    if(k==='revisar'){SS.pedido=val('ssaj');return ssRevisarSite(p.id)}
+    if(k==='usarrev'){const r=SS.rev&&SS.rev.id===p.id?SS.rev.itens[+v]:null;if(r){SS.pedido=r.sugestao;SS.limpaAj=true;SS.err='';SS.msg='Sugestão copiada para "Pedir uma mudança". Revise e clique em "Aplicar a mudança".';ssPaint();const e=document.getElementById('ssaj');if(e)e.focus()}return}
     if(k==='js'){SS.js=SS.js===p.id?'':p.id;SS.pedido=val('ssaj');return ssPaint()}
     if(k==='apagar')return ssApagar(p);
     if(k==='dev'){SS.dev=v==='pc'?'pc':'cel';SS.pedido=val('ssaj');return ssPaint()}

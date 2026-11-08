@@ -22,3 +22,13 @@
 #studio .ss-ck input{width:20px;height:20px;flex:none;min-height:0}
 #studio .ss-fs{border:1px solid var(--ctl);border-radius:12px;padding:10px 14px;margin:12px 0}
 #studio .ss-avl input{flex:1 1 140px;min-width:0}
+
+.ss-apres{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;background:var(--or-obsidiana,#0A0908);color:var(--fg,#EAE0D5)}
+.ss-ap-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--ctl,#333)}
+.ss-ap-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40vw}
+.ss-ap-ac{margin:0;gap:6px}
+.ss-ap-ac .btn[aria-pressed="true"]{border-color:rgba(198,172,142,.8);background:rgba(198,172,142,.16)}
+.ss-ap-cena{flex:1;min-height:0;display:flex;justify-content:center;background:#111}
+.ss-ap-if{display:block;border:0;background:#fff;height:100%;max-width:100%}
+#studio .ss-rev{margin:12px 0;padding:12px;border:1px solid var(--ctl);border-radius:12px}
+#studio .ss-rev h4{margin:0 0 8px}

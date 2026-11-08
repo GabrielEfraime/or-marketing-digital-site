@@ -100,6 +100,13 @@ O Site Studio, dentro da Minha área, parte de uma empresa (vinda da Captação 
 | SS-042 | Nenhuma chamada de IA DEVE ocorrer ao abrir o site, a Minha área ou um projeto. Toda chamada DEVE partir de um clique do consultor. | Revisão de código; teste com a aba de rede aberta ao abrir um projeto. |
 | SS-043 | O código novo DEVE ficar em arquivos novos de `src/js/`, incluídos em `src/ordem.json`, sem repetir nomes do escopo global. A mudança DEVE ser feita em `src/`, nunca em `dist/`. | Revisão de código; `npm run montar` sem conflito. |
 
+### 3.8 Dentro do site (acrescentado em 2026-11-08, pedido do CEO; aguarda aprovação)
+
+| ID | Requisito | Verificação |
+|---|---|---|
+| SS-044 | O consultor DEVE poder apresentar o site demonstrativo e a proposta em tela cheia dentro do próprio site, sem baixar arquivo nem abrir outro programa, com tamanhos de celular, tablet e computador. O modo Apresentar DEVE fechar com Esc e com um botão visível, prender o foco enquanto aberto, devolver o foco ao fechar, e mostrar o site sempre com a faixa de prévia. O JavaScript do site só liga por escolha do consultor. A proposta só pode ser impressa pelo modo Apresentar depois da marca "revisei" e sem promessa no texto. | Teste manual em desktop e 375px; revisão de código (iframe sandbox sem allow-same-origin, sem rede). |
+| SS-045 | O consultor DEVE poder pedir, no Studio, uma revisão do site por um segundo modelo de IA diferente do que gerou, como segunda opinião. A chamada DEVE partir de um clique, tratar o HTML revisado como dado (nunca instrução, sem deixar fechar o bloco de dados), enviar no máximo 60 mil caracteres, limitar a resposta a 8 itens por gravidade e mostrar quem respondeu. Cada sugestão DEVE poder virar um pedido de mudança com um clique, que o consultor revisa antes de aplicar. A revisão NÃO DEVE alterar o site sozinha. | Testes automatizados do prompt e da leitura da resposta; teste manual com a Groq real. |
+
 ## 4. Auditoria de conformidade
 
 - A auditoria compara o código com esta SPEC, é somente leitura e não altera código.
@@ -120,5 +127,6 @@ Leitura automática de site e Instagram de terceiros; link público da proposta;
 
 ## 7. Histórico
 
+- 2026-11-08: acrescentados SS-044 e SS-045 (modo Apresentar e revisão por segundo modelo), a pedido do CEO; aguardam aprovação.
 - 2026-11-08: aprovada pelo CEO.
 - 2026-11-08: rascunho criado (43 requisitos, SS-001 a SS-043).

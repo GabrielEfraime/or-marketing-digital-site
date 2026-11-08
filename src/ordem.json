@@ -328,6 +328,14 @@
       "descricao": "Site Studio, Etapa 5: proposta comercial (documento HTML com a identidade OR, valores da tabela, conferência de somas, aviso de promessas)"
     },
     {
+      "arquivo": "src/js/48-site-studio-apresentar.js",
+      "descricao": "Site Studio: modo Apresentar, site ou proposta em tela cheia dentro do site (celular, tablet, computador)"
+    },
+    {
+      "arquivo": "src/js/48-site-studio-revisao.js",
+      "descricao": "Site Studio: revisão do site por um segundo modelo de IA, só no clique"
+    },
+    {
       "arquivo": "src/js/48-site-studio-tela.js",
       "descricao": "Site Studio, Etapa 2: tela da Minha área (novo projeto, lista, ficha com a análise)"
     },
