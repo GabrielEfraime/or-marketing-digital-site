@@ -17,3 +17,21 @@ Cada entrada guarda: quem revisou o quê, o que achou, **o que o outro concordou
 
 **Divergências de método entre as duas IAs:** nenhuma sobre o que corrigir. O Codex propôs "separar a demonstração em iframe isolado", e foi a solução adotada, por ser a única que não depende de enumerar propriedades CSS.
 **Custo observado:** uma chamada de revisão curta (cerca de 5 minutos), somente leitura, contada no plano ChatGPT do usuário.
+
+## 2026-11-08 · Modo Apresentar e revisão por outra IA (SS-044 e SS-045)
+
+- **Quem escreveu:** Claude Code. **Quem revisou:** Codex CLI 0.167.0, `codex exec -s read-only`, em **worktree limpo** (sem `.env` nem documentos internos), sobre o commit `ef96317`.
+
+| Achado do Codex | Veredito do Claude | Evidência | Ação |
+|---|---|---|---|
+| **Alto:** o iframe da apresentação não tinha CSP própria, então o JavaScript do site (quando ligado) herdava o `connect-src` da página | **Concordo.** "Sem rede" não estava garantido | o conteúdo era `srcdoc` sem meta de CSP | CSP no conteúdo (`default-src 'none'`, sem `connect-src` nem `frame-src`); popups para contatos continuam (WhatsApp), aceito |
+| **Alto:** a faixa "Não é o site oficial" ficava dentro do documento não confiável (CSS ou JS a escondem) | **Concordo; eu devia ter pegado**, é a mesma falha já achada na exportação | `ssMonta` inseria a faixa no HTML do site | Faixa agora no overlay, fora do iframe; o site é montado com `semFaixa` |
+| **Médio:** Esc não chega ao overlay se o foco está dentro do iframe; o fundo não era inerte | **Concordo em parte.** Evento de teclado dentro de iframe sem same-origin não atravessa: não há como interceptar | — | Fundo da página fica `inert` enquanto aberto; botão "Sair" com `aria-keyshortcuts` e dica (Shift+Tab ou o botão); limite documentado |
+| **Médio:** clique duplo em "Revisar" faz duas chamadas (`busy` marcado depois de um `await`) | **Concordo, e o mesmo defeito existia em `ssRodaIA`** (ajuste de site) | reproduzido no navegador: antes, 2 chamadas; depois, 1 | Marca "ocupado" antes de qualquer `await` nas duas funções |
+| **Médio:** a IA 2 pode ser o mesmo modelo que gerou, ou cair nele pelo fallback | **Concordo** | o app já mostra quem respondeu | Aviso na tela quando o revisor é o modelo que gerou a versão |
+| **Médio:** "tentar de novo" depois de falha na revisão ia para o fluxo de ajuste | **Concordo** | reproduzido | Roteado para `ssRevisarSite` |
+| **Médio:** JSON válido sem a lista `itens` virava "sem pontos a corrigir" | **Concordo** | `{"erro":"..."}` | Sem `itens`, cai no texto bruto (teste novo) |
+| **Baixo:** ouvinte de teclado não é removido se o overlay for removido por fora | Concordo | — | O ouvinte se remove sozinho (e tira o `inert`) |
+| **Bem feito:** `esc()` em todos os textos da revisão, HTML e fatos tratados como dado, revisão antiga avisada | Concordo | — | Preservar |
+
+**Resultado:** 70 testes; correções comprovadas no navegador (faixa fora do iframe, CSP sem rede, fundo inerte, clique duplo = 1 chamada, retry da revisão, aviso de mesma IA). Divergências de método: nenhuma sobre o que corrigir.

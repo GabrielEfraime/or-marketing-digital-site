@@ -16,7 +16,7 @@ function ssParseRevisao(txt){
   const t=String(txt||'').replace(/```(?:json)?/gi,'').trim();if(!t)return null;
   let o=null;const a=t.indexOf('{'),b=t.lastIndexOf('}');
   if(a>=0&&b>a)try{o=JSON.parse(t.slice(a,b+1).replace(/,\s*([}\]])/g,'$1'))}catch(e){o=null}
-  if(!isObj(o))return {itens:[],bom:[],bruto:txtT(t,3000,1)};
+  if(!isObj(o)||!Array.isArray(o.itens))return {itens:[],bom:[],bruto:txtT(t,3000,1)};  /* JSON sem a lista esperada não vira "sem pontos" */
   const itens=(Array.isArray(o.itens)?o.itens:[]).filter(isObj).map(x=>({sev:['alta','media','baixa'].includes(String(x.sev).toLowerCase())?String(x.sev).toLowerCase():'media',
     onde:txtT(x.onde,120),problema:txtT(x.problema,400),sugestao:txtT(x.sugestao,400)})).filter(x=>x.problema||x.sugestao).slice(0,8);
   const ordem={alta:0,media:1,baixa:2};itens.sort((p,q)=>ordem[p.sev]-ordem[q.sev]);
@@ -24,15 +24,18 @@ function ssParseRevisao(txt){
 }
 
 /* ---- ligação com o app (só no clique) ---- */
-async function ssRevisarSite(id){
-  const p=ssGet(id);if(!p||!p.vAtual||SS.busy)return;
+/* só uma chamada por vez: "ocupado" é marcado antes de qualquer await (dois cliques rápidos não disparam duas revisões) */
+async function ssRevisarSite(id){if(SS.busy)return;SS.busy=true;try{await ssRevisarSiteReal(id)}finally{if(SS.busy){SS.busy=false;ssPaint()}}}
+async function ssRevisarSiteReal(id){
+  const p=ssGet(id);if(!p||!p.vAtual)return;
   let html='';try{html=await arqGet(ssChaveV(id,p.vAtual))}catch(e){}
   if(!html){SS.err='Não achei o HTML desta versão neste navegador. Gere o site de novo.';return ssPaint()}
   SS.ult={tipo:'revisar'};SS.busy=true;SS.err='';SS.msg='';SS.prog='Revisando com outra IA…';ssPaint();
   try{
     const txt=await askF(ssPedidoRevisao(html,p.nome,ssDadosSite(p).fatos),x=>{SS.prog='Revisando com outra IA… '+x.length+' caracteres';ssProg()},{slot:'ia2',max:1800,temp:0.2});
     const r=ssParseRevisao(txt);if(!r)throw new Error('A IA não devolveu a revisão. Tente de novo.');
-    SS.rev={id,n:p.vAtual,em:Date.now(),ia:IA_QUEM||(CFG.ia2&&CFG.ia2.model)||'',...r};
+    const quem=IA_QUEM||(CFG.ia2&&CFG.ia2.model)||'',gerou=(p.vers.find(v=>v.n===p.vAtual)||{}).ia||'';
+    SS.rev={id,n:p.vAtual,em:Date.now(),ia:quem,mesmaIA:!!gerou&&gerou===quem,...r};  /* o revisor pode cair no mesmo modelo que gerou: avisa na tela */
     ssRegistra(id,'revisao','Revisão da versão '+p.vAtual+' por outra IA: '+(r.itens.length?r.itens.length+' ponto(s).':'sem pontos.'));
     SS.msg=r.bruto?'A IA respondeu fora do formato; mostrei o texto bruto.':'Revisão pronta. É uma segunda opinião: decida o que aplicar.';
   }catch(e){SS.err=e.message}
@@ -41,7 +44,7 @@ async function ssRevisarSite(id){
 function ssRevisaoHtml(p){
   const r=SS.rev&&SS.rev.id===p.id?SS.rev:null;if(!r)return '';
   const gr={alta:'Alta',media:'Média',baixa:'Baixa'};
-  return `<div class="ss-rev"><h4>Revisão por outra IA <span class="hint">· versão ${r.n}${r.n!==p.vAtual?' (já não é a versão atual)':''} · ${esc(dHora(r.em))}${r.ia?' · '+esc(r.ia):''}</span></h4>
+  return `<div class="ss-rev"><h4>Revisão por outra IA ${r.mesmaIA?'<p class="err" role="alert">Atenção: o mesmo modelo que gerou o site fez esta revisão, então ela não é uma segunda opinião de verdade. Configure outra IA na tela IAs (ou espere o limite da outra voltar).</p>':''}<span class="hint">· versão ${r.n}${r.n!==p.vAtual?' (já não é a versão atual)':''} · ${esc(dHora(r.em))}${r.ia?' · '+esc(r.ia):''}</span></h4>
    ${r.bruto?`<p class="ss-bruto">${esc(r.bruto)}</p>`:r.itens.length?`<ul class="ss-itens">${r.itens.map((x,i)=>`<li><span class="cap-tag ${x.sev==='alta'?'ss-av':''}">${gr[x.sev]}</span> <b>${esc(x.onde)}</b> ${esc(x.problema)}${x.sugestao?`<br><span class="hint">Sugestão: ${esc(x.sugestao)}</span> <button type="button" class="btn ghost" data-ss="usarrev:${i}">Usar como pedido de mudança</button>`:''}</li>`).join('')}</ul>`:'<p class="hint">Sem pontos a corrigir nesta revisão.</p>'}
    ${r.bom&&r.bom.length?`<p class="hint"><b>Está bem:</b> ${r.bom.map(esc).join(' · ')}</p>`:''}</div>`;
 }

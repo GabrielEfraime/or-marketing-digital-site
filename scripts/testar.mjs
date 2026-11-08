@@ -161,7 +161,7 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
   const cx = vm.createContext({ console });
   cx.sget = (k) => (k in mem ? mem[k] : null); cx.sset = (k, v) => { mem[k] = v; }; cx.diskSaveSoon = () => {}; cx.foiApagado = (id) => id === 'apagado1';
   cx.esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  vm.runInContext([linha('const ID_OK='), linha('const isObj='), linha('const txtT=')].join(String.fromCharCode(10)) + String.fromCharCode(10) + lerJs('site-studio-projetos', 'site-studio-analise', 'site-studio-site', 'site-studio-versoes', 'site-studio-proposta', 'site-studio-revisao'), cx);
+  vm.runInContext([linha('const ID_OK='), linha('const isObj='), linha('const txtT=')].join(String.fromCharCode(10)) + String.fromCharCode(10) + lerJs('site-studio-projetos', 'site-studio-analise', 'site-studio-site', 'site-studio-versoes', 'site-studio-proposta', 'site-studio-revisao', 'site-studio-apresentar'), cx);
   // devolve cópia JSON dos objetos: arrays do contexto isolado têm outro protótipo e quebrariam o deepEqual
   const E = (js) => { const r = vm.runInContext(js, cx); return r && typeof r === 'object' ? JSON.parse(JSON.stringify(r)) : r; };
 
@@ -450,6 +450,19 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
     const bruto = E("ssParseRevisao('O site está ótimo, nada a dizer.')"); assert.equal(bruto.itens.length, 0); assert.ok(bruto.bruto.includes('nada a dizer'));
     assert.equal(E("ssParseRevisao('')"), null); assert.deepEqual(E('ssParseRevisao(\'{"itens":[]}\')'), { itens: [], bom: [] });
     assert.equal(E('ssParseRevisao(' + JSON.stringify('{"itens":' + JSON.stringify(Array.from({ length: 20 }, () => ({ sev: 'baixa', problema: 'p' }))) + '}') + ').itens.length'), 8);
+  });
+  // Segunda revisão do Codex (08/11/2026): CSP do conteúdo apresentado e esquema da resposta da revisão
+  await t('apresentar: o conteúdo leva CSP sem rede e sem formulário, com ou sem <head>', () => {
+    const a = E("ssComCsp('<html><head><title>x</title></head><body>oi</body></html>')"), b = E("ssComCsp('<p>sem head</p>')");
+    for (const h of [a, b]) { assert.ok(h.includes("default-src 'none'") && h.includes("form-action 'none'") && h.includes("script-src 'unsafe-inline'")); assert.ok(!/connect-src|frame-src/.test(h)); }
+    assert.ok(a.indexOf('Content-Security-Policy') < a.indexOf('<title>')); assert.ok(b.startsWith('<meta http-equiv="Content-Security-Policy"'));
+  });
+  await t('revisão por outra IA: JSON sem a lista "itens" não vira "sem pontos": cai no texto bruto', () => {
+    const rev = (txt) => E('ssParseRevisao(' + JSON.stringify(txt) + ')');
+    const r = rev('{"erro":"resposta incompleta"}');
+    assert.equal(r.itens.length, 0); assert.ok(r.bruto && r.bruto.includes('resposta incompleta'));
+    assert.ok(rev('{"itens":"nada"}').bruto !== undefined);
+    assert.equal(rev('{"itens":[]}').bruto, undefined);
   });
   // Revisão cruzada com o Codex (08/11/2026): faixa em documento de fora e só contatos aprovados
   await t('revisão Codex: o site baixado vai num iframe isolado, com a faixa e a CSP no documento de fora', () => {

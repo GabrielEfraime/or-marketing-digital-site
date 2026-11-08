@@ -193,7 +193,7 @@ async function ssAbreApresentacao(p,que){
   try{
     if(que==='site'){
       const h=await arqGet(ssChaveV(p.id,p.vAtual));if(!h){SS.err='Não achei o HTML desta versão neste navegador. Gere o site de novo.';return ssPaint()}
-      ssApresentar('Site de '+p.nome,ssMonta(h,ssDadosSite(p)),{js:true,tamanhos:true,tam:SS.dev==='cel'?'cel':'pc'});
+      ssApresentar('Site de '+p.nome,ssMonta(h,{...ssDadosSite(p),semFaixa:true}),{js:true,csp:true,tamanhos:true,tam:SS.dev==='cel'?'cel':'pc',faixa:'Prévia feita pela '+BRAND+' para '+p.nome+'. Não é o site oficial.'});  /* a faixa fica fora do iframe: nem CSS nem JavaScript do site a alcançam */
     }else{
       const q=ssSalvaProposta(p),{doc}=await ssDadosProposta(q);
       ssApresentar('Proposta para '+q.nome,ssBlindaExport(ssPropostaHtml(doc)),{tamanhos:true,tam:'pc',imprimir:()=>ssAcaoProposta(ssGet(q.id)||q,'proppdf')});
@@ -241,7 +241,7 @@ function ssBind(el,p){
     if(k==='gerar'){salva();return ssRodaIA(p.id,'gerar')}
     if(k==='ajustar'){SS.pedido=val('ssaj');salva();return ssRodaIA(p.id,'ajustar',SS.pedido)}
     if(k==='baixar'){arqGet(ssChaveV(p.id,p.vAtual)).then(h=>{if(!h){SS.err='Não achei o HTML desta versão neste navegador.';return ssPaint()}(()=>{const ds=ssDadosSite(p);ssBaixaHtml(capSlug(p.nome)+'.html',ssBlindaExport(ssMonta(h,{...ds,semFaixa:true}),{faixa:true,nome:p.nome,ok:ssContatosOk(ds)}))})()}).catch(()=>{SS.err='Não consegui abrir a versão guardada.';ssPaint()});return}
-    if(k==='retry'){salva();const u=SS.ult||{tipo:'analisar'};return u.tipo==='analisar'?ssAnalisar(p.id):ssRodaIA(p.id,u.tipo,u.pedido)}
+    if(k==='retry'){salva();const u=SS.ult||{tipo:'analisar'};return u.tipo==='analisar'?ssAnalisar(p.id):u.tipo==='revisar'?ssRevisarSite(p.id):ssRodaIA(p.id,u.tipo,u.pedido)}
     if(k==='salvar'||k==='analisar'){salva();if(k==='analisar')return ssAnalisar(p.id);SS.msg='Dados salvos.';SS.err='';return ssPaint()}
   };
   const salva=()=>{if(!p)return;ssUpd(p.id,{nome:val('ssfn')||p.nome,site:ssEntrada(val('ssfs')).site||'',ig:val('ssfi').replace(/^@/,''),colado:val('ssfc'),mostraWa:g('ssmw')?g('ssmw').checked:p.mostraWa})};

@@ -157,8 +157,10 @@ async function ssConfereLimite(p){
   const v=p.vers.find(x=>x.n===sai);
   return sim('Você chegou ao limite de '+SS_VERS_LIM+' versões. Para criar a próxima, a versão '+sai+(v&&v.pedido?' ("'+v.pedido.slice(0,60)+'")':'')+' será apagada deste navegador, e isso não tem volta. Baixe o site antes se quiser guardá-la. Continuar?',{ok:'Apagar e continuar',titulo:'Limite de versões'});
 }
-async function ssRodaIA(id,tipo,pedido){
-  const p=ssGet(id);if(!p||SS.busy)return;
+/* só uma chamada por vez: "ocupado" é marcado antes de qualquer await (dois cliques rápidos não disparam duas chamadas) */
+async function ssRodaIA(id,tipo,pedido){if(SS.busy)return;SS.busy=true;try{await ssRodaIAReal(id,tipo,pedido)}finally{if(SS.busy){SS.busy=false;ssPaint()}}}
+async function ssRodaIAReal(id,tipo,pedido){
+  const p=ssGet(id);if(!p)return;
   SS.ult={tipo,pedido};
   const d=ssDadosSite(p);let msgs,rot;
   if(tipo==='gerar'){if(!d.fatos.length){SS.err='Informe o nome do negócio, o site ou o Instagram antes de gerar o site.';return ssPaint()}msgs=ssPedidoSite(d);rot='Gerando o site'}
