@@ -602,5 +602,40 @@ await t('IA: instruções de uso das respostas entram no pedido e proíbem preç
   assert.match(ler('src/js/08-ui-base.js'), /usoRespostas\(l\)/); assert.match(ler('src/js/27-orcamento-mensagem.js'), /usoRespostas\(l\)/);
 });
 
+// frameworks do Prompt Mestre (FOFA, AIDA, STP, Ansoff, tipografia): só onde servem, sem valor em reais, sem promessa
+{
+  const cf = vm.createContext({ console });
+  vm.runInContext(lerJs('frameworks-marketing') + ';this.fwBloco=fwBloco;this.fwMaxExtra=fwMaxExtra;this.fwLista=fwLista;this.FW=FW;', cf);
+  const dinheiro = /R\$|\d\s*(reais|mil\b)/i;
+  await t('frameworks: plano de marketing traz FOFA com prioridade, STP e Ansoff, marcando confirmado/hipótese/estimativa', () => {
+    const b = cf.fwBloco(['mkt'], 'plano');
+    for (const x of [/FOFA/, /Forças x Oportunidades/, /impacto e urgência/, /Segmentação/, /Posicionamento/, /Matriz de Ansoff/, /penetração/, /diversificação/, /investimento, complexidade, riscos, prazo, retorno e indicadores/, /\[confirmado\]/, /\[hipótese\]/, /\[estimativa\]/]) assert.match(b, x);
+    assert.doesNotMatch(b, dinheiro); assert.doesNotMatch(b, /garant(a|imos)\b.*resultado/i);
+  });
+  await t('frameworks: Google Ads só recebe AIDA (sem FOFA, STP nem Ansoff) e dois serviços geram blocos diferentes', () => {
+    const ads = cf.fwBloco(['ads'], 'plano'), mkt = cf.fwBloco(['mkt'], 'plano');
+    assert.match(ads, /AIDA/); assert.doesNotMatch(ads, /FOFA|Ansoff|STP:/); assert.notEqual(ads, mkt);
+    assert.equal(cf.fwBloco(['press'], 'plano'), ''); assert.equal(cf.fwBloco([], 'plano'), '');
+    assert.equal(cf.fwBloco(['press'], 'texto'), ''); assert.match(cf.fwBloco(['ads'], 'texto'), /Atenção.*Interesse.*Desejo.*Ação/);
+    assert.equal(cf.fwBloco(['ads', 'meta'], 'plano').split('AIDA nos textos').length, 2);
+  });
+  await t('frameworks: AIDA proíbe falsa escassez e invenção; WhatsApp e proposta não ganham valores', () => {
+    for (const m of ['msg', 'orc', 'texto', 'site']) { const b = cf.fwBloco(['site'], m); assert.match(b, /falsa escassez/); assert.doesNotMatch(b, dinheiro); }
+    assert.match(cf.fwBloco([], 'msg'), /pergunta simples/);
+  });
+  await t('frameworks: site recebe as regras de tipografia (1,5 / 1,25 / 0,9 a 1,1, WCAG, hierarquia, celular)', () => {
+    const b = cf.fwBloco(['site'], 'site');
+    for (const x of [/cerca de 1,5/, /1,25/, /0,9 a 1,1/, /escala tipográfica consistente/, /informação principal, complemento, benefício, ação/, /WCAG/, /celular/]) assert.match(b, x);
+  });
+  await t('frameworks: teto de resposta cresce só quando entram análises longas', () => {
+    assert.equal(cf.fwMaxExtra(['ads']), 0); assert.equal(cf.fwMaxExtra(['mkt']), 1500); assert.equal(cf.fwMaxExtra(['assess']), 1000);
+  });
+  await t('frameworks: ligados nos prompts (Estratégia, orçamento, mensagem, kits, captação, Site Studio)', () => {
+    for (const [f, re] of [['25-especialistas-estrategia', /fwBloco\(svcs\(l\),'plano'\)/], ['27-orcamento-mensagem', /fwBloco\(svcs\(l\),'orc'\)/], ['27-orcamento-mensagem', /fwBloco\(svcs\(l\),'msg'\)/], ['29-execucao-kits-site', /fwBloco\(\[key\],'site'\)/], ['34-acompanhamento-producao', /fwBloco\(\[k\],'texto'\)/], ['43-posts-acoes', /fwBloco\(\["social"\],"texto"\)/], ['48-captacao', /fwBloco\(\['site'\],'site'\)/], ['48-site-studio-site', /fwBloco\(\['site'\],'site'\)/]]) assert.match(ler('src/js/' + f + '.js'), re, f);
+    assert.match(ler('src/js/48-site-studio-analise.js'), /FOFA \(SWOT\)/); assert.match(ler('src/js/48-site-studio-revisao.js'), /line-height cerca de 1,5/);
+    assert.match(ler('src/ordem.json'), /25-frameworks-marketing\.js/);
+  });
+}
+
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
 process.exit(falhou ? 1 : 0);

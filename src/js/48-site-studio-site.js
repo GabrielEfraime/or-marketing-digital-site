@@ -116,7 +116,7 @@ const ssFatosTxt=f=>f.map((x,i)=>(i+1)+'. '+x.txt).join('\n');
 function ssBaseSys(extra){
   const g=n=>typeof n==='string'?n:'';
   return 'Você é um web designer e desenvolvedor sênior. Cria demonstrações de site para a agência mostrar ao dono do negócio. Português do Brasil.\n'+extra
-   +'\n\n'+g(typeof PM_CORE!=='undefined'&&PM_CORE)+'\n\n'+g(typeof PM_MOD!=='undefined'&&PM_MOD.site)+'\n\n'+g(typeof SITE_REGRAS!=='undefined'&&SITE_REGRAS)
+   +'\n\n'+g(typeof PM_CORE!=='undefined'&&PM_CORE)+'\n\n'+g(typeof PM_MOD!=='undefined'&&PM_MOD.site)+'\n\n'+g(typeof SITE_REGRAS!=='undefined'&&SITE_REGRAS)+'\n\n'+g(typeof fwBloco==='function'&&fwBloco(['site'],'site'))
    +'\n\nREGRAS FIXAS: um único arquivo HTML com CSS e JavaScript dentro; nenhum recurso externo (sem fontes, CDN, scripts, imagens ou iframes de outros sites). Imagens: só espaços desenhados com CSS e a legenda "Foto do negócio", ou os marcadores {{FOTO1}}..{{FOTO6}} em src. '
    +'Links: use exatamente {{WHATSAPP}}, {{MAPA}} e {{INSTAGRAM}} no href (o app troca pelo endereço certo), com target="_blank" rel="noopener". Nunca escreva depoimentos, nomes de clientes, números, prêmios, anos de atuação, endereços ou preços que não estejam nos dados; use "a confirmar". '
    +'Responsivo a partir de 375px, <html lang="pt-BR">, meta viewport, foco visível, alt nas imagens, alvos de toque de 44px, prefers-reduced-motion respeitado. HTML, CSS e JS enxutos.';

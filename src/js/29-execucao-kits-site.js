@@ -204,16 +204,16 @@ async function execGen(id,which,corr){
   const fix=corr&&prev?`\n\nRESPOSTA ANTERIOR (tinha erro):\n${typeof prev==='string'?prev:JSON.stringify(prev)}\n\nCORREÇÃO DO CONSULTOR (obrigatória, siga à risca): ${corr}\nRefaça tudo corrigindo isso e mantendo o que estava certo.`:'';
   let msgs,opt;
   if(which==='ads'){
-    msgs=[{role:'system',content:'Você é um gestor de tráfego sênior de Google Ads no Brasil. Responda SOMENTE com JSON válido, sem nenhum texto fora do JSON. Respeite os limites: títulos até 30 caracteres, descrições até 90, caminhos até 15. Use só informações do briefing e nunca invente dados do cliente; o que faltar, marque como "a confirmar".\n\n'+PM_CORE+'\n\n'+especialista(['ads'])+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
+    msgs=[{role:'system',content:'Você é um gestor de tráfego sênior de Google Ads no Brasil. Responda SOMENTE com JSON válido, sem nenhum texto fora do JSON. Respeite os limites: títulos até 30 caracteres, descrições até 90, caminhos até 15. Use só informações do briefing e nunca invente dados do cliente; o que faltar, marque como "a confirmar".\n\n'+PM_CORE+'\n\n'+especialista(['ads'])+'\n\n'+fwBloco(['ads'],'texto')+' Aplique dentro dos campos do JSON, sem criar campos novos.'+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
       {role:'user',content:base+'\n\nMonte o kit completo para executar no Google Ads Editor. Preencha o JSON abaixo, com os mesmos nomes de campos. Regras: 2 a 3 campanhas e 2 a 3 grupos de anúncios por campanha, de acordo com a verba; 8 a 12 palavras-chave por grupo (misture exata, frase e ampla), pensadas para o ramo e a região do cliente; 1 anúncio responsivo por grupo com 15 títulos (máx. 30 caracteres cada) e 4 descrições (máx. 90); no mínimo 20 palavras negativas; orçamento diário em reais (verba mensal dividida por 30); rastreamento com conversões, GA4 e WhatsApp.\n\nJSON:\n'+ADS_SCHEMA+fix}];
     opt={slot:'ia1',json:true,max:5200,temp:0.3};
   }else if(which==='social'){
-    msgs=[{role:'system',content:'Você é estrategista de conteúdo para redes sociais no Brasil, especialista em retenção e engajamento. Responda SOMENTE com JSON válido, sem nenhum texto fora do JSON. Use só informações do briefing.\n\n'+PM_CORE+'\n\n'+especialista(['social'])+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
+    msgs=[{role:'system',content:'Você é estrategista de conteúdo para redes sociais no Brasil, especialista em retenção e engajamento. Responda SOMENTE com JSON válido, sem nenhum texto fora do JSON. Use só informações do briefing.\n\n'+PM_CORE+'\n\n'+especialista(['social'])+'\n\n'+fwBloco(['social'],'texto')+' Aplique dentro dos campos do JSON, sem criar campos novos.'+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
       {role:'user',content:base+'\n\nMonte o kit de execução de conteúdo. Preencha o JSON abaixo, com os mesmos nomes de campos. Regras: 3 a 4 pilares; calendário de 14 dias com formato, tema, gancho dos 3 primeiros segundos, legenda pronta, CTA e hashtags (pode haver dias de descanso, mas liste os dias de postagem); 3 roteiros completos com cenas (visual e fala); 10 ideias extras; melhores horários para a rede escolhida; métricas. Tudo específico para o ramo e o público do cliente.\n\nJSON:\n'+SOC_SCHEMA+fix}];
     opt={slot:'ia1',json:true,max:4200,temp:0.7};
   }else{
     const key=svcs(l).includes('resite')?'resite':'site';
-    msgs=[{role:'system',content:MODS[key].sys+' Use SOMENTE informações do briefing; nunca troque o assunto nem o negócio do cliente.\n\n'+PM_CORE+'\n\n'+especialista([key])+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
+    msgs=[{role:'system',content:MODS[key].sys+' Use SOMENTE informações do briefing; nunca troque o assunto nem o negócio do cliente.\n\n'+PM_CORE+'\n\n'+especialista([key])+'\n\n'+fwBloco([key],'site')+(kb('exec',l)?'\n\n'+kb('exec',l):'')},
       {role:'user',content:base+lpBloco(l)+saBloco(l)+'\n\nTarefa: '+MODS[key].task+fix}];
     opt={slot:'ia1',max:9000,temp:0.6};
   }
