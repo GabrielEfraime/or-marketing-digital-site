@@ -42,8 +42,8 @@ window.__passo=async()=>{const h=document.querySelector('#qh');if(!h)return fals
 window.__ate=async(m,k)=>{await __ini(m);await __gate();for(let i=0;i<80;i++){if(P.cur&&P.cur.tp&&P.cur.tp.endsWith(':'+k))return P.cur.tp;if(!(await __passo()))break}return 'fim'};
 window.__medida=()=>{const q=document.querySelector('.dcont');const r=x=>x?[Math.round(x.getBoundingClientRect().left),Math.round(x.getBoundingClientRect().width),Math.round(x.getBoundingClientRect().height)]:null;return {dcont:r(q),botoes:[...document.querySelectorAll('.dcont .btn')].map(b=>r(b)),rolagemH:document.documentElement.scrollWidth>innerWidth}};`;
 
-const CASOS = [['ads', ['ads'], 'pesq'], ['meta', ['meta'], 'gancho'], ['social', ['social'], 'processo'], ['site', ['site'], 'meta'], ['resite', ['resite'], 'convite'],
-  ['brand', ['brand'], 'historia'], ['mkt', ['mkt'], 'gargalo'], ['assess', ['assess'], 'dados'], ['local', ['local'], 'acao'], ['comum', ['ads'], 'invest']];
+const CASOS = [['ads', ['ads'], 'pesq'], ['meta', ['meta'], 'destino'], ['social', ['social'], 'aprova'], ['site', ['site'], 'meta'], ['resite', ['resite'], 'acesso'],
+  ['brand', ['brand'], 'uso'], ['mkt', ['mkt'], 'gargalo'], ['assess', ['assess'], 'dados'], ['comum', ['ads'], 'invest']];
 const relatorio = {};
 for (const [nome, w, h, mobile] of [['1440', 1440, 900, false], ['390', 390, 844, true]]) {
   await cmd('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
@@ -52,7 +52,7 @@ for (const [nome, w, h, mobile] of [['1440', 1440, 900, false], ['390', 390, 844
   await js("__ini(['ads'])"); await foto(`${nome}-00-contato-inicio`); relatorio[nome].gate = await js('__medida()');
   for (const [n, mods, chave] of CASOS) { const tp = await js(`__ate(${JSON.stringify(mods)},'${chave}')`); await foto(`${nome}-${n}`); relatorio[nome][n] = { tp, ...(await js('__medida()')) }; }
   // erro da IA: com endereço inválido a chamada falha e o briefing segue com as perguntas padrão
-  await js("IA_CHAVES.forEach(k=>{if(CFG[k]){CFG[k].key=CFG[k].key||'x';CFG[k].url='https://invalido.invalid/v1'}});__ini(['site'])"); await espera(300);
+  await js("IA_CHAVES.forEach(k=>{if(CFG[k]){CFG[k].key=CFG[k].key||'x';CFG[k].url='https://invalido.invalid/v1'}});window.fetch=()=>Promise.reject(new Error('sem rede'));__ini(['site'])"); await espera(300);
   await js("document.querySelector('#ln').value='Teste Silva';document.querySelector('#lw').value='(21) 99999-0000';document.querySelector('#lc').checked=true;document.querySelector('#go').click()"); await espera(500);
   await js("(async()=>{for(let i=0;i<4;i++){const c=document.querySelector('[data-o]');if(c){c.click();await __s(100);const n=document.querySelector('#nx');if(n&&!n.hidden)n.click()}else{const f=document.querySelector('#f');if(f){f.value='Teste';document.querySelector('#nx').click()}}await __s(900)}})()");
   await espera(3000); await foto(`${nome}-erro-ia`); relatorio[nome].erroIA = { falhou: await js('!!P.fail'), pergunta: await js("document.querySelector('#qh')?.textContent||''"), aviso: await js("document.querySelector('.hint2[role=status]')?.textContent||''"), ...(await js('__medida()')) };

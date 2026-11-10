@@ -139,7 +139,7 @@ await t('briefing: materiais, aprovação e datas não se repetem entre serviço
   vm.runInContext("const SEED=2,P={mods:['social','meta'],qa:[],skipTp:new Set()};",c);
   vm.runInContext(ler('src/js/18-briefing-assistente.js'),c);
   for(const id of ['materiaisbase','aprovacaoprazo','datasconfirmadas']){
-    assert.equal(vm.runInContext("topicPool().filter(x=>x.t[0]==="+JSON.stringify(id)+").length",c),1);
+    assert.ok(vm.runInContext("topicPool().filter(x=>x.t[0]==="+JSON.stringify(id)+").length",c)<=1); /* no briefing enxuto essas perguntas saíram; se voltarem, não podem repetir */
   }
 });
 
@@ -569,6 +569,10 @@ await t('WhatsApp: máscara (21) 99999-9999 enquanto digita, celular e fixo, com
   for (const [e, r] of [['', ''], ['2', '(2'], ['21', '(21'], ['219', '(21) 9'], ['21999', '(21) 999'], ['2199999', '(21) 9999-9'], ['21999999999', '(21) 99999-9999'], ['2133334444', '(21) 3333-4444'], ['+55 21 99999-9999', '(21) 99999-9999'], ['(21) 99999-99999999', '(21) 99999-9999'], ['abc', '']]) assert.equal(S('foneMask(' + JSON.stringify(e) + ')'), r, e);
   assert.ok(S("wnum(foneMask('21999999999'))") === '5521999999999');
 });
+await t('briefing enxuto: cada serviço do site tem no máximo 13 perguntas, com as 2 fixas primeiro', () => {
+  const n = S("['ads','meta','social','site','resite','brand','mkt','assess'].map(k=>[k,MODS[k].qs.length,MODS[k].qs[0][0],MODS[k].qs[1][0]])");
+  for (const [k, q, a, b] of n) { assert.ok(q <= 13, k + ' tem ' + q); assert.ok(['negocio', 'nome'].includes(a) && ['oferta', 'rede', 'tipo', 'url', 'situacao', 'obj', 'desafio'].includes(b), k + ' perde as fixas: ' + a + ',' + b); }
+});
 await t('contato direto: mensagem curta, com os serviços, sem dado novo', () => {
   const m = S("contatoMsg(['Google Ads','Site novo'])");
   assert.match(m, /^Olá! Vim pelo site da OR Marketing Digital/); assert.match(m, /Google Ads, Site novo/); assert.ok(m.length < 200);
@@ -585,10 +589,10 @@ await t('briefing: cada serviço tem perguntas com chave única, assunto válido
     const ch = m.qs.map((q) => q[0]); assert.equal(new Set(ch).size, ch.length, 'chave repetida em ' + m.k);
     for (const q of m.qs) { assert.ok(/\?\s*$/.test(q[1]) || m.k === 'guia' || /^(fotos|links)/.test(q[0]) || true); assert.ok(q[2] > 0, m.k + ':' + q[0] + ' sem opções nem dica'); if (q[3]) new RegExp(q[3], 'i'); assert.ok(!/senha\b(?! )|cnpj|cpf/i.test(q[1]) || /sem passar senha|nunca por senha/.test(q[1]), m.k + ':' + q[0]); }
   }
-  for (const k of ['ads', 'meta', 'social', 'site', 'resite', 'brand', 'mkt', 'assess', 'local']) assert.ok(S("MODS." + k + ".uso").length > 40, 'falta uso em ' + k);
+  for (const k of ['ads', 'meta', 'social', 'site', 'resite', 'brand', 'mkt', 'assess']) assert.ok(S("MODS." + k + ".uso").length > 40, 'falta uso em ' + k);
 });
-await t('briefing: perguntas B2B comuns ao fim (porte, quem compra, decisor, investimento) e sem emoji', () => {
-  const c = S("COMUM.map(q=>q[0])"); assert.equal(c.join(), 'porte,tipocli,decisor,prazo,invest,pgto');
+await t('briefing: perguntas B2B comuns ao fim (porte, decisor, prazo, investimento) e sem emoji', () => {
+  const c = S("COMUM.map(q=>q[0])"); assert.equal(c.join(), 'porte,decisor,prazo,invest');
   assert.equal(S("Object.values(MODS).every(m=>m.qs.slice(-COMUM.length).map(q=>q[0]).join()===COMUM.map(q=>q[0]).join())"), true);
   assert.equal(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/u.test(JSON.stringify(S("MODS"))), false);
 });
