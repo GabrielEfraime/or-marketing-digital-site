@@ -25,11 +25,11 @@ body.pub main:not(.home){padding-top:0}
 .v-lime{background:#C6AC8E;color:#0A0908}
 .v-ink{background:#EAE0D5}
 .v-h1,.v-h2,.v-h3{margin:0;text-wrap:balance;hyphens:none}
-.v-h1{font-weight:800;animation:vrev 1.5s cubic-bezier(.2,.7,.2,1) both;text-transform:uppercase;font-size:clamp(42px,8.2vw,128px);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.v-h1{font-weight:800;animation:vrev 1.5s cubic-bezier(.2,.7,.2,1) both;text-transform:uppercase;font-size:var(--t-display);line-height:var(--line-height-display);letter-spacing:var(--ls-display);max-width:12ch}
 .v-big{font-size:clamp(42px,8.6vw,140px);max-width:14ch}
 .v-h3{font-size:clamp(20px,2vw,28px);font-weight:700;line-height:var(--lh-t)}
 .v-lead{font-size:clamp(19px,2vw,26px);line-height:var(--lh-ui);max-width:34ch;margin:clamp(24px,3vw,40px) 0 0}
-.v-p{font-size:clamp(17px,1.5vw,20px);line-height:var(--lh-body);max-width:62ch;margin:clamp(18px,2.4vw,28px) 0 0;color:inherit}
+.v-p{font-size:var(--t-prose);line-height:var(--lh-body);max-width:62ch;margin:clamp(18px,2.4vw,28px) 0 0;color:inherit}
 .v-micro{margin:20px 0 0;font-size:var(--t-md)}
 .v-act{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:clamp(28px,3.4vw,44px)}
 .v-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:14px;border-radius:999px;background:#C6AC8E;color:#0A0908;transition:transform .15s ease,filter .2s;min-height:52px;padding:0 28px}
@@ -46,7 +46,7 @@ body.pub main:not(.home){padding-top:0}
 @media(max-width:860px){.v-hero{min-height:0}.v-hero-in{grid-template-columns:1fr}}
 /* três opções */
 .v-opts{list-style:none;margin:clamp(40px,6vw,88px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,4vw,72px)}
-.v-opts h3{font-family:var(--fd);font-size:clamp(34px,4.6vw,68px);font-weight:800;letter-spacing:-.04em;line-height:1;margin:0 0 16px}
+.v-opts h3{font-family:var(--fd);font-size:clamp(34px,4.6vw,68px);font-weight:800;letter-spacing:var(--ls-display);line-height:1;margin:0 0 16px}
 .v-opts p{margin:0;font-size:clamp(17px,1.4vw,19px);line-height:var(--lh-body);max-width:34ch}
 @media(max-width:860px){.v-opts{grid-template-columns:1fr}}
 /* duas colunas e listas */
