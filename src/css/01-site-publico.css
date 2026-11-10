@@ -60,10 +60,6 @@ body.pub h1,body.pub h2,body.pub h3,.step b{font-weight:600;letter-spacing:-.015
 .tl p{margin:0;color:var(--fg2)}
 .cta-band h2{max-width:20ch}
 .cta-band .sub{color:var(--fg2)}
-.wafab,.wafab:visited,.wafab:hover{color:#0A0908;text-decoration:none}
-.wafab{position:fixed;right:18px;bottom:18px;z-index:40;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 8px 24px #0006}
-.wafab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.wafab svg{width:30px;height:30px;fill:#0A0908}
 .recbox{margin:24px 0;max-width:min(760px,100%)}
 .recbox h3{margin:0 0 12px;font-size:22px}
 .reclist{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:14px}
@@ -89,7 +85,6 @@ body.pub h1,body.pub h2,body.pub h3,body.pub .brandb,.gl .q,.gl h2,.step b{font-
 @media(max-width:640px){.foot-top{grid-template-columns:1fr}}
 .totop{position:fixed;right:18px;bottom:18px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid #ffffff33;background:#0E0E0Ee6;color:#EAE0D5;display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s}
 .totop.on{opacity:1;pointer-events:auto}
-.totop.wa{right:24px;bottom:84px}
 .totop:focus-visible{outline:2px solid var(--focus)}
 .big{font:700 clamp(40px,6vw,72px)/1 var(--fd),sans-serif;letter-spacing:-.04em;color:var(--accent);max-width:none;margin:0}
 .guide{padding-top:clamp(50px,8vw,110px)}

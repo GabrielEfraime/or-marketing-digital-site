@@ -131,7 +131,6 @@ body.adm .tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 }
 @media(max-width:640px){
   /* botões flutuantes menores e longe do texto do rodapé */
-  .wafab{width:48px;height:48px;right:12px;bottom:12px}
   .totop{width:44px;height:44px;right:16px;bottom:68px}
   .foot,.v-foot{padding-bottom:96px}
   .row{gap:8px}
@@ -207,7 +206,6 @@ html .menub{padding:0 16px;border:1px solid;border-radius:999px}
 html body.adm .btn:not(.ghost){box-shadow:var(--vc-hi),var(--vc-sh);background-image:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 60%)}
 /* flutuantes */
 html .totop{background:rgba(20,20,20,.5);border-color:rgba(255,255,255,.22);box-shadow:var(--vc-hi),var(--vc-sh);backdrop-filter:blur(var(--vc-blur)) saturate(170%);-webkit-backdrop-filter:blur(var(--vc-blur)) saturate(170%)}
-html .wafab{background:rgba(37,211,102,.9);box-shadow:var(--vc-hi),0 8px 24px #0006;backdrop-filter:blur(var(--vc-blur)) saturate(170%);-webkit-backdrop-filter:blur(var(--vc-blur)) saturate(170%)}
 
 /* ----- sem suporte ou com "reduzir transparência": tudo sólido ----- */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -215,11 +213,10 @@ html .wafab{background:rgba(37,211,102,.9);box-shadow:var(--vc-hi),0 8px 24px #0
   
   html body.adm .tabs{background:var(--vc-solid)}}
 @media(prefers-reduced-transparency:reduce){
-  html .nav,html .nav.scr,html .nav.mopen .mnav,html .v-cap,html .dsh-f,html body.adm .tabs,html .v-btn,html .nav-cta,html body.pub .btn,html .v-pill,html .menub,html .or-btn,html .chip2,html .tab,html body.adm .btn,html .totop,html .wafab{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  html .nav,html .nav.scr,html .nav.mopen .mnav,html .v-cap,html .dsh-f,html body.adm .tabs,html .v-btn,html .nav-cta,html body.pub .btn,html .v-pill,html .menub,html .or-btn,html .chip2,html .tab,html body.adm .btn,html .totop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
   html .nav,html .nav.scr,html .nav.mopen .mnav,html .v-cap,html .dsh-f{background:var(--bg)!important}
   
   html body.adm .tabs{background:var(--vc-solid)}
   html .v-btn:not(.dk),html .nav-cta,html body.pub .btn:not(.ghost):not(.wa){background:#C6AC8E}
   html .v-btn.dk{background:#0A0908}
-  html .totop{background:var(--panel)}
-  html .wafab{background:#25D366}}
+  html .totop{background:var(--panel)}}
