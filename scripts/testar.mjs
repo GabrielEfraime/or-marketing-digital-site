@@ -508,7 +508,7 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
 // Cofre do site: chaves cifradas no build e abertas no navegador com a senha (a mesma função do backup protegido)
 {
   const { cofre } = await import('./montar.mjs');
-  const bk = ler('src/js/19-backup-disco.js'), pedaco = bk.slice(bk.indexOf('const b64='), bk.indexOf('function bkpDlg'));
+  const bk = ler('src/js/19-backup-disco.js'), pedaco = bk.slice(bk.indexOf('const b64='));
   const senha = 'uma-senha-forte-123', chaves = { groq: 'gsk_' + 'a'.repeat(40), gemini: 'AIzaSy' + 'b'.repeat(33), pollinations: 'sk_' + 'c'.repeat(30) };
   const abre = (blob) => {
     const cv = vm.createContext({ console, crypto: globalThis.crypto, TextEncoder, TextDecoder, atob, btoa, Uint8Array });

@@ -35,7 +35,7 @@ function ssSiteHtml(p){
    <div class="row"><button type="button" class="btn hl" data-ss="gerar"${SS.busy?' disabled':''}>Gerar o site</button></div><p class="hint" role="status" aria-live="polite" id="ssprog2">${esc(SS.prog)}</p></section>`;
   const v=p.vers.find(x=>x.n===p.vAtual);
   return `<section class="panel"><h3>Site demonstrativo</h3>
-   <p class="hint">Versão ${p.vAtual} de ${p.vers.length}${v?' · '+esc(dHora(v.em)):''}. As versões ficam só neste navegador e não entram no backup: baixe o site para guardar.</p>
+   <p class="hint">Versão ${p.vAtual} de ${p.vers.length}${v?' · '+esc(dHora(v.em)):''}. As versões ficam só neste navegador: baixe o site para guardar.</p>
    <div class="row" role="group" aria-label="Tamanho da prévia"><button type="button" class="cap-chip ${dev==='cel'?'on':''}" aria-pressed="${dev==='cel'}" data-ss="dev:cel">Celular</button><button type="button" class="cap-chip ${dev==='pc'?'on':''}" aria-pressed="${dev==='pc'}" data-ss="dev:pc">Computador</button>
     <button type="button" class="btn hl" data-ss="apresentar:site">Apresentar em tela cheia</button><button type="button" class="btn ghost" data-ss="revisar"${SS.busy?' disabled':''}>Revisar com outra IA</button><button type="button" class="btn ghost" data-ss="baixar">Baixar o site (HTML)</button><button type="button" class="btn ghost" data-ss="gerar"${SS.busy?' disabled':''}>Gerar de novo</button></div>
    <div class="row"><button type="button" class="btn ghost" data-ss="js" aria-pressed="${SS.js===p.id}">${SS.js===p.id?'Desativar o JavaScript da prévia':'Ativar o JavaScript da prévia (menus e botões do site)'}</button></div>
@@ -153,7 +153,7 @@ function ssCarregaPrevia(p){
   const f=document.getElementById('sspv');if(!f||!p.vAtual)return;
   arqGet(ssChaveV(p.id,p.vAtual)).then(h=>{
     const f2=document.getElementById('sspv');if(!f2||SS.id!==p.id)return;
-    if(!h){const a=document.getElementById('ssacess');if(a)a.innerHTML='<p class="err" role="alert">Não achei o HTML desta versão neste navegador (as versões não entram no backup). Gere o site de novo.</p>';return}
+    if(!h){const a=document.getElementById('ssacess');if(a)a.innerHTML='<p class="err" role="alert">Não achei o HTML desta versão neste navegador. Gere o site de novo.</p>';return}
     f2.srcdoc=ssMonta(h,ssDadosSite(p));
     const a=document.getElementById('ssacess'),av=ssChecaAcess(h).concat(ssChecaEstrutura(h));
     if(a)a.innerHTML=av.length?`<div class="err" role="status"><b>Checagem automática (confira antes de mostrar):</b><ul>${av.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`:'<p class="hint">Checagem automática: sem avisos. Isso não substitui revisar a mão.</p>'

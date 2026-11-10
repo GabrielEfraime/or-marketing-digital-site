@@ -9,18 +9,12 @@
 .fn li{display:grid;grid-template-columns:minmax(120px,1.1fr) 2fr 3ch;gap:12px;align-items:center;font-size:var(--t-sm)}
 .fn i{display:block;height:12px;border-radius:999px;background:linear-gradient(90deg,#5E503F,#C6AC8E);min-width:0}
 .fn b{text-align:right;font-variant-numeric:tabular-nums}
-.gdia{width:100%;height:auto;display:block;color:var(--fg)}
-.gdia rect{fill:#C6AC8E}
-.gdia .gt{font:12px ui-monospace,Consolas,monospace;fill:currentColor;opacity:.6}
-.psv,.tkl,.act,.intg{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.psv li,.tkl li{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+
+.psv,.act,.intg{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.psv li{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .act li{display:grid;gap:2px;padding:8px 0;border-top:1px solid var(--gl-bd)}
 .act li:first-child{border-top:0}
-.tkl li{padding:8px 0;border-top:1px solid var(--gl-bd)}
-.tkl li:first-child{border-top:0}
-.lnkb{all:unset;cursor:pointer;text-align:left;min-height:24px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#ffffff40}
-.lnkb:hover{text-decoration-color:currentColor}
-.lnkb:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+
 .late{color:var(--err);font-weight:700;white-space:nowrap}
 .soon{color:var(--warn);font-weight:700;white-space:nowrap}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
@@ -28,7 +22,7 @@
 .tbl td{padding:10px;border-bottom:1px solid var(--gl-bd);vertical-align:middle}
 .tbl tbody tr{cursor:pointer;transition:background .15s}
 .tbl tbody tr:hover{background:var(--gl-bg)}.tbl tbody tr:focus-visible{background:var(--gl-bg);outline:2px solid var(--focus);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--focus)}
-.dsh-nota{margin-top:16px}
+
 .chip.recusado{background:var(--err);color:var(--bg)}
 .it.recusado{border-left-color:var(--err)}
 .savebar{padding:0 14px;font-size:13px;line-height:var(--lh-ui);color:#B8B8B3}
@@ -47,33 +41,14 @@
 .panel h3.dsh-h,h3.dsh-h{font-size:var(--t-xs);line-height:var(--lh-ui)}
 
 /* Navegação: grupo Inteligência Artificial */
-.nvg{display:grid;gap:4px;margin-top:6px}
-.nvgt{padding:6px 14px 2px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
-.nv.sub{padding-left:28px}
+
 
 /* Dashboard em grade Bento: 4 colunas em área larga, 2 em média, 1 em estreita (por largura do container) */
 #dashc{container-type:inline-size}
-.bn-res{margin:0 0 14px;font-size:15px}
-.bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;grid-auto-flow:dense}
-.bn{background:var(--gl-bg);border:1px solid var(--gl-bd);padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
-.bn:hover{border-color:var(--gl-hi,#ffffff55)}
-.bn .dsh-h{margin:0 0 6px}
-.bn-hero{grid-column:span 2;grid-row:span 2}
-.bn-w2{grid-column:span 2}
-.bn-t{font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
-.bn-n{font:700 38px/1.05 var(--fb);font-variant-numeric:tabular-nums;border-left:3px solid var(--c,#5E503F);padding-left:10px}
-.bn-n.big{font-size:56px}
-.bn-s{font-size:13px;opacity:.8;line-height:var(--lh-ui)}
-.gbn rect{transition:fill .15s}
-.gbn rect:hover,.gbn rect.on{fill:#fff}.gbn rect:focus-visible{fill:#fff;outline:2px solid var(--focus);outline-offset:2px}
-.gcap{min-height:1.4em;margin:6px 0 0}
+
 .alr{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .alr li{display:grid;gap:2px;padding-top:8px;border-top:1px solid var(--gl-bd)}
 .alr li:first-child{border-top:0;padding-top:0}
-.bento:has(.bn:hover) .bn:not(:hover):not(:focus-within){opacity:.88}
-@container (max-width:900px){.bento{grid-template-columns:repeat(2,minmax(0,1fr))}.bn-hero{grid-row:auto}}
-@container (max-width:520px){.bento{grid-template-columns:minmax(0,1fr)}.bn-hero,.bn-w2{grid-column:auto}}
-@media(prefers-reduced-motion:reduce){.bn,.gbn rect{transition:none}}
 
 /* Modais padronizados: rolagem do overlay sem cortar o topo,botão fechar,fundo travado */
 .modal{position:fixed;inset:0;z-index:100;place-items:center;overflow:auto;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:12px;background:rgba(10,9,8,.55)}

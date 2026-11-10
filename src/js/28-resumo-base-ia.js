@@ -57,7 +57,7 @@ async function ficha(id,corr){
 }
 function kbInner(){
   const k=CFG.kb||{};
-  return `<h2 class="pt">Base da IA</h2><p class="hint">Ensine a IA como você trabalha. Isto é enviado junto em cada pedido, então escreva curto e direto. Fica salvo no backup.</p>
+  return `<h2 class="pt">Base da IA</h2><p class="hint">Ensine a IA como você trabalha. Isto é enviado junto em cada pedido, então escreva curto e direto. Fica salvo neste navegador.</p>
   <div class="panel"><label for="kbs">Quem é você e como é o seu negócio</label><textarea id="kbs" style="min-height:120px" placeholder="Ex: Somos uma equipe de marketing digital no Rio. Atendemos pequenos negócios com sites, tráfego pago e conteúdo.">${esc(k.sobre||'')}</textarea>
   <label for="kbr">Regras de ouro (a IA sempre segue)</label><textarea id="kbr" style="min-height:120px" placeholder="Ex: Nunca prometer resultado garantido. Falar sempre em reais. Mensagens curtas e simpáticas. Nunca inventar valores fora da tabela.">${esc(k.regras||'')}</textarea>
   <label for="kbe">Exemplos de mensagens e orçamentos (a IA escolhe o exemplo do ramo do cliente e imita o estilo)</label><p class="hint">Cada exemplo começa com uma linha ### Ramo: palavras, do, ramo, separadas por vírgula. Troque pelos seus textos reais quando tiver.</p><textarea id="kbe" style="min-height:180px" placeholder="Cole aqui 1 ou 2 mensagens/orçamentos reais que você já mandou para clientes.">${esc(k.exemplos||'')}</textarea>

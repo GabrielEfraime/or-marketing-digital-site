@@ -33,10 +33,10 @@ Os números seguem a ordem real de carga em `src/ordem.json` (sem letras e sem b
 | 16 | `site-publico-base` | `vida()`, `tick()`, `nav2()` (menu), constantes do briefing |
 | 17 | `site-publico-paginas` | `pub()` (home), `svcPage()`, `vagasPage()` |
 | 18 | `briefing-assistente` | `gate()`, perguntas da IA (`aiQ`, `nextQ`), `wizard()`, `submit()` (sem servidor: o lead fica no navegador e segue pelo WhatsApp), `thanks()` |
-| 19 | `backup-disco` | Pasta de backup (File System Access API), `merge()` por data, backup cifrado |
+| 19 | `backup-disco` | Pasta de backup já conectada (File System Access API: `diskInit`/`diskSave`/`diskLoad`; não há mais tela para conectar nem baixar/importar backup), `merge()` por data, `bkpDecifra` (usada pelo cofre) |
 | 20 | `minha-area-estado` | Minha área, estado e utilitários: `A`, `J`, `svcs`, `svcName`, `parseOrc`, `statLine` |
 | 21 | `assistente-setor` | Assistente interno por setor (`orAssist*`, `OR_SETORES`) |
-| 22 | `minha-area` | Casca da Minha área (direção C): `admShell` (menu agrupado, barra de topo com breadcrumb, busca, avisos, ajuda e avatar, barra inferior no celular), `pnIr()` (troca de tela por estado), menu da conta/folha "Mais", tela Configurações (`A.view==='cfg'`: Backup no HD, Dados e segurança, IAs, recolhidos), `admin()` (PIN), lista de leads, abas, ações e detalhe do lead |
+| 22 | `minha-area` | Casca da Minha área (direção C): `admShell` (menu agrupado, barra de topo com breadcrumb, busca, avisos, ajuda e avatar, barra inferior no celular), `pnIr()` (troca de tela por estado), menu da conta/folha "Mais", `admin()` (PIN), lista de leads, abas, ações e detalhe do lead |
 | 22 | `paleta-comando` | Paleta Ctrl+K (`pnPaletaAbre`): telas e leads, só dados locais, foco preso, Esc fecha |
 | 23 | `demandas-quadro` | Quadro de demandas (`orQuadro*`, `OR_QUADRO`, `OR_COLUNAS`): dados, normalização, importação, lista e eventos |
 | 24 | `demandas-quadro-ia` | Demandas com IA: arte da demanda (`orQuadroArteIA`), imagem (`orQuadroImagemIA`) e planejamento (`orQuadroPlanejar`) |
@@ -146,7 +146,7 @@ O modelo de dados (`Lead`, `CFG`) está em `docs/ESPECIFICACAO-COMPLETA.md`, se�
 | `ativ2` | Registro de atividades (status, orçamentos, mensagens, envios, planos), até 400 |
 | `pinlock` | Bloqueio de tentativas do PIN |
 
-Backup em pasta no HD e exportar/importar JSON mesclam por `id`, vencendo o maior `t`. Tudo que entra por importação passa por `cleanLead`/`cleanTrack`.
+A pasta no HD (só para quem já a conectou) mescla por `id`, vencendo o maior `t`. Tudo que entra por importação passa por `cleanLead`/`cleanTrack`.
 
 ## Segurança (resumo)
 
@@ -171,7 +171,7 @@ O site é só no tema escuro (o `<head>` do molde fixa `data-theme=dark`, que o 
 | `23-identidade-earthen.css` | **Dono da marca e dos tokens** (fundido de 14 e 23): estados `--ok/--err/--warn/--info`, `--sp-*`, `--t-*`, `--dur-*`, `--z-*`, ícones, utilitários `.u-*`, paleta Earthen Luxe, assinatura OR, slogan, seções claras |
 | `24` a `27` | Topo 3D, títulos e dúvidas, Minha área limpa, editor de posts |
 
-Regras do vidro (desde o Lote 3B): `backdrop-filter` só em barra do topo (`.nav`), capítulos laterais (`.v-cap`), barra de filtros (`.dsh-f`), menu lateral (`.side`), abas (`.tabs`), botões e flutuantes (`.totop`, `.wafab`). Cartões, painéis e janelas não têm blur; o fundo atrás da janela (`.modal`) só escurece. Para criar um componente novo, use fundo sólido (`--panel`, `--pane`, `--side`). O bloco "sem suporte / reduzir transparência" fica no fim de `13-vidro.css`.
+Regras do vidro (desde o Lote 3B): `backdrop-filter` só em barra do topo (`.nav`), capítulos laterais (`.v-cap`), barra de filtros (`.dsh-f`), abas (`.tabs`), botões e flutuantes (`.totop`, `.wafab`). Cartões, painéis e janelas não têm blur; o fundo atrás da janela (`.modal`) só escurece. Para criar um componente novo, use fundo sólido (`--panel`, `--pane`, `--side`). O bloco "sem suporte / reduzir transparência" fica no fim de `13-vidro.css`.
 
 Ao editar: quando um arquivo antigo e um novo definem a mesma regra, o novo vence pela ordem. Resta `!important` só onde é preciso (movimento reduzido global, utilitários `.u-*`, menu do topo, botões da Minha área e o que vence estilo inline do JS). Antes de apagar uma regra, procure se a classe ainda é usada no JS e no molde (`et-*` é montada dinamicamente).
 

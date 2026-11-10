@@ -47,7 +47,7 @@ async function ssComparaVersoes(id,a,b){
   if(!a||!b||a===b){SS.cmp=null;SS.err='Escolha duas versões diferentes para comparar.';return ssPaint()}
   try{
     const [ha,hb]=await Promise.all([arqGet(ssChaveV(id,a)),arqGet(ssChaveV(id,b))]);
-    if(!ha||!hb){SS.cmp=null;SS.err='Não achei o HTML de uma das versões neste navegador (as versões não entram no backup).';return ssPaint()}
+    if(!ha||!hb){SS.cmp=null;SS.err='Não achei o HTML de uma das versões neste navegador.';return ssPaint()}
     SS.err='';SS.cmp={id,a,b,...ssDiff(ha,hb)};
   }catch(e){SS.cmp=null;SS.err='Não consegui abrir as versões guardadas neste navegador.'}
   ssPaint();

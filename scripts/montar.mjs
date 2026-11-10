@@ -59,7 +59,7 @@ export function seo() {
 
 
 // Cofre do site: as chaves de IA entram no site CIFRADAS, nunca em texto. Cifra AES-256-GCM com chave derivada da senha (PBKDF2-SHA256, 600 mil voltas),
-// no mesmo formato do backup protegido do app (bkpCifra/bkpDecifra), então o navegador abre com a função que já existe.
+// no mesmo formato do backup protegido do app (bkpDecifra), então o navegador abre com a função que já existe.
 // Entradas (ambiente do GitHub Actions ou arquivo .env local, gitignorado): COFRE_SENHA (mínimo 12 caracteres) e as chaves GROQ_API_KEY, GEMINI_API_KEY, POLLINATIONS_API_KEY.
 // Sem senha ou sem chave, o site sai sem cofre (null): a chave em texto nunca vai para a página.
 export function cofre(chaves, senha) {

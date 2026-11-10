@@ -7,14 +7,14 @@
 /* Tokens de estado (único lugar). Contraste como texto sobre #0A0908: ok 8,86; err 6,96; warn 9,26; info 8,92 (WCAG 2.x). */
 :root[data-theme=dark],.dark,body.pub{--bg:#0A0908;--fg:#EAE0D5;--accent:#C6AC8E;--link:#C6AC8E;--g1:#C6AC8E30;--g2:#C6AC8E1a;--g3:#C6AC8E12}
 body.pub h1,body.pub h2,body.pub h3,.v-h1,.v-h2,.v-h3,.svp-h{font-family:var(--fd)}
-body.pub :focus-visible,.shell :focus-visible,:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+body.pub :focus-visible,:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .vlogo{display:block;height:30px;width:auto}
 .wmw .wm,.wmw .wt{font:400 10px var(--fd);letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9;line-height:var(--lh-t)}
 body.pub .wmw .wt{font-size:10px;letter-spacing:.32em;text-transform:uppercase;margin:0;opacity:.9}
 .v-hero-3d{position:relative;aspect-ratio:1;width:100%;max-width:min(640px,100%);justify-self:end;display:flex;align-items:center;justify-content:center}
 .v-or-hero{width:78%;max-width:460px;height:auto;display:block;filter:drop-shadow(0 24px 60px #C6AC8E33)}
 @media(prefers-reduced-motion:no-preference){.v-or-hero{animation:orflut 7s ease-in-out infinite}@keyframes orflut{50%{transform:translateY(-8px)}}}
-@media(prefers-reduced-motion:no-preference){}
+
 body.pub .nav .vlogo{height:34px}
 @media(max-width:860px){.v-hero-3d{max-width:340px;justify-self:start;order:-1;aspect-ratio:auto!important;justify-content:flex-start;padding:0 2px}.v-or-hero{width:70%;max-width:260px;margin:0}}
 /* Ícones de linha (IC em 10-app-navegacao-icones.js) e texto só para leitor de tela */

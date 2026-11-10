@@ -1,7 +1,7 @@
 // Abre a plataforma por um servidor local em http://127.0.0.1:5173 (Ctrl+C para parar). Uso: npm run abrir  |  npm run abrir -- --teste
 // Por que não abrir o arquivo direto (file://)? No Chrome, todo HTML aberto com duplo clique divide o mesmo armazenamento:
 // um site de prévia baixado e aberto assim leria as chaves e os dados dos clientes. Pelo servidor local, a plataforma fica separada.
-// Primeira vez neste endereço: clique em "Conectar pasta de backup no HD" para trazer os leads, ou importe um backup.
+// Cada endereço tem o seu próprio armazenamento: na primeira vez neste endereço a plataforma começa sem os dados de outro endereço.
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import path from 'node:path';

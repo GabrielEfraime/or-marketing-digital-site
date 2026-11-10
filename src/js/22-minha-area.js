@@ -12,7 +12,6 @@ const PN_ICONES={
   assistente:PN_SVG('<path d="M12 3.5l1.7 4.8 4.8 1.7-4.8 1.7L12 16.5l-1.7-4.8L5.5 10l4.8-1.7z"/><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'),
   kb:PN_SVG('<path d="M5 4.5A1.5 1.5 0 016.5 3H19v15H6.5A1.5 1.5 0 005 19.5z"/><path d="M5 19.5A1.5 1.5 0 006.5 21H19v-3M9 7.5h6"/>'),
   ias:PN_SVG('<rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M9.5 3v3.5M14.5 3v3.5M9.5 17.5V21M14.5 17.5V21M3 9.5h3.5M3 14.5h3.5M17.5 9.5H21M17.5 14.5H21"/>'),
-  cfg:PN_SVG('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>'),
   pub:PN_SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 014 18.5v-11A1.5 1.5 0 015.5 6H10"/>'),
   busca:PN_SVG('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
   sino:PN_SVG('<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/>'),
@@ -27,8 +26,8 @@ const PN_GRUPOS=[
   ['Inteligência artificial',[['assistente','Assistente por setor'],['kb','Base da IA'],['ias','IAs']]]
 ];
 const PN_BARRA=[['dash','Início'],['','Leads'],['cap','Captar'],['trk','Projetos']];
-const PN_NOMES={dash:'Dashboard','':'Leads',cap:'Captar clientes',studio:'Site Studio',posts:'Posts',demandas:'Demandas','arte-demanda':'Arte da demanda',vagas:'Vagas',trk:'Acompanhamento',assistente:'Assistente por setor',kb:'Base da IA',ias:'IAs',cfg:'Configurações'};
-const pnAtivo=()=>{const v=A.view||'';return v==='arte-demanda'?'demandas':v==='tal'?'vagas':v};
+const PN_NOMES={dash:'Dashboard','':'Leads',cap:'Captar clientes',studio:'Site Studio',posts:'Posts',demandas:'Demandas','arte-demanda':'Arte da demanda',vagas:'Vagas',trk:'Acompanhamento',assistente:'Assistente por setor',kb:'Base da IA',ias:'IAs'};
+const pnAtivo=()=>{const v=A.view||'';return v==='arte-demanda'?'demandas':v};
 const pnContagem=v=>{
   try{
     if(v==='')return getL().filter(l=>!l.arq&&l.status==='novo').length;
@@ -51,28 +50,6 @@ function pnIr(v){
 function pnItem(v,t,cls){
   const on=pnAtivo()===v,n=pnContagem(v);
   return `<button type="button" class="${cls||'pn-i'}${on?' on':''}" data-pn="${esc(v)}"${on?' aria-current="page"':''}>${PN_ICONES[v]}<span class="pn-t">${esc(t)}</span>${n?`<span class="pn-c" aria-label="${n} ${v===''?'novo(s)':'em aberto'}">${n}</span>`:''}</button>`;
-}
-/* atualiza só os números do menu (por exemplo depois de importar um backup), sem refazer a tela */
-function pnContagens(){
-  document.querySelectorAll('.pn-i[data-pn],.pn-mi[data-pn]').forEach(b=>{
-    const v=b.dataset.pn,n=pnContagem(v);let c=b.querySelector('.pn-c');
-    if(!n){if(c)c.remove();return}
-    if(!c){c=document.createElement('span');c.className='pn-c';b.appendChild(c)}
-    c.textContent=String(n);c.setAttribute('aria-label',n+' '+(v===''?'novo(s)':'em aberto'));
-  });
-}
-/* aviso discreto quando o Backup no HD não está ligado (pasta a reconectar ou desligado): ponto no avatar, no botão Mais e em Configurações */
-function pnDiskPonto(){
-  const s=typeof DISK==='object'?DISK.state:'on',aviso=s!=='on',txt=s==='perm'?'Backup no HD: a pasta precisa ser reconectada':'Backup no HD desligado';
-  document.querySelectorAll('#pn-av,.pn-bi[data-pn-mais],.pn-mi[data-pn="cfg"]').forEach(b=>{
-    let p=b.querySelector(':scope>.pn-ponto-bkp');
-    if(!b.dataset.rot)b.dataset.rot=b.getAttribute('aria-label')||'';
-    if(!aviso){if(p)p.remove();b.removeAttribute('title');if(b.dataset.rot)b.setAttribute('aria-label',b.dataset.rot);return}
-    if(!p){p=document.createElement('span');p.className='pn-ponto-bkp';p.setAttribute('aria-hidden','true');b.appendChild(p)}
-    b.title=txt;
-    if(b.dataset.rot)b.setAttribute('aria-label',b.dataset.rot+'. '+txt);
-    else if(b.classList.contains('pn-mi'))b.setAttribute('aria-label','Configurações. '+txt);
-  });
 }
 function pnAlertas(){try{return alertas(dashCalc()).length}catch(e){return 0}}
 function admShell(inner){
@@ -97,7 +74,7 @@ function admShell(inner){
     <div class="pn-av-w"><button type="button" class="pn-av" id="pn-av" aria-expanded="false" aria-controls="pn-menu" aria-label="Menu da conta"><span aria-hidden="true">${esc(pnIniciais())}</span></button>
      <div class="pn-menu" id="pn-menu" role="group" aria-label="Menu da conta" hidden>
       <div class="pn-m-mais"><span class="pn-gt">Mais telas</span>${mais.map(([k,t])=>pnItem(k,t,'pn-mi')).join('')}</div>
-      <div class="pn-m-conta"><span class="pn-gt pn-m-conta-gt">Conta</span><button type="button" class="pn-mi${v==='cfg'?' on':''}" data-pn="cfg"${v==='cfg'?' aria-current="page"':''}>${PN_ICONES.cfg}<span class="pn-t">Configurações</span></button><button type="button" class="pn-mi" data-nav="pub">${PN_ICONES.pub}<span class="pn-t">Ver site público</span></button></div>
+      <div class="pn-m-conta"><button type="button" class="pn-mi" data-nav="pub">${PN_ICONES.pub}<span class="pn-t">Ver site público</span></button></div>
      </div></div>
    </header>
    <div id="savebad" class="savebad" role="alert" hidden></div>
@@ -163,34 +140,12 @@ function bindShell(){
         if(g&&g.isConnected){g.focus();if(e.shiftKey)e.preventDefault()}
       }}
   };
-  pintaSave();pnDiskPonto();
-  if(A.view==='cfg')cfgBind();
+  pintaSave();
 }
 document.addEventListener('mousedown',e=>{const m=document.getElementById('pn-menu');if(!m||m.hidden)return;if(e.target.closest('#pn-menu,#pn-av,[data-pn-mais]'))return;pnFechaMenu(true)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.modal')){const m=document.getElementById('pn-menu');if(m&&!m.hidden)pnFechaMenu()}});
-/* ---- Configurações: tudo recolhido por padrão. O bloco do Backup no HD é isolado (fácil de remover quando o backup virar automático). ---- */
-function cfgBlocoBackup(){
-  return `<details class="pn-det" id="cfg-bkp"><summary><span class="pn-det-t">Backup no HD</span><span class="pn-det-s">Pasta do computador onde os dados são salvos</span></summary><div class="pn-det-c"><div id="disk" class="diskbar"></div></div></details>`;
-}
-function cfgBlocoDados(){
-  return `<details class="pn-det" id="cfg-dados"><summary><span class="pn-det-t">Dados e segurança</span><span class="pn-det-s">Exportar, importar e proteção do acesso</span></summary><div class="pn-det-c"><div class="dtools"><button type="button" id="csv" class="btn ghost">Exportar CSV</button><button type="button" id="bkp" class="btn ghost">Baixar backup</button><button type="button" id="impb" class="btn ghost">Importar backup</button><input type="file" id="imp" accept=".json" hidden><button type="button" id="npin" class="btn ghost">Trocar PIN</button><button type="button" id="lclean" class="btn ghost">Limpar leads antigos</button></div><p class="hint">Importar mescla com o que já existe. Trocar PIN e limpar leads antigos pedem confirmação.</p></div></details>`;
-}
-function cfgBlocoIAs(){
-  return `<details class="pn-det" id="cfg-ias"><summary><span class="pn-det-t">IAs</span><span class="pn-det-s">Modelos em uso e a tela de chaves</span></summary><div class="pn-det-c"><ul class="pn-lista"><li><span>IA 1 (criação)</span><b>${esc(CFG.ia1.model)}</b></li><li><span>IA 2 (atendimento)</span><b>${esc(CFG.ia2.model)}</b></li><li><span>IA 3 (captação)</span><b>${esc(CFG.ia3.model)}</b></li></ul><div class="row"><button type="button" class="btn ghost" data-pn="ias">Abrir a tela IAs</button></div></div></details>`;
-}
-function cfgInner(){
-  return `<h2 class="pt">Configurações</h2><p class="hint">Itens que quase nunca mudam ficam recolhidos, para ninguém mexer sem querer. Abra só o que precisar.</p>${storeWarn()}<div class="pn-dets">${cfgBlocoBackup()}${cfgBlocoDados()}${cfgBlocoIAs()}</div>`;
-}
+/* exportar os leads em CSV (botão do Dashboard) */
 const leadsCsv=()=>dl('leads.csv','nome,whatsapp,email,area,status,data\n'+getL().map(l=>[l.nome,l.whats,l.email,svcName(l),l.status,l.data].map(csvSafe).join(',')).join('\n'),'text/csv');
-function cfgBind(){
-  const g=id=>document.getElementById(id);
-  document.querySelectorAll('.pn-det').forEach(d=>{const s=d.querySelector('summary');s.setAttribute('aria-expanded',d.open?'true':'false');d.addEventListener('toggle',()=>s.setAttribute('aria-expanded',d.open?'true':'false'))});
-  g('csv').onclick=leadsCsv;
-  g('bkp').onclick=()=>bkpDlg();
-  g('impb').onclick=()=>g('imp').click();
-  g('imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;pnContagens();aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''))}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
-  paintDisk();
-}
 function admin(){
   if(!A.auth){
     /* bloqueio por PIN: nada da área logada pode ficar na tela (busca Ctrl+K, menu da conta, folha Mais, janelas abertas) */
@@ -204,9 +159,7 @@ function admin(){
   if(A.view==='demandas'){setApp(admShell(orQuadroInner()));bindShell();return orQuadroBind()}
   if(A.view==='arte-demanda'){setApp(admShell(orQuadroArteInner()));bindShell();return reaArteBind(document.querySelector('.mainc'),'demanda:'+OR_QUADRO.aberta)}
   if(A.view==='assistente'){setApp(admShell(orAssistInner()));bindShell();return orAssistBind()}
-  if(A.view==='cfg'){setApp(admShell(cfgInner()));bindShell();return}
   if(A.view==='dash'){setApp(admShell(dashInner()));bindShell();return bindDash()}
-  if(A.view==='tal'){A.view='vagas';A.vgTab='db';A.vgc=null;A.vg=null}
   if(A.view==='vagas'){setApp(admShell(vagasInner()));bindShell();return bindVagas()}
   if(A.view==='posts'){setApp(admShell(postsInner()));bindShell();return reaPostsBind()}
   if(A.view==='trk'){setApp(admShell('<div id="trk"></div>'));bindShell();return trkPaint()}

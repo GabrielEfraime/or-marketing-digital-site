@@ -167,7 +167,7 @@ async function ssRodaIAReal(id,tipo,pedido){
   else{
     if(!p.vAtual)return;if(!txtT(pedido,1200,1)){SS.err='Escreva o que você quer mudar.';return ssPaint()}
     let atual='';try{atual=await arqGet(ssChaveV(id,p.vAtual))}catch(e){}
-    if(!atual){SS.err='Não achei a versão atual do site neste navegador (as versões não entram no backup). Gere o site de novo.';return ssPaint()}
+    if(!atual){SS.err='Não achei a versão atual do site neste navegador. Gere o site de novo.';return ssPaint()}
     if(atual.length>SS_HTML_MAX){SS.err='O site ficou grande demais para a IA ajustar de uma vez. Peça mudanças menores ou gere de novo.';return ssPaint()}
     msgs=ssPedidoAjuste(atual,pedido,d);rot='Aplicando a mudança'}
   if(!(await ssConfereLimite(p)))return;

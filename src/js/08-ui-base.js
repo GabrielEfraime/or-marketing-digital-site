@@ -81,17 +81,8 @@ async function apagarLead(id,ask){
   await Promise.all([arqDelPref('site:'+id+':'),arqDelPref('refid:'+id+':'),...ex.map(e=>arqDel('cx:'+e))]).catch(()=>{});
   if(await diskPurge(id))marcaApagado(id,true);
 }
-async function limparAntigos(){
-  const lim=Date.now()-RETENCAO_MESES*30*864e5;
-  const v=getL().filter(l=>(l.t||0)<lim&&l.status!=='aplicado'&&l.status!=='aprovado');
-  if(!v.length)return aviso('Nenhum lead sem contratação com mais de '+RETENCAO_MESES+' meses.');
-  if(!(await sim(v.length+' lead(s) parado(s) há mais de '+RETENCAO_MESES+' meses serão apagados de vez, inclusive do backup no HD. Continuar?',{ok:'Apagar',titulo:'Apagar leads antigos?'})))return;
-  for(const l of v)await apagarLead(l.id,false);A.sel=null;admin();
-}
 document.addEventListener('click',async e=>{
-  const b=e.target.closest&&e.target.closest('#lgd,#lgx,#npin,#lclean');if(!b||!A.auth)return;
-  if(b.id==='npin')return trocarPin(false);
-  if(b.id==='lclean')return limparAntigos();
+  const b=e.target.closest&&e.target.closest('#lgd,#lgx');if(!b||!A.auth)return;
   const l=getL().find(x=>x.id===A.sel);if(!l)return;
   if(b.id==='lgx')return dl('dados-'+l.id+'.json',JSON.stringify(l,null,1),'application/json');
   await apagarLead(l.id,true);A.sel=null;paintList();paintDet();

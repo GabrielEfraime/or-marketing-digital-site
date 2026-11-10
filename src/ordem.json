@@ -15,7 +15,7 @@
     },
     {
       "arquivo": "src/css/01-minha-area.css",
-      "descricao": "Minha área: menu lateral, lista de leads, abas, painéis, acompanhamento, janelas e formulários"
+      "descricao": "Minha área: lista de leads, abas, painéis, acompanhamento, janelas e formulários"
     },
     {
       "arquivo": "src/css/02-apple-hig.css",
@@ -111,7 +111,7 @@
     },
     {
       "arquivo": "src/css/29-minha-area-painel.css",
-      "descricao": "Minha área, direção C: casca (menu agrupado, topo, barra inferior), cartões, listas, formulários, Dashboard e Configurações"
+      "descricao": "Minha área, direção C: casca (menu agrupado, topo, barra inferior), cartões, listas, formulários, Dashboard e demais telas"
     }
   ],
   "js": [
@@ -193,7 +193,7 @@
     },
     {
       "arquivo": "src/js/19-backup-disco.js",
-      "descricao": "Backup na pasta do HD (File System Access API) e mesclagem por data"
+      "descricao": "Pasta do HD já conectada (File System Access API: só salva e carrega; sem tela de conexão), mesclagem por data e decifra do cofre do site"
     },
     {
       "arquivo": "src/js/20-minha-area-estado.js",

@@ -1,6 +1,6 @@
 /* ====== Paleta de comando (Ctrl+K) da Minha área: telas e leads, só com dados locais, nada de IA nem de rede ====== */
 const PAL={aberta:false,gatilho:null,itens:[],i:0};
-const palTelas=()=>[...PN_GRUPOS.flatMap(g=>g[1]),['cfg','Configurações']].map(([v,t])=>({tipo:'tela',v,t}));
+const palTelas=()=>PN_GRUPOS.flatMap(g=>g[1]).map(([v,t])=>({tipo:'tela',v,t}));
 function palResultados(q){
   const n=norm(q||''),telas=palTelas().filter(x=>!n||norm(x.t).includes(n)),
     leads=getL().filter(l=>!l.arq&&(!n||norm(l.nome).includes(n)||norm(svcName(l)).includes(n))).sort((a,b)=>leadT(b)-leadT(a)).slice(0,n?8:5).map(l=>({tipo:'lead',id:l.id,t:l.nome,s:stl(l.status)+' · '+svcName(l)}));

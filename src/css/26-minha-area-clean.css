@@ -9,35 +9,17 @@ html body.adm{
   background:radial-gradient(60% 45% at 100% 0,#22333B38,transparent 70%) fixed,var(--or-obsidiana);font-family:var(--fb)}
 
 /* barra lateral */
-html body.adm .side{border-right:1px solid var(--bd);padding:26px 16px 22px;gap:8px}
-html body.adm .side *:focus-visible{outline:2px solid var(--or-areia)!important;outline-offset:2px}
+
 /* coluna da barra: caixas (pílulas, botões) a 16 px da borda e textos a 32 px, no computador */
-html body.adm .side .brandb{margin:0 0 14px}
-html body.adm .side .wmw .wm{font:500 12px/1 var(--fb)}
-html body.adm .side .wmw .wt{display:block;margin:0;font:600 12px/1 var(--fb);letter-spacing:.34em;text-transform:uppercase;color:var(--or-areia);opacity:1}
-html body.adm .side .nv{min-height:44px;position:relative;box-sizing:border-box;font:500 15px/var(--lh-t) var(--fb);color:rgba(234,224,213,.62);padding:11px 14px 11px 16px;border-radius:10px;border:1px solid transparent;background:none;box-shadow:none}
-html body.adm .side .nv:hover{color:var(--or-marfim);background:rgba(234,224,213,.04)}
-html body.adm .side .nv.on{color:var(--or-marfim);font-weight:600;background:rgba(234,224,213,.06);border-color:rgba(234,224,213,.08);box-shadow:none}
-html body.adm .side .nv.sub{padding-left:28px}
-html body.adm .nvgt{padding:18px 16px 6px;font:600 12px/1 var(--fb);letter-spacing:.22em;color:var(--or-areia);opacity:.85}
-html body.adm .iasum{margin-top:8px;padding:14px 16px 0;border-top:1px solid var(--bd);font-size:var(--t-xs);line-height:var(--lh-body);color:rgba(234,224,213,.72)}
-html body.adm .diskbar{padding:0;font-size:13px;line-height:var(--lh-ui);color:rgba(234,224,213,.55)}
-html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{display:block;padding:0 16px}
-html body.adm .side .btn{width:100%;margin:4px 0 6px;padding:11px 14px;border-radius:12px;font:600 13px/var(--lh-ui) var(--fb);color:var(--or-areia)!important;background:rgba(198,172,142,.06)!important;background-image:none;border:1px solid rgba(198,172,142,.45);box-shadow:none}
-html body.adm .side .btn:hover{background:rgba(198,172,142,.14)!important}
-html body.adm .side .ok2{color:var(--st-aplicado)}
-html body.adm .dtools{gap:6px}
-html body.adm .dtools button{font:500 13px/var(--lh-ui) var(--fb);color:rgba(234,224,213,.72);border:1px solid var(--ctl);border-radius:10px;padding:10px 14px}
-html body.adm .dtools button:hover{color:var(--or-marfim);border-color:rgba(234,224,213,.2)}
+
 /* no computador, o item ativo ganha o traço em areia à esquerda */
-@media(min-width:861px){html body.adm .side .nv.on::before{content:"";position:absolute;left:0;top:50%;width:2px;height:18px;translate:0 -50%;border-radius:2px;background:var(--or-areia)}}
 
 /* conteúdo */
 html body.adm .mainc{padding:clamp(22px,3.2vw,48px) clamp(18px,3.2vw,52px)}
 html body.adm .pt{margin:0 0 8px;font:600 clamp(28px,2.8vw,40px)/1.1 var(--fd);letter-spacing:-.025em}
 html body.adm .hint{color:rgba(234,224,213,.6)}
 html body.adm label{font:600 14px/var(--lh-ui) var(--fb);color:rgba(234,224,213,.86)}
-html body.adm .dsh-f label,html body.adm .mper,html body.adm .dsh-h,html body.adm .tbl th,html body.adm .bn-t{font-family:var(--fb);font-weight:600;letter-spacing:.14em;color:rgba(234,224,213,.6);opacity:1}
+html body.adm .dsh-f label,html body.adm .mper,html body.adm .dsh-h,html body.adm .tbl th{font-family:var(--fb);font-weight:600;letter-spacing:.14em;color:rgba(234,224,213,.6);opacity:1}
 html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select,html body.adm textarea{
   font:400 15px/var(--lh-ui) var(--fb);color:var(--or-marfim);background-color:var(--inpbg);border:1px solid rgba(234,224,213,.12);border-radius:12px}
 html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select{min-height:46px}
@@ -45,16 +27,14 @@ html body.adm input:focus-visible,html body.adm select:focus-visible,html body.a
 html body.adm ::placeholder{color:rgba(234,224,213,.38)}
 
 /* cartões: sólidos, borda fina, sem brilho */
-html body.adm .panel,html body.adm .kpi,html body.adm .sc,html body.adm .mbox,html body.adm .bn{background:var(--panel);border:1px solid var(--bd);box-shadow:none}
+html body.adm .panel,html body.adm .kpi,html body.adm .sc,html body.adm .mbox{background:var(--panel);border:1px solid var(--bd);box-shadow:none}
 html body.adm .panel{border-radius:18px}
-html body.adm .sc,html body.adm .kpi,html body.adm .bn{border-radius:16px}
+html body.adm .sc,html body.adm .kpi{border-radius:16px}
 /* cartões de resumo: a cor do status vira um ponto antes da legenda (mesmo ponto dos selos de status) */
 html body.adm .sc{border-top-width:1px}
 html body.adm .sc span::before{content:"";display:inline-block;width:6px;height:6px;margin:0 8px 1px 0;border-radius:50%;vertical-align:middle;background:var(--c,var(--or-areia))}
 html body.adm .sc b{font:600 clamp(28px,3vw,38px)/1 var(--fd);letter-spacing:-.03em}
 html body.adm .sc span{font-size:var(--t-sm);color:rgba(234,224,213,.62)}
-html body.adm .bn-n{font:600 38px/1.05 var(--fd);letter-spacing:-.03em;border-left-width:2px}
-html body.adm .bn-n.big{font-size:56px}
 
 /* lista de leads e status */
 html body.adm .it{background:var(--panel);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:14px;padding:14px 16px;transition:background-color .2s,box-shadow .2s}
@@ -87,12 +67,12 @@ html body.adm .savebar.ok{color:var(--st-aplicado)}
 @media(max-width:860px){
   /* tudo na mesma borda do conteúdo (18 px) */
   html body.adm .mainc{padding-left:18px;padding-right:18px}
-  html body.adm .side .brandb{padding-left:18px;padding-right:18px}
-  html body.adm .side>.nvs{align-items:center;padding:8px 18px 12px}
-  html body.adm .savebar,html body.adm .iasum,html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{padding-left:18px;padding-right:18px}
-  html body.adm .diskbar{padding:0 18px}html body.adm .diskbar>.hint,html body.adm .diskbar>.ok2{padding:0}
-  html body.adm .side>.dtools{padding-left:18px;padding-right:18px}
-  html body.adm .side .nv{align-self:center;height:auto;border-radius:999px;padding:10px 16px;min-height:44px}html body.adm .side .nv.on{background:var(--or-marfim);color:var(--or-obsidiana);border-color:var(--or-marfim)}}
+  
+  
+  html body.adm .savebar{padding-left:18px;padding-right:18px}
+  
+  
+  }
 
 @media(prefers-reduced-motion:reduce){html body.adm .it{transition:none}}
 
@@ -145,24 +125,21 @@ input[type=checkbox],input[type=radio]{accent-color:#C6AC8E}
 :where(body.adm) details[open]>summary::after{transform:rotate(45deg)}
 .it2-c>summary,.cap-kd summary,.rea-post-caption summary{min-height:44px}
 .x{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0}
-.cap-lnk,.lnkb{position:relative}
-.cap-lnk::after,.lnkb::after{content:"";position:absolute;inset:-10px -6px}
+.cap-lnk{position:relative}
+.cap-lnk::after{content:"";position:absolute;inset:-10px -6px}
 /* 6: tarefas: texto em linha cheia; data e ✕ na linha de baixo */
 @media(max-width:640px){.tsk{flex-wrap:wrap;row-gap:0}.tsk label{flex:1 1 100%;min-width:0}.tsk>span{flex:1 1 0;min-width:0}.tsk i{margin-left:auto}}
 /* 8: barras de rolagem finas e sem setas (a rolagem continua) */
-.tabs,.list,html body.adm .side,.rea-calendar-grid-scroll,.or-quadro{scrollbar-width:thin;scrollbar-color:var(--ctl) transparent}
+.tabs,.list,.rea-calendar-grid-scroll,.or-quadro{scrollbar-width:thin;scrollbar-color:var(--ctl) transparent}
 /* barra lateral: marca em duas linhas, sem rolagem horizontal; select da tela IAs */
-html body.adm .side{overflow-x:hidden}
-html body.adm .side .wmw,html body.adm .side .wmw .wm{min-width:0;white-space:normal}
-html body.adm .side .wmw .wm{letter-spacing:.18em;overflow-wrap:anywhere}
+
 html body.adm .iacard select{font-size:var(--t-sm);padding-left:10px;padding-right:10px;text-overflow:ellipsis}
-.nvs{scrollbar-width:thin;scrollbar-color:var(--ctl) transparent}
-@media(max-width:860px) and (max-height:620px){html body.adm .side>.nvs{padding:4px 14px 6px}}
+
 /* Nomes longos sem espaços (lead, vaga, demanda, cliente) quebram dentro do cartão em vez de estourar a tela */
-html body.adm :is(.bn,.panel,.it,.lnkb,li,p,h2,h3,h4,b,td,th,.hint,.dem-it,.cap-cb){overflow-wrap:anywhere}
-html body.adm :is(.bn,.panel,.it,li,.dem-it,.cap-cb,main,section){min-width:0}
+html body.adm :is(.panel,.it,li,p,h2,h3,h4,b,td,th,.hint,.dem-it,.cap-cb){overflow-wrap:anywhere}
+html body.adm :is(.panel,.it,li,.dem-it,.cap-cb,main,section){min-width:0}
 /* Alvos de toque de 44px: área clicável maior sem mudar o desenho */
-.plink,.cap-lnk,.lnkb{position:relative}
+.plink,.cap-lnk{position:relative}
 .plink::after{content:"";position:absolute;inset:-10px -6px}
 html :is(.tg2b,.or-checklist label,.row>label:has(>input[type=checkbox])){min-height:44px;display:flex;align-items:center;gap:8px}
 html body.adm .tab{min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center}

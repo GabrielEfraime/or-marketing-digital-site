@@ -13,7 +13,7 @@ function pintaSave(){
   if(!SAVE.at){el.className='savebar';el.textContent='';if(bad){bad.hidden=true;bad.textContent=''}return}
   el.className='savebar'+(SAVE.ok?' ok':'');
   el.textContent=SAVE.ok?'Salvo neste navegador às '+new Date(SAVE.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
-  if(bad){bad.hidden=SAVE.ok;bad.textContent=SAVE.ok?'':'NÃO SALVO: o armazenamento do navegador está cheio ou bloqueado. Baixe o backup antes de fechar esta aba.'}
+  if(bad){bad.hidden=SAVE.ok;bad.textContent=SAVE.ok?'':'NÃO SALVO: o armazenamento do navegador está cheio ou bloqueado. O que você fez agora pode se perder se fechar esta aba.'}
 }
 
 /* registro de atividades (a partir de agora): quem fez o quê e quando */

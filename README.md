@@ -19,7 +19,7 @@ npm run montar:teste  # build local com a chave Gemini do .env (gera ../estudio-
 npm run abrir:teste   # abre o build de teste em http://127.0.0.1:5173
 ```
 
-Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer HTML aberto no mesmo Chrome consegue ler as chaves e os dados da plataforma. Na primeira vez no endereço novo, clique em **Conectar pasta de backup no HD** para trazer os leads, ou importe um backup.
+Use `npm run abrir` em vez de dar duplo clique no HTML. Pelo `file://`, qualquer HTML aberto no mesmo Chrome consegue ler as chaves e os dados da plataforma. Cada endereço tem o seu próprio armazenamento: na primeira vez em um endereço novo, a plataforma começa sem os dados do outro.
 
 ## Publicar (GitHub Pages)
 
