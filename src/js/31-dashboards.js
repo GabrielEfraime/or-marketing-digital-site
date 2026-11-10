@@ -8,9 +8,12 @@ const dHora=t=>{const d=new Date(t);return d.toLocaleDateString('pt-BR',{day:'2-
 /* indicador de salvamento: confirma que gravou de verdade ou avisa que não */
 function pintaSave(){
   const el=document.getElementById('savebar');if(!el)return;
-  if(!SAVE.at){el.className='savebar';el.textContent='';return}
-  el.className='savebar'+(SAVE.ok?' ok':' bad');
-  el.textContent=SAVE.ok?'Salvo neste navegador às '+new Date(SAVE.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'NÃO SALVO: o armazenamento do navegador está cheio ou bloqueado. Baixe o backup antes de fechar esta aba.';
+  /* "Salvo" fica discreto na barra de topo; "NÃO SALVO" ocupa uma linha própria do layout (#savebad), sem cobrir o menu nem o conteúdo */
+  const bad=document.getElementById('savebad');
+  if(!SAVE.at){el.className='savebar';el.textContent='';if(bad){bad.hidden=true;bad.textContent=''}return}
+  el.className='savebar'+(SAVE.ok?' ok':'');
+  el.textContent=SAVE.ok?'Salvo neste navegador às '+new Date(SAVE.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+  if(bad){bad.hidden=SAVE.ok;bad.textContent=SAVE.ok?'':'NÃO SALVO: o armazenamento do navegador está cheio ou bloqueado. Baixe o backup antes de fechar esta aba.'}
 }
 
 /* registro de atividades (a partir de agora): quem fez o quê e quando */
@@ -125,6 +128,12 @@ const PD_I={
   filtro:PD_ICO('<path d="M4 6h16M7 12h10M10 18h4"/>')
 };
 const PD_ATIV_IC={status:'check',orcamento:'doc',mensagem:'chat',envio:'chat',plano:'check',projeto:'pulso'};
+/* ícone da atividade: só tipos conhecidos (um tipo como "constructor" não pode virar "undefined") */
+const pdIcone=t=>Object.hasOwn(PD_ATIV_IC,t)?PD_ATIV_IC[t]:'pulso';
+/* dia da semana com mais leads; empate (ou nenhum lead) = -1, "sem destaque" */
+const pdDiaTop=c=>{const mx=Math.max(...c);return mx>0&&c.filter(x=>x===mx).length===1?c.indexOf(mx):-1};
+/* o gráfico "Leads por dia" mostra no máximo 90 dias, mesmo com o filtro "Tudo" */
+const pdRotuloPeriodo=d=>d&&d<=90?'Últimos '+d+' dias':'Últimos 90 dias';
 const PD_DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],PD_DIAS_L=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 const pdYmd=t=>new Date(t).toLocaleDateString('sv-SE');
 /* traçado de uma série: curva monotônica (Fritsch-Carlson), sem ultrapassar os valores; x com folga de 3% nas bordas; y de 0 (base) a 100 (topo) */
@@ -158,24 +167,25 @@ function pdGrafico(R){
   ativGet().filter(e=>e.tipo==='orcamento').forEach(e=>{const k=pdYmd(e.t);if(k>=lim)orcPorDia[k]=(orcPorDia[k]||0)+1});
   const a=dias.map(p=>p[1]),b=dias.map(p=>orcPorDia[p[0]]||0),tot=a.reduce((x,y)=>x+y,0),mx=Math.max(...a,...b,1);
   const pills=[[7,'7 dias'],[30,'30 dias'],[90,'90 dias'],[0,'Tudo']].map(([v,t])=>`<button type="button" class="pd-pl" data-dias="${v}" aria-pressed="${DASH.dias===v}">${t}</button>`).join('');
-  const topo=`<div class="pd-hd"><div><h3>Leads por dia</h3><div class="pd-val">${tot}</div></div><div class="pd-pills" role="group" aria-label="Período do gráfico">${pills}</div></div>`;
-  const leg='<div class="pd-leg"><span><i></i>Leads recebidos</span><span><i class="b"></i>Orçamentos gerados</span></div>';
+  const rot=pdRotuloPeriodo(DASH.dias);
+  const topo=`<div class="pd-hd"><div><h3>Leads por dia</h3><div class="pd-val">${tot}</div><div class="pd-per">${rot}${DASH.dias===0||DASH.dias>90?' (o gráfico não passa de 90 dias)':''}</div></div><div class="pd-pills" role="group" aria-label="Período do gráfico">${pills}</div></div>`;
+  const leg='<div class="pd-leg"><span><i></i>Leads recebidos</span><span><i class="b"></i>Orçamentos gerados</span></div><p class="pd-nota pd-nota-g">A linha "Orçamentos gerados" vem do registro de atividades (só o que foi registrado a partir de agora) e não respeita os filtros de status, serviço, plano e cliente.</p>';
   if(!tot)return `<section class="pn-card pd-graf">${topo}<div class="pd-plot pd-plot-v"><div class="pd-vazio"><p>Ainda não há leads neste período. O gráfico aparece quando o primeiro briefing chegar.</p><button type="button" class="btn pd-btn pd-sec" data-pn="cap">Captar clientes</button></div><svg class="pd-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="gh" d="M0 72 L100 72"/></svg></div>${leg}</section>`;
   const desc=i=>fdate(dias[i][0])+': '+a[i]+' lead(s), '+b[i]+' orçamento(s)';
-  return `<section class="pn-card pd-graf">${topo}<div class="pd-plot" id="pd-plot" tabindex="0" role="group" aria-label="Leads recebidos por dia, ${tot} no total. Use as setas do teclado para ler cada dia.">
+  return `<section class="pn-card pd-graf">${topo}<div class="pd-plot" id="pd-plot" tabindex="0" role="group" aria-label="Leads recebidos por dia, ${tot} no total, ${rot.toLowerCase()}. Use as setas do teclado para ler cada dia.">
    <svg class="pd-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="l2" d="${pdCaminho(b,mx)}"/><path class="l1" d="${pdCaminho(a,mx)}"/></svg>
    ${a.filter(x=>x>0).length<=12?a.map((x,i)=>x>0?`<span class="pd-pt" style="left:${pdX(i,n).toFixed(2)}%;top:${pdY(x,mx).toFixed(2)}%"></span>`:'').join(''):''}<span class="pd-dot" id="pd-dot" hidden></span><div class="pd-tip" id="pd-tip" hidden></div></div>
-   <p class="pd-dica" id="pd-dica" role="status" aria-live="polite">Passe o cursor ou use as setas sobre o gráfico para ver o dia.</p>${leg}<span hidden id="pd-dados" data-n="${n}">${esc(JSON.stringify(dias.map((p,i)=>[desc(i),a[i],b[i]])))}</span></section>`;
+   <p class="pd-dica" id="pd-dica">Passe o cursor ou use as setas sobre o gráfico para ver o dia.</p><span class="pn-sr" id="pd-live" role="status" aria-live="polite"></span>${leg}<span hidden id="pd-dados" data-n="${n}">${esc(JSON.stringify(dias.map((p,i)=>[desc(i),a[i],b[i]])))}</span></section>`;
 }
 function pdSemana(R){
   const c=[0,0,0,0,0,0,0];R.base.forEach(l=>{c[new Date(leadT(l)).getDay()]++});
-  const mx=Math.max(...c),tot=c.reduce((x,y)=>x+y,0),top=tot?c.indexOf(mx):-1;
-  return `<section class="pn-card pd-sem"><div class="pd-hd"><div><h3>Leads por dia da semana</h3><div class="pd-val">${top>=0?esc(PD_DIAS_L[top]):'—'}</div></div></div><div class="pd-bars" role="img" aria-label="Leads por dia da semana: ${c.map((x,i)=>PD_DIAS[i]+' '+x).join(', ')}">${c.map((x,i)=>`<div class="pd-bar${i===top?' on':''}"><div class="pd-tr"><i style="height:${tot?Math.max(x?4:0,Math.round(x/mx*100)):0}%"></i></div><span>${PD_DIAS[i]}</span></div>`).join('')}</div></section>`;
+  const mx=Math.max(...c),tot=c.reduce((x,y)=>x+y,0),top=pdDiaTop(c);
+  return `<section class="pn-card pd-sem"><div class="pd-hd"><div><h3>Leads por dia da semana</h3><div class="pd-val">${top>=0?esc(PD_DIAS_L[top]):(tot?'Sem destaque':'—')}</div></div></div><div class="pd-bars" role="img" aria-label="Leads por dia da semana: ${c.map((x,i)=>PD_DIAS[i]+' '+x).join(', ')}">${c.map((x,i)=>`<div class="pd-bar${i===top?' on':''}"><div class="pd-tr"><i style="height:${tot?Math.max(x?4:0,Math.round(x/mx*100)):0}%"></i></div><span>${PD_DIAS[i]}</span></div>`).join('')}</div></section>`;
 }
 function pdAtiv(){
   const ev=ativGet().slice(0,5);
   const vazio='<div class="pd-vz"><span class="pd-ci2">'+PD_I.pulso+'</span><p>Sem atividades ainda. Elas aparecem aqui conforme você usa o painel.</p></div>';
-  return `<section class="pn-card pd-ativ"><div class="pd-hd"><h3>Atividade recente</h3><button type="button" class="pd-ver" id="pd-vertudo"${ev.length?'':' disabled'}>Ver tudo</button></div>${ev.length?`<ul class="pd-lista">${ev.map(e=>`<li><span class="pd-ci">${PD_I[PD_ATIV_IC[e.tipo]||'pulso']}</span><div class="pd-tx">${e.id?`<button type="button" class="pd-lk" data-lead="${esc(e.id)}"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></button>`:`<b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span>`}</div></li>`).join('')}</ul>`:vazio}</section>`;
+  return `<section class="pn-card pd-ativ"><div class="pd-hd"><h3>Atividade recente</h3><button type="button" class="pd-ver" id="pd-vertudo"${ev.length?'':' disabled'}>Ver tudo</button></div>${ev.length?`<ul class="pd-lista">${ev.map(e=>`<li><span class="pd-ci">${PD_I[pdIcone(e.tipo)]}</span><div class="pd-tx">${e.id?`<button type="button" class="pd-lk" data-lead="${esc(e.id)}"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></button>`:`<b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span>`}</div></li>`).join('')}</ul>`:vazio}</section>`;
 }
 function pdFunil(R){
   const et=[['Leads recebidos',R.recebidos,'todos'],['Orçamento gerado',R.orc,'pronto'],['Orçamento enviado',R.env,'pronto'],['Aprovados',R.apr,'aprovado'],['Em execução',R.exec,'aplicado']],max=Math.max(R.recebidos,1);
@@ -191,7 +201,7 @@ function pdMatriz(){
 }
 function pdVerTudo(){
   const ev=ativGet().slice(0,100);
-  const m=dlg('Atividade recente','<h3>Atividade recente</h3><ul class="pd-lista pd-lista-dlg">'+ev.map(e=>`<li><span class="pd-ci">${PD_I[PD_ATIV_IC[e.tipo]||'pulso']}</span><div class="pd-tx"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></div></li>`).join('')+'</ul><div class="row"><button type="button" class="btn ghost" data-ok>Fechar</button></div>',{larga:true});
+  const m=dlg('Atividade recente','<h3>Atividade recente</h3><ul class="pd-lista pd-lista-dlg">'+ev.map(e=>`<li><span class="pd-ci">${PD_I[pdIcone(e.tipo)]}</span><div class="pd-tx"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></div></li>`).join('')+'</ul><div class="row"><button type="button" class="btn ghost" data-ok>Fechar</button></div>',{larga:true});
   m.querySelector('[data-ok]').onclick=()=>m.remove();
 }
 function pdHero(R){
@@ -213,7 +223,7 @@ function dashPainel(R){
   <div class="pd-g pd-g83">${pdGrafico(R)}${pdSemana(R)}</div>
   <div class="pd-g pd-g3">${pdAtiv()}${pdFunil(R)}${pdMatriz()}</div>
   <div class="pd-g pd-g2">
-   <section class="pn-card"><h3 class="pd-h3">Precisa de atenção</h3>${al.length?`<ul class="pd-ul">${al.slice(0,8).map(x=>`<li><span class="pd-mut">${esc(x.t)}</span><button type="button" class="pd-lk" ${x.proj?`data-proj="${esc(x.proj)}"`:`data-lead="${esc(x.id)}"`}>${esc(x.n)}</button></li>`).join('')}</ul>${al.length>8?`<p class="pd-nota">Mostrando 8 de ${al.length}.</p>`:''}`:'<p class="pd-mut">Nada exigindo atenção agora.</p>'}</section>
+   <section class="pn-card" id="pd-atencao" tabindex="-1" aria-labelledby="pd-atencao-t"><h3 class="pd-h3" id="pd-atencao-t">Precisa de atenção</h3>${al.length?`<ul class="pd-ul">${al.slice(0,8).map(x=>`<li><span class="pd-mut">${esc(x.t)}</span><button type="button" class="pd-lk" ${x.proj?`data-proj="${esc(x.proj)}"`:`data-lead="${esc(x.id)}"`}>${esc(x.n)}</button></li>`).join('')}</ul>${al.length>8?`<p class="pd-nota">Mostrando 8 de ${al.length}.</p>`:''}`:'<p class="pd-mut">Nada exigindo atenção agora.</p>'}</section>
    <section class="pn-card"><h3 class="pd-h3">Tarefas e prazos próximos</h3>${R.tarefas.length?`<ul class="pd-ul">${R.tarefas.map(({l,x})=>`<li class="pd-li2"><button type="button" class="pd-lk" data-proj="${esc(l.id)}"><b>${esc(l.nome)}</b> · ${esc(x.txt)}</button><span class="${x.due<hoje?'late':(x.due<=addDays(hoje,7)?'soon':'pd-mut')}">${x.due<hoje?'atrasada · ':''}${esc(fdate(x.due))}</span></li>`).join('')}</ul>${R.tarefasTotal>10?`<p class="pd-nota">Mostrando 10 de ${R.tarefasTotal} tarefas pendentes.</p>`:''}`:'<p class="pd-mut">Nenhuma tarefa pendente com prazo.</p>'}</section>
   </div>
   <div class="pd-g pd-g3">
@@ -257,18 +267,21 @@ function pdBindPlot(el){
   let dados=[];try{dados=JSON.parse(dd.textContent)}catch(e){return}
   const dot=el.querySelector('#pd-dot'),tip=el.querySelector('#pd-tip'),dica=el.querySelector('#pd-dica'),n=dados.length;
   const mx=Math.max(...dados.map(x=>Math.max(x[1],x[2])),1);
-  const mostra=i=>{
+  const live=el.querySelector('#pd-live');
+  /* a leitura em voz alta (aria-live) só muda por foco e setas; o mouse atualiza só o texto visível */
+  const mostra=(i,fala)=>{
     i=Math.max(0,Math.min(n-1,i));plot.dataset.i=i;
     const x=pdX(i,n),y=pdY(dados[i][1],mx);
     dot.hidden=false;dot.style.left=x+'%';dot.style.top=y+'%';
     tip.hidden=false;tip.innerHTML='<b></b><span></span>';tip.firstChild.textContent=dados[i][1]+' lead(s)';tip.lastChild.textContent=dados[i][0].split(': ')[0]+' · '+dados[i][2]+' orçamento(s)';
     tip.classList.toggle('esq',x>60);tip.style.left=x+'%';tip.style.top=Math.min(Math.max(y,22),78)+'%';
     dica.textContent=dados[i][0];
+    if(fala&&live)live.textContent=dados[i][0];
   };
   const idx=e=>{const r=plot.getBoundingClientRect();return Math.round(((e.clientX-r.left)/r.width*100-3)/94*(n-1))};
   plot.onpointermove=e=>mostra(idx(e));plot.onpointerdown=e=>mostra(idx(e));
-  plot.onfocus=()=>mostra(plot.dataset.i!=null&&plot.dataset.i!==''?+plot.dataset.i:n-1);
-  plot.onkeydown=e=>{const i=+(plot.dataset.i??n-1),j=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:e.key==='Home'?0:e.key==='End'?n-1:null;if(j!==null){e.preventDefault();mostra(j)}};
+  plot.onfocus=()=>mostra(plot.dataset.i!=null&&plot.dataset.i!==''?+plot.dataset.i:n-1,true);
+  plot.onkeydown=e=>{const i=+(plot.dataset.i??n-1),j=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:e.key==='Home'?0:e.key==='End'?n-1:null;if(j!==null){e.preventDefault();mostra(j,true)}};
 }
 function bindDash(){
   const m={'df-status':['status',v=>v],'df-svc':['svc',v=>v],'df-plano':['plano',v=>v],'df-ord':['ord',v=>v]};

@@ -88,8 +88,20 @@ html body.adm .pn-bar{display:none}
 html body.adm .pn .savebar{padding:0;margin:0;font:400 12px/16px var(--fb);color:var(--pn-t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body.adm .pn .savebar:empty{display:none}
 html body.adm .pn .savebar.ok{color:var(--ok)}
-html body.adm .pn .savebar.bad{position:fixed;top:72px;right:var(--pn-pad);max-width:min(440px,calc(100vw - 2*var(--pn-pad)));white-space:normal;z-index:65;padding:var(--sp-3) var(--sp-4);border-radius:var(--pn-ri);background:#2a1513;border:1px solid var(--err);color:#F3C2BD;font:600 13px/20px var(--fb)}
-@media(max-width:860px){html body.adm .pn .savebar.bad{left:var(--pn-pad);max-width:none}}
+/* "NÃO SALVO" tem linha própria no layout (entre a barra de topo e o conteúdo): empurra a página em vez de cobrir menu e botões */
+html body.adm .pn .savebad{margin:var(--sp-3) var(--pn-pad) 0;padding:var(--sp-3) var(--sp-4);border-radius:var(--pn-ri);background:#2a1513;border:1px solid var(--err);color:#F3C2BD;font:600 13px/20px var(--fb)}
+html body.adm .pn .savebad[hidden]{display:none}
+html body.adm .pn .pn-teste{margin:var(--sp-3) var(--pn-pad) 0}
+/* aviso do Backup no HD: ponto discreto (avatar, botão Mais, item Configurações) */
+html body.adm .pn-ponto-bkp{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 2px #0A0908;pointer-events:none}
+html body.adm .pn-av{position:relative}
+html body.adm .pn-av .pn-ponto-bkp{top:-1px;right:-1px}
+html body.adm .pn-bi{position:relative}
+html body.adm .pn-bi .pn-ponto-bkp{top:6px;left:calc(50% + 6px);right:auto}
+html body.adm .pn-mi .pn-ponto-bkp{position:static;margin-left:auto;flex:none;box-shadow:none}
+html body.adm .pd-per{font:400 12px/16px var(--fb);color:var(--pn-t2);margin-top:var(--sp-1)}
+html body.adm .pd-graf .pd-nota-g{margin-top:var(--sp-2)}
+html body.adm #pd-atencao{scroll-margin-top:calc(var(--pn-topo) + var(--sp-4));outline:0}
 
 /* ---- paleta de comando (Ctrl+K) ---- */
 html body.adm .pal{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:12vh var(--sp-4) var(--sp-4);background:rgba(0,0,0,.6);overflow:auto}
@@ -149,6 +161,8 @@ html body.adm .pd-acoes{display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-top:v
 html body.adm .pd-g{display:grid;gap:var(--pn-gap);margin-top:var(--pn-gap);grid-template-columns:repeat(12,minmax(0,1fr))}
 html body.adm .pd-g>*{grid-column:span 4}
 html body.adm .pd-g4>*{grid-column:span 3;height:152px}
+/* entre 861 e 1100px quatro cartões por linha quebram palavras: dois por linha */
+@media(min-width:861px) and (max-width:1100px){html body.adm .pd-g4>*{grid-column:span 6}}
 html body.adm .pd-g83>:first-child{grid-column:span 8}
 html body.adm .pd-g83>:last-child{grid-column:span 4}
 html body.adm .pd-g83>*{height:336px}
@@ -239,7 +253,8 @@ html body.adm .pd-ul li{display:flex;flex-direction:column;gap:2px;padding:var(-
 html body.adm .pd-ul li:first-child{border-top:0}
 html body.adm .pd-kv li{flex-direction:row;justify-content:space-between;align-items:baseline;gap:var(--sp-3)}
 html body.adm .pd-kv b{font-variant-numeric:tabular-nums}
-html body.adm .pd-li2{flex-direction:row!important;justify-content:space-between;align-items:center;gap:var(--sp-3)}
+/* .pd-ul li (mesma cascata) manda coluna: seletor mais específico, sem !important */
+html body.adm .pd-ul .pd-li2{flex-direction:row;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 html body.adm .pn .late{color:var(--err);font-weight:700}
 html body.adm .pn .soon{color:var(--warn);font-weight:700}
 html body.adm .pd-tab .tbw{overflow-x:auto;margin-top:var(--sp-3)}
@@ -266,12 +281,13 @@ html body.adm .pd-tab .tbl tbody tr:hover{background:rgba(234,224,213,.04)}
   html body.adm .pd-pl{flex:1}
   html body.adm .pd-fn li{grid-template-columns:minmax(0,120px) 1fr 32px}
   html body.adm .pd-ver{margin:0}
+  /* !important necessário: o JS posiciona a dica com style inline (left/top) e no celular ela fica fixa no canto */
   html body.adm .pd-tip{left:auto!important;right:var(--sp-2);top:var(--sp-2)!important;transform:none}
   html body.adm .pd-heat{grid-template-rows:none;flex:none}
 }
 
 /* ---- Configurações ---- */
-html body.adm .pn-dets{display:grid;gap:var(--pn-gap);margin-top:var(--sp-5);max-width:880px}
+html body.adm .pn-dets{display:grid;gap:var(--pn-gap);margin-top:var(--sp-5)}
 html body.adm .pn-det{border-radius:var(--pn-rc);background:var(--pn-card),var(--pn-card-bg);border:1px solid var(--pn-ln)}
 html body.adm .pn-det>summary{list-style:none;cursor:pointer;display:grid;gap:2px;padding:var(--sp-4) var(--sp-5);min-height:64px;border-radius:var(--pn-rc);position:relative}
 html body.adm .pn-det>summary::-webkit-details-marker{display:none}

@@ -7,6 +7,7 @@ function palResultados(q){
   return [...telas,...leads];
 }
 function palPinta(){
+  if(!A.auth){palFecha(true);return}
   const lista=document.getElementById('pal-lista'),inp=document.getElementById('pal-q');if(!lista||!inp)return;
   PAL.itens=palResultados(inp.value);if(PAL.i>=PAL.itens.length)PAL.i=Math.max(0,PAL.itens.length-1);
   let ult='';
@@ -18,9 +19,15 @@ function palPinta(){
   const st=document.getElementById('pal-st');if(st)st.textContent=PAL.itens.length?PAL.itens.length+' resultado(s)':'Nenhum resultado';
 }
 function palEscolhe(i){
+  if(!A.auth){palFecha(true);return}
   const x=PAL.itens[i];if(!x)return;palFecha(true);
   if(x.tipo==='tela')pnIr(x.v);
-  else{A.view='';A.sel=x.id;A.tab='orc';A.edit=false;A.err='';A.fs=false;admin();window.scrollTo(0,0)}
+  else{
+    /* o filtro da lista volta para "todos", senão o lead escolhido pode não aparecer; o foco vai para a área principal */
+    A.view='';A.filter='todos';A.sel=x.id;A.tab='orc';A.edit=false;A.err='';A.fs=false;admin();
+    const m=document.querySelector('.mainc');if(m){try{m.focus({preventScroll:true})}catch(e){}}
+    window.scrollTo(0,0);
+  }
 }
 function palFecha(semFoco){
   const p=document.getElementById('pal');if(p)p.remove();
@@ -28,7 +35,7 @@ function palFecha(semFoco){
   if(!semFoco&&PAL.gatilho&&PAL.gatilho.isConnected)PAL.gatilho.focus();
 }
 function pnPaletaAbre(gatilho){
-  if(PAL.aberta||document.querySelector('.modal'))return;
+  if(!A.auth||PAL.aberta||document.querySelector('.modal'))return;
   pnFechaMenu(true);
   PAL.aberta=true;PAL.i=0;PAL.gatilho=(gatilho&&gatilho!==document.body)?gatilho:document.querySelector('.pn-busca');
   const p=document.createElement('div');p.id='pal';p.className='pal';

@@ -67,6 +67,7 @@ async function diskSave(full){
   DISK.busy=false;paintDisk();
 }
 function paintDisk(){
+  if(typeof pnDiskPonto==='function'){pnDiskPonto();pnContagens()}
   const e=document.getElementById('disk');if(!e)return;const s=DISK.state;
   e.innerHTML=s==='on'?`<span class="ok2">● Backup no HD ligado: pasta "${esc(DISK.dir.name)}"${DISK.last?' · salvo às '+DISK.last:''}</span>`
    :s==='perm'?`<button class="btn hl" id="dskr">Reconectar pasta de backup</button> <span class="hint">um clique para liberar a pasta de novo</span>`

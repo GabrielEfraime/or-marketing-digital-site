@@ -545,5 +545,22 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
   });
 }
 
+// Dashboard: funções puras (empate no dia da semana, tipo de atividade, rótulo do período do gráfico)
+{
+  const cv = vm.createContext({ console });
+  vm.runInContext(ler('src/js/31-dashboards.js') + ';this.pdDiaTop=pdDiaTop;this.pdIcone=pdIcone;this.pdRotuloPeriodo=pdRotuloPeriodo;', cv);
+  await t('dashboard: dia da semana com empate ou sem leads fica sem destaque', () => {
+    assert.equal(cv.pdDiaTop([0, 3, 1, 0, 0, 0, 0]), 1); assert.equal(cv.pdDiaTop([2, 2, 0, 0, 0, 0, 0]), -1);
+    assert.equal(cv.pdDiaTop([0, 0, 0, 0, 0, 0, 0]), -1); assert.equal(cv.pdDiaTop([1, 1, 1, 1, 1, 1, 1]), -1);
+  });
+  await t('dashboard: tipo de atividade desconhecido (constructor, __proto__) usa o ícone padrão', () => {
+    assert.equal(cv.pdIcone('orcamento'), 'doc'); assert.equal(cv.pdIcone('constructor'), 'pulso');
+    assert.equal(cv.pdIcone('__proto__'), 'pulso'); assert.equal(cv.pdIcone('toString'), 'pulso'); assert.equal(cv.pdIcone(undefined), 'pulso');
+  });
+  await t('dashboard: gráfico rotulado com os dias que mostra (Tudo = últimos 90 dias)', () => {
+    assert.equal(cv.pdRotuloPeriodo(7), 'Últimos 7 dias'); assert.equal(cv.pdRotuloPeriodo(90), 'Últimos 90 dias'); assert.equal(cv.pdRotuloPeriodo(0), 'Últimos 90 dias');
+  });
+}
+
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
 process.exit(falhou ? 1 : 0);

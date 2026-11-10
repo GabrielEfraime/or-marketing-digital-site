@@ -52,6 +52,28 @@ function pnItem(v,t,cls){
   const on=pnAtivo()===v,n=pnContagem(v);
   return `<button type="button" class="${cls||'pn-i'}${on?' on':''}" data-pn="${esc(v)}"${on?' aria-current="page"':''}>${PN_ICONES[v]}<span class="pn-t">${esc(t)}</span>${n?`<span class="pn-c" aria-label="${n} ${v===''?'novo(s)':'em aberto'}">${n}</span>`:''}</button>`;
 }
+/* atualiza só os números do menu (por exemplo depois de importar um backup), sem refazer a tela */
+function pnContagens(){
+  document.querySelectorAll('.pn-i[data-pn],.pn-mi[data-pn]').forEach(b=>{
+    const v=b.dataset.pn,n=pnContagem(v);let c=b.querySelector('.pn-c');
+    if(!n){if(c)c.remove();return}
+    if(!c){c=document.createElement('span');c.className='pn-c';b.appendChild(c)}
+    c.textContent=String(n);c.setAttribute('aria-label',n+' '+(v===''?'novo(s)':'em aberto'));
+  });
+}
+/* aviso discreto quando o Backup no HD não está ligado (pasta a reconectar ou desligado): ponto no avatar, no botão Mais e em Configurações */
+function pnDiskPonto(){
+  const s=typeof DISK==='object'?DISK.state:'on',aviso=s!=='on',txt=s==='perm'?'Backup no HD: a pasta precisa ser reconectada':'Backup no HD desligado';
+  document.querySelectorAll('#pn-av,.pn-bi[data-pn-mais],.pn-mi[data-pn="cfg"]').forEach(b=>{
+    let p=b.querySelector(':scope>.pn-ponto-bkp');
+    if(!b.dataset.rot)b.dataset.rot=b.getAttribute('aria-label')||'';
+    if(!aviso){if(p)p.remove();b.removeAttribute('title');if(b.dataset.rot)b.setAttribute('aria-label',b.dataset.rot);return}
+    if(!p){p=document.createElement('span');p.className='pn-ponto-bkp';p.setAttribute('aria-hidden','true');b.appendChild(p)}
+    b.title=txt;
+    if(b.dataset.rot)b.setAttribute('aria-label',b.dataset.rot+'. '+txt);
+    else if(b.classList.contains('pn-mi'))b.setAttribute('aria-label','Configurações. '+txt);
+  });
+}
 function pnAlertas(){try{return alertas(dashCalc()).length}catch(e){return 0}}
 function admShell(inner){
   const v=A.view||'',atual=PN_NOMES[v]||'',nal=pnAlertas();
@@ -59,27 +81,29 @@ function admShell(inner){
   const mais=[['studio','Site Studio'],['posts','Posts'],['demandas','Demandas'],['vagas','Vagas'],['assistente','Assistente por setor'],['kb','Base da IA'],['ias','IAs']];
   const naBarra=PN_BARRA.map(x=>x[0]).includes(pnAtivo());
   return `<div class="pn">
-  <aside class="pn-side" aria-label="Menu da Minha área">${window.OR_TESTE?'<p class="err" role="note">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}
+  <aside class="pn-side" aria-label="Menu da Minha área">
    <button type="button" class="brandb pn-brand" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
    <nav class="pn-nav" aria-label="Seções da Minha área">${PN_GRUPOS.map(([g,its],i)=>`<div class="pn-g" role="group" aria-labelledby="pn-g${i}"><span class="pn-gt" id="pn-g${i}">${esc(g)}</span>${its.map(([k,t])=>pnItem(k,t)).join('')}</div>`).join('')}</nav>
   </aside>
   <div class="pn-col">
+   ${window.OR_TESTE?'<p class="err pn-teste" role="note">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}
    <header class="pn-top">
-    <button type="button" class="pn-ib pn-menub" data-pn-mais aria-label="Abrir o menu" aria-haspopup="true" aria-expanded="false">${PN_ICONES.menu}</button>
+    <button type="button" class="pn-ib pn-menub" data-pn-mais aria-label="Abrir o menu" aria-controls="pn-menu" aria-expanded="false">${PN_ICONES.menu}</button>
     <div class="pn-bcw"><nav class="pn-bc" aria-label="Você está em"><button type="button" class="pn-bc-l pn-bc-raiz" data-pn="dash">Minha área</button><span class="pn-bc-s" aria-hidden="true">/</span>${crumb}</nav><div id="savebar" class="savebar" role="status"></div></div>
     <button type="button" class="pn-busca" data-pn-paleta aria-haspopup="dialog" aria-label="Buscar lead ou ir para uma tela (Ctrl+K)">${PN_ICONES.busca}<span class="pn-busca-t">Buscar lead ou ir para uma tela</span><kbd>Ctrl</kbd><kbd>K</kbd></button>
     <button type="button" class="pn-ib pn-busca-ib" data-pn-paleta aria-haspopup="dialog" aria-label="Buscar lead ou ir para uma tela">${PN_ICONES.busca}</button>
     <button type="button" class="pn-ib" id="pn-sino" aria-label="Avisos: ${nal?nal+' que precisam de atenção':'nenhum no momento'}" data-pn="dash">${PN_ICONES.sino}${nal?'<span class="pn-ponto" aria-hidden="true"></span>':''}</button>
     <button type="button" class="pn-ib pn-ajuda" id="pn-ajuda" aria-label="Ajuda: atalhos e como a IA trabalha">${PN_ICONES.ajuda}</button>
-    <div class="pn-av-w"><button type="button" class="pn-av" id="pn-av" aria-haspopup="true" aria-expanded="false" aria-controls="pn-menu" aria-label="Menu da conta"><span aria-hidden="true">${esc(pnIniciais())}</span></button>
+    <div class="pn-av-w"><button type="button" class="pn-av" id="pn-av" aria-expanded="false" aria-controls="pn-menu" aria-label="Menu da conta"><span aria-hidden="true">${esc(pnIniciais())}</span></button>
      <div class="pn-menu" id="pn-menu" role="group" aria-label="Menu da conta" hidden>
       <div class="pn-m-mais"><span class="pn-gt">Mais telas</span>${mais.map(([k,t])=>pnItem(k,t,'pn-mi')).join('')}</div>
       <div class="pn-m-conta"><span class="pn-gt pn-m-conta-gt">Conta</span><button type="button" class="pn-mi${v==='cfg'?' on':''}" data-pn="cfg"${v==='cfg'?' aria-current="page"':''}>${PN_ICONES.cfg}<span class="pn-t">Configurações</span></button><button type="button" class="pn-mi" data-nav="pub">${PN_ICONES.pub}<span class="pn-t">Ver site público</span></button></div>
      </div></div>
    </header>
+   <div id="savebad" class="savebad" role="alert" hidden></div>
    <main class="mainc" tabindex="-1">${inner}</main>
   </div>
-  <nav class="pn-bar" aria-label="Atalhos">${PN_BARRA.map(([k,t])=>`<button type="button" class="pn-bi${pnAtivo()===k?' on':''}" data-pn="${k}"${pnAtivo()===k?' aria-current="page"':''}>${PN_ICONES[k]}<span>${esc(t)}</span></button>`).join('')}<button type="button" class="pn-bi${naBarra?'':' on'}" data-pn-mais aria-haspopup="true" aria-expanded="false">${PN_ICONES.mais}<span>Mais</span></button></nav>
+  <nav class="pn-bar" aria-label="Atalhos">${PN_BARRA.map(([k,t])=>`<button type="button" class="pn-bi${pnAtivo()===k?' on':''}" data-pn="${k}"${pnAtivo()===k?' aria-current="page"':''}>${PN_ICONES[k]}<span>${esc(t)}</span></button>`).join('')}<button type="button" class="pn-bi${naBarra?'':' on'}" data-pn-mais aria-controls="pn-menu" aria-expanded="false">${PN_ICONES.mais}<span>Mais</span></button></nav>
   <div class="pn-veu" hidden></div>
   </div>`;
 }
@@ -87,7 +111,7 @@ function admShell(inner){
 const PN={gatilho:null};
 function pnFechaMenu(semFoco){
   const m=document.getElementById('pn-menu');if(!m||m.hidden)return;
-  m.hidden=true;document.body.classList.remove('pn-folha');
+  m.hidden=true;document.body.classList.remove('pn-folha');m.setAttribute('role','group');m.setAttribute('aria-label','Menu da conta');m.removeAttribute('aria-modal');
   const veu=document.querySelector('.pn-veu');if(veu)veu.hidden=true;
   document.querySelectorAll('#pn-av,[data-pn-mais]').forEach(b=>b.setAttribute('aria-expanded','false'));
   if(!semFoco&&PN.gatilho&&PN.gatilho.isConnected)PN.gatilho.focus();
@@ -97,9 +121,17 @@ function pnAbreMenu(gatilho){
   PN.gatilho=gatilho;m.hidden=false;
   const mob=matchMedia('(max-width:860px)').matches;
   document.body.classList.toggle('pn-folha',mob);
+  /* na folha do celular o resto da tela fica coberto e o foco fica preso: é um diálogo modal; no computador é só um grupo de botões */
+  if(mob){m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Mais telas e conta')}
   const veu=document.querySelector('.pn-veu');if(veu)veu.hidden=!mob;
   document.querySelectorAll('#pn-av,[data-pn-mais]').forEach(b=>b.setAttribute('aria-expanded',b===gatilho?'true':'false'));
   const p=[...m.querySelectorAll('button')].filter(b=>b.offsetParent!==null)[0];if(p)p.focus();
+}
+/* sino: leva até o cartão "Precisa de atenção" do Dashboard (sem animação se o usuário pediu menos movimento) */
+function pnVaiAtencao(){
+  const s=document.getElementById('pd-atencao');if(!s)return;
+  s.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  try{s.focus({preventScroll:true})}catch(e){}
 }
 function pnAjudaDlg(){
   const m=dlg('Ajuda','<h3>Ajuda</h3><p class="hint">Atalhos: Ctrl+K abre a busca de leads e telas; Esc fecha janelas e menus; Tab percorre os controles.</p><p class="hint">A IA só trabalha quando você clica em um botão de gerar. Nada é enviado ao cliente sem a sua revisão.</p><div class="row"><button type="button" class="btn" data-ok>Entendi</button></div>');
@@ -111,6 +143,7 @@ function bindShell(){
   const alterna=b=>{const m=document.getElementById('pn-menu');if(m&&!m.hidden&&PN.gatilho===b)pnFechaMenu();else{pnFechaMenu(true);pnAbreMenu(b)}};
   const av=document.getElementById('pn-av');if(av)av.onclick=()=>alterna(av);
   document.querySelectorAll('[data-pn-mais]').forEach(b=>b.onclick=()=>alterna(b));
+  const sn=document.getElementById('pn-sino');if(sn)sn.onclick=()=>{if(A.view!=='dash')pnIr('dash');pnVaiAtencao()};
   const aj=document.getElementById('pn-ajuda');if(aj)aj.onclick=pnAjudaDlg;
   const veu=document.querySelector('.pn-veu');if(veu)veu.onclick=()=>pnFechaMenu();
   const m=document.getElementById('pn-menu');
@@ -124,9 +157,13 @@ function bindShell(){
     else if(e.key==='Tab'){
       /* a folha do celular prende o foco; o menu do computador fecha ao sair */
       if(document.body.classList.contains('pn-folha')){if(e.shiftKey&&i<=0){e.preventDefault();bs[bs.length-1].focus()}else if(!e.shiftKey&&i===bs.length-1){e.preventDefault();bs[0].focus()}}
-      else pnFechaMenu(true)}
+      else{
+        /* menu do computador: Tab fecha e o foco volta ao avatar; a partir dele o navegador segue para o elemento seguinte (Shift+Tab: o anterior) */
+        const g=PN.gatilho;pnFechaMenu(true);
+        if(g&&g.isConnected){g.focus();if(e.shiftKey)e.preventDefault()}
+      }}
   };
-  pintaSave();
+  pintaSave();pnDiskPonto();
   if(A.view==='cfg')cfgBind();
 }
 document.addEventListener('mousedown',e=>{const m=document.getElementById('pn-menu');if(!m||m.hidden)return;if(e.target.closest('#pn-menu,#pn-av,[data-pn-mais]'))return;pnFechaMenu(true)});
@@ -151,11 +188,14 @@ function cfgBind(){
   g('csv').onclick=leadsCsv;
   g('bkp').onclick=()=>bkpDlg();
   g('impb').onclick=()=>g('imp').click();
-  g('imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''))}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
+  g('imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;pnContagens();aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''))}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
   paintDisk();
 }
 function admin(){
   if(!A.auth){
+    /* bloqueio por PIN: nada da área logada pode ficar na tela (busca Ctrl+K, menu da conta, folha Mais, janelas abertas) */
+    palFecha(true);pnFechaMenu(true);document.body.classList.remove('pn-folha','pal-aberta');
+    document.querySelectorAll('.modal').forEach(m=>m.remove());
     setApp(`<main class="pinw" tabindex="-1"><div class="pin panel"><h1 class="pinh">Minha área</h1><p class="hint">Digite o seu PIN para entrar.</p><label for="pin">PIN</label><input id="pin" type="password" autocomplete="off">
     <div class="row"><button class="btn" id="ok">Entrar</button><button class="btn ghost" data-nav="pub">Voltar ao site</button></div><p class="hint" id="er" role="alert"></p></div></main>`);
     const t=async()=>{const r=await pinOk($('#pin').value);if(r===true){A.auth=true;lastAct=Date.now();admin();if(!CFG.pinh)setTimeout(()=>trocarPin(true),200)}else{$('#er').textContent=r==='wait'?'Muitas tentativas. Aguarde '+Math.ceil((pinLock.until-Date.now())/1000)+' s.':'PIN incorreto.';$('#pin').value='';$('#pin').focus()}};
