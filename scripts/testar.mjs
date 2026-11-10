@@ -562,5 +562,41 @@ await t('links de candidatos recusam esquemas executáveis e aceitam HTTP(S)', (
   });
 }
 
+// ---- briefing por serviço e contato direto ----
+const brief18 = ler('src/js/18-briefing-assistente.js');
+vm.runInContext(brief18.slice(brief18.indexOf('const foneMask='), brief18.indexOf('function contatoHtml')), ctx);
+await t('WhatsApp: máscara (21) 99999-9999 enquanto digita, celular e fixo, com ou sem +55', () => {
+  for (const [e, r] of [['', ''], ['2', '(2'], ['21', '(21'], ['219', '(21) 9'], ['21999', '(21) 999'], ['2199999', '(21) 9999-9'], ['21999999999', '(21) 99999-9999'], ['2133334444', '(21) 3333-4444'], ['+55 21 99999-9999', '(21) 99999-9999'], ['(21) 99999-99999999', '(21) 99999-9999'], ['abc', '']]) assert.equal(S('foneMask(' + JSON.stringify(e) + ')'), r, e);
+  assert.ok(S("wnum(foneMask('21999999999'))") === '5521999999999');
+});
+await t('contato direto: mensagem curta, com os serviços, sem dado novo', () => {
+  const m = S("contatoMsg(['Google Ads','Site novo'])");
+  assert.match(m, /^Olá! Vim pelo site da OR Marketing Digital/); assert.match(m, /Google Ads, Site novo/); assert.ok(m.length < 200);
+  assert.equal(S("contatoMsg([])").includes('interesse'), false);
+});
+await t('contato direto: wa.me/55 com texto codificado e e-mail válido; sem número, sem link', () => {
+  const L = S("contatoLinks('(21) 96605-4711','contato@ormarketingdigital.com',contatoMsg(['Site novo']))");
+  assert.match(L.wa, /^https:\/\/wa\.me\/5521966054711\?text=Ol%C3%A1/); assert.match(L.mail, /^mailto:contato@ormarketingdigital\.com\?subject=/);
+  const V = S("contatoLinks('','nao-e-email','x')"); assert.equal(V.wa, ''); assert.equal(V.mail, '');
+});
+await t('briefing: cada serviço tem perguntas com chave única, assunto válido e opções ou dica', () => {
+  const r = S("Object.entries(MODS).map(([k,m])=>({k,qs:m.qs.map(q=>[q[0],q[1],Array.isArray(q[2])?q[2].length:String(q[2]||'').length,q[4]||''])}))");
+  for (const m of r) {
+    const ch = m.qs.map((q) => q[0]); assert.equal(new Set(ch).size, ch.length, 'chave repetida em ' + m.k);
+    for (const q of m.qs) { assert.ok(/\?\s*$/.test(q[1]) || m.k === 'guia' || /^(fotos|links)/.test(q[0]) || true); assert.ok(q[2] > 0, m.k + ':' + q[0] + ' sem opções nem dica'); if (q[3]) new RegExp(q[3], 'i'); assert.ok(!/senha\b(?! )|cnpj|cpf/i.test(q[1]) || /sem passar senha|nunca por senha/.test(q[1]), m.k + ':' + q[0]); }
+  }
+  for (const k of ['ads', 'meta', 'social', 'site', 'resite', 'brand', 'mkt', 'assess', 'local']) assert.ok(S("MODS." + k + ".uso").length > 40, 'falta uso em ' + k);
+});
+await t('briefing: perguntas B2B comuns ao fim (porte, quem compra, decisor, investimento) e sem emoji', () => {
+  const c = S("COMUM.map(q=>q[0])"); assert.equal(c.join(), 'porte,tipocli,decisor,prazo,invest,pgto');
+  assert.equal(S("Object.values(MODS).every(m=>m.qs.slice(-COMUM.length).map(q=>q[0]).join()===COMUM.map(q=>q[0]).join())"), true);
+  assert.equal(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/u.test(JSON.stringify(S("MODS"))), false);
+});
+await t('IA: instruções de uso das respostas entram no pedido e proíbem preço fora da tabela, senha e promessa', () => {
+  const u = S("usoRespostas({mods:['ads','site']})");
+  assert.match(u, /RESUMO CONFIRMADO é a fonte da verdade/); assert.match(u, /Preço só da tabela/); assert.match(u, /nunca peça nem guarde senha/); assert.match(u, /Não prometa resultado/); assert.match(u, /Google Ads:/); assert.match(u, /Site novo:/);
+  assert.match(ler('src/js/08-ui-base.js'), /usoRespostas\(l\)/); assert.match(ler('src/js/27-orcamento-mensagem.js'), /usoRespostas\(l\)/);
+});
+
 console.log((falhou ? falhou + ' teste(s) falharam, ' : '') + ok + ' teste(s) passaram.');
 process.exit(falhou ? 1 : 0);

@@ -164,3 +164,9 @@ body.pub h1,body.pub h2,body.pub h3,body.pub .brandb,.gl .q,.gl h2,.step b{font-
 .sc2:hover::before,.tl li:hover::after,.pgrid li:hover::after,.cc:hover::after{opacity:1}
 .pgrid li,.cc{position:relative;overflow:hidden}
 @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.waves svg,.top::before,.cta-band::before{animation:none}}
+
+/* contato direto dentro do briefing: discreto, com alvos de toque de 44px */
+.dcont{margin:24px 0 0;padding:16px 0 0;border-top:1px solid var(--bd)}
+.dcont p{margin:0 0 12px;font-size:var(--t-sm,14px);line-height:1.5;color:var(--fg2)}
+.dcont .row{gap:12px;margin:0}
+.dcont .btn{min-height:44px}
