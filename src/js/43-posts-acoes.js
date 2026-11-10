@@ -91,7 +91,7 @@ async function reaPostsGerarLegenda(id,pid){
   const l=trkL(id),p=l&&l.track&&(l.track.pecas||[]).find(x=>x.id===pid);if(!l||!p||T.busy)return;
   T.busy="posts-legenda:"+id;
   const msgs=[
-    {role:"system",content:"Você escreve a legenda de uma publicação social usando exclusivamente os fatos do briefing. Entregue uma legenda pronta em português do Brasil, natural, clara e apropriada ao público. Não invente promessas, preços, estatísticas, depoimentos ou garantias. Inclua chamada para ação e no máximo cinco hashtags somente se fizer sentido."+(rgpBloco(l)?"\n\n"+rgpBloco(l):"")},
+    {role:"system",content:"Você escreve a legenda de uma publicação social usando exclusivamente os fatos do briefing. Entregue uma legenda pronta em português do Brasil, natural, clara e apropriada ao público. Não invente promessas, preços, estatísticas, depoimentos ou garantias. Inclua chamada para ação e no máximo cinco hashtags somente se fizer sentido. "+fwBloco(["social"],"texto")+(rgpBloco(l)?"\n\n"+rgpBloco(l):"")},
     {role:"user",content:"BRIEFING DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,8000)+"\n\nPOST PARA ADAPTAÇÃO:\n<POST>\n"+String(p.txt||"").slice(0,5000)+"\n</POST>\n\nTítulo: "+String(p.titulo||"")}
   ];
   REA_POSTS_STATE.notice="A IA está adaptando a legenda ao briefing…";admin();

@@ -133,6 +133,7 @@ O modelo de dados (`Lead`, `CFG`) está em `docs/ESPECIFICACAO-COMPLETA.md`, se�
 - `askF()` tenta o slot, depois os outros, depois o Gemini (sempre com aviso na tela); só então mostra o erro.
 - Anthropic, OpenRouter, Cerebras e OpenAI saíram da CSP e da tela IAs em 06/11/2026. Um `cfg2` antigo que ainda aponte para eles volta, só nessa IA, ao padrão da Groq (migração `seededProv`, `04-armazenamento-config.js`), sem perder as outras configurações.
 - Os prompts de especialista (`ESP`) entram só na Estratégia e nos kits. O orçamento usa o protocolo curto (`PM_MOD`).
+- **Frameworks do Prompt Mestre** (`25-frameworks-marketing.js`: `FW`, `FW_POR_MOD`, `fwBloco(mods, modo)`, `fwMaxExtra`): FOFA com prioridade e cruzamento, AIDA, STP e Matriz de Ansoff, mais regras de tipografia. Blocos curtos, só onde servem ao serviço: Estratégia (`gen`, modo `plano`; Marketing = FOFA+STP+Ansoff, Assessoria = FOFA+Ansoff, Google Ads/Meta = AIDA, Site = AIDA+STP+tipografia), propostas e mensagem de WhatsApp (`orc`/`msgGen`, AIDA), kits (`execGen`), peças (`34`), legenda (`43`), captação (`48-captacao`), Site Studio (análise = FOFA dentro do JSON; `ssBaseSys` = AIDA+STP+tipografia; revisão confere tipografia). A proposta do Site Studio e o assistente do briefing não usam IA com framework. Em análise, a IA marca [confirmado], [hipótese] e [estimativa], sem valor em reais nem dado inventado. Para mudar onde entra cada framework, edite `FW_POR_MOD`.
 - A IA **nunca faz conta nem inventa preço**: `calcOrc`/`checarValores` conferem os valores contra a tabela.
 
 ## Armazenamento

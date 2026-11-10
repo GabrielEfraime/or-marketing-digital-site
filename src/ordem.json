@@ -224,6 +224,10 @@
       "descricao": "ESP (9 especialistas), protocolo geral/por módulo e gen() (Estratégia)"
     },
     {
+      "arquivo": "src/js/25-frameworks-marketing.js",
+      "descricao": "Frameworks do Prompt Mestre (FOFA, AIDA, STP, Ansoff) e regras de tipografia: blocos curtos por serviço (fwBloco)"
+    },
+    {
       "arquivo": "src/js/26-regras-profissao.js",
       "descricao": "Regras de publicidade por profissão (advocacia, medicina, odontologia; contabilidade e engenharia em levantamento): dados, bloco dos prompts e painel \"Conferir regras da profissão\""
     },
