@@ -1,20 +1,158 @@
+/* ====== Casca da Minha área (direção C): menu agrupado, barra de topo, barra inferior no celular ====== */
+const PN_SVG=p=>'<svg class="pn-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+p+'</svg>';
+const PN_ICONES={
+  dash:PN_SVG('<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>'),
+  '':PN_SVG('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.7a3.5 3.5 0 010 6.6M18 14.8c2 .6 3.2 2.3 3.5 5.2"/>'),
+  cap:PN_SVG('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>'),
+  studio:PN_SVG('<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 9h18M7 6.8h.01M10 6.8h.01"/>'),
+  posts:PN_SVG('<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><circle cx="9" cy="9" r="1.6"/><path d="M4 17l5-5 4 4 2-2 5 5"/>'),
+  demandas:PN_SVG('<rect x="3.5" y="4" width="4.5" height="16" rx="1.5"/><rect x="9.8" y="4" width="4.5" height="10" rx="1.5"/><rect x="16" y="4" width="4.5" height="13" rx="1.5"/>'),
+  vagas:PN_SVG('<rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M9 7.5V6a2 2 0 012-2h2a2 2 0 012 2v1.5M3 13h18"/>'),
+  trk:PN_SVG('<path d="M3 12h4l2.5-6.5 4 13 2.5-6.5h5"/>'),
+  assistente:PN_SVG('<path d="M12 3.5l1.7 4.8 4.8 1.7-4.8 1.7L12 16.5l-1.7-4.8L5.5 10l4.8-1.7z"/><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'),
+  kb:PN_SVG('<path d="M5 4.5A1.5 1.5 0 016.5 3H19v15H6.5A1.5 1.5 0 005 19.5z"/><path d="M5 19.5A1.5 1.5 0 006.5 21H19v-3M9 7.5h6"/>'),
+  ias:PN_SVG('<rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M9.5 3v3.5M14.5 3v3.5M9.5 17.5V21M14.5 17.5V21M3 9.5h3.5M3 14.5h3.5M17.5 9.5H21M17.5 14.5H21"/>'),
+  cfg:PN_SVG('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>'),
+  pub:PN_SVG('<path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 014 18.5v-11A1.5 1.5 0 015.5 6H10"/>'),
+  busca:PN_SVG('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
+  sino:PN_SVG('<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/>'),
+  ajuda:PN_SVG('<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 114 2c-.9.6-1.6 1-1.6 2.1M12 16.8h.01"/>'),
+  mais:PN_SVG('<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>'),
+  menu:PN_SVG('<path d="M4 7h16M4 12h16M4 17h16"/>')
+};
+const PN_GRUPOS=[
+  ['Visão geral',[['dash','Dashboard'],['','Leads'],['cap','Captar clientes']]],
+  ['Ferramentas',[['studio','Site Studio'],['posts','Posts'],['demandas','Demandas'],['vagas','Vagas']]],
+  ['Acompanhamento',[['trk','Acompanhamento']]],
+  ['Inteligência artificial',[['assistente','Assistente por setor'],['kb','Base da IA'],['ias','IAs']]]
+];
+const PN_BARRA=[['dash','Início'],['','Leads'],['cap','Captar'],['trk','Projetos']];
+const PN_NOMES={dash:'Dashboard','':'Leads',cap:'Captar clientes',studio:'Site Studio',posts:'Posts',demandas:'Demandas','arte-demanda':'Arte da demanda',vagas:'Vagas',trk:'Acompanhamento',assistente:'Assistente por setor',kb:'Base da IA',ias:'IAs',cfg:'Configurações'};
+const pnAtivo=()=>{const v=A.view||'';return v==='arte-demanda'?'demandas':v==='tal'?'vagas':v};
+const pnContagem=v=>{
+  try{
+    if(v==='')return getL().filter(l=>!l.arq&&l.status==='novo').length;
+    if(v==='demandas')return OR_QUADRO.itens.filter(d=>!d.arquivada&&d.coluna!=='Concluídas').length;
+  }catch(e){}
+  return 0;
+};
+const pnIniciais=()=>{const n=String(typeof RESPONSAVEL==='string'?RESPONSAVEL:'').trim();if(!n)return 'OR';const p=n.split(/\s+/);return ((p[0]||'')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()};
+/* troca de tela: os mesmos zeramentos de antes, por estado (nunca por #hash) */
+function pnIr(v){
+  v=v||'';
+  if(v==='trk'){T.id=null;T.msg=''}
+  else if(v==='cap'){CAP.id=null;CAP.err='';CAP.msg=''}
+  else if(v==='studio'){SS.id=null;SS.err='';SS.msg=''}
+  else if(v==='vagas'){A.vgc=null;A.vgTab=null}
+  A.view=v;pnFechaMenu(true);admin();
+  const m=document.querySelector('.mainc');if(m){try{m.focus({preventScroll:true})}catch(e){}}
+  window.scrollTo(0,0);
+}
+function pnItem(v,t,cls){
+  const on=pnAtivo()===v,n=pnContagem(v);
+  return `<button type="button" class="${cls||'pn-i'}${on?' on':''}" data-pn="${esc(v)}"${on?' aria-current="page"':''}>${PN_ICONES[v]}<span class="pn-t">${esc(t)}</span>${n?`<span class="pn-c" aria-label="${n} ${v===''?'novo(s)':'em aberto'}">${n}</span>`:''}</button>`;
+}
+function pnAlertas(){try{return alertas(dashCalc()).length}catch(e){return 0}}
 function admShell(inner){
-  return `<div class="shell"><aside class="side">${window.OR_TESTE?'<p class="err" role="note" style="margin:0 0 10px">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}<button class="brandb" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
-  <nav class="nvs" aria-label="Seções da Minha área">${[['','nvl','Leads'],['cap','nvc','Captar clientes'],['studio','nvss','Site Studio'],['dash','nvd','Dashboard'],['trk','nvt','Acompanhamento'],['posts','nvpost','Posts'],['demandas','nvdem','Demandas'],['vagas','nvvg','Vagas']].map(([v,id,t])=>`<button class="nv ${(A.view||'')===v?'on':''}" id="${id}"${(A.view||'')===v?' aria-current="page"':''}>${t}</button>`).join('')}<div class="nvg" role="group" aria-labelledby="nvgt"><span class="nvgt" id="nvgt">Inteligência Artificial</span>${[['assistente','nvassist','Assistente por setor'],['kb','nvk','Base da IA'],['ias','nvi','IAs']].map(([v,id,t])=>`<button class="nv sub ${A.view===v?'on':''}" id="${id}"${A.view===v?' aria-current="page"':''}>${t}</button>`).join('')}</div><button class="nv" data-nav="pub">Ver site público</button></nav>
-  <div class="iasum">IA 1 (criação): ${esc(CFG.ia1.model)}<br>IA 2 (atendimento): ${esc(CFG.ia2.model)}<br>IA 3 (captação): ${esc(CFG.ia3.model)}</div>
-  <div id="disk" class="diskbar"></div><div id="savebar" class="savebar" role="status"></div>
-  <div class="dtools"><button id="csv">Exportar CSV</button><button id="bkp">Baixar backup</button><button id="impb">Importar backup</button><input type="file" id="imp" accept=".json" hidden><button id="npin">Trocar PIN</button><button id="lclean">Limpar leads antigos</button></div>
-  </aside><main class="mainc" tabindex="-1">${inner}</main></div>`;
+  const v=A.view||'',atual=PN_NOMES[v]||'',nal=pnAlertas();
+  const crumb=v==='arte-demanda'?`<button type="button" class="pn-bc-l" data-pn="demandas">Demandas</button><span class="pn-bc-s" aria-hidden="true">/</span><span aria-current="page">Arte da demanda</span>`:`<span aria-current="page">${esc(atual)}</span>`;
+  const mais=[['studio','Site Studio'],['posts','Posts'],['demandas','Demandas'],['vagas','Vagas'],['assistente','Assistente por setor'],['kb','Base da IA'],['ias','IAs']];
+  const naBarra=PN_BARRA.map(x=>x[0]).includes(pnAtivo());
+  return `<div class="pn">
+  <aside class="pn-side" aria-label="Menu da Minha área">${window.OR_TESTE?'<p class="err" role="note">Build de TESTE com a chave da IA embutida. Não publique nem envie este arquivo.</p>':''}
+   <button type="button" class="brandb pn-brand" data-nav="pub" aria-label="Ver site público">${logo}<span class="wmw"><span class="wm">Marketing digital</span><span class="wt">Painel</span></span></button>
+   <nav class="pn-nav" aria-label="Seções da Minha área">${PN_GRUPOS.map(([g,its],i)=>`<div class="pn-g" role="group" aria-labelledby="pn-g${i}"><span class="pn-gt" id="pn-g${i}">${esc(g)}</span>${its.map(([k,t])=>pnItem(k,t)).join('')}</div>`).join('')}</nav>
+  </aside>
+  <div class="pn-col">
+   <header class="pn-top">
+    <button type="button" class="pn-ib pn-menub" data-pn-mais aria-label="Abrir o menu" aria-haspopup="true" aria-expanded="false">${PN_ICONES.menu}</button>
+    <div class="pn-bcw"><nav class="pn-bc" aria-label="Você está em"><button type="button" class="pn-bc-l pn-bc-raiz" data-pn="dash">Minha área</button><span class="pn-bc-s" aria-hidden="true">/</span>${crumb}</nav><div id="savebar" class="savebar" role="status"></div></div>
+    <button type="button" class="pn-busca" data-pn-paleta aria-haspopup="dialog" aria-label="Buscar lead ou ir para uma tela (Ctrl+K)">${PN_ICONES.busca}<span class="pn-busca-t">Buscar lead ou ir para uma tela</span><kbd>Ctrl</kbd><kbd>K</kbd></button>
+    <button type="button" class="pn-ib pn-busca-ib" data-pn-paleta aria-haspopup="dialog" aria-label="Buscar lead ou ir para uma tela">${PN_ICONES.busca}</button>
+    <button type="button" class="pn-ib" id="pn-sino" aria-label="Avisos: ${nal?nal+' que precisam de atenção':'nenhum no momento'}" data-pn="dash">${PN_ICONES.sino}${nal?'<span class="pn-ponto" aria-hidden="true"></span>':''}</button>
+    <button type="button" class="pn-ib pn-ajuda" id="pn-ajuda" aria-label="Ajuda: atalhos e como a IA trabalha">${PN_ICONES.ajuda}</button>
+    <div class="pn-av-w"><button type="button" class="pn-av" id="pn-av" aria-haspopup="true" aria-expanded="false" aria-controls="pn-menu" aria-label="Menu da conta"><span aria-hidden="true">${esc(pnIniciais())}</span></button>
+     <div class="pn-menu" id="pn-menu" role="group" aria-label="Menu da conta" hidden>
+      <div class="pn-m-mais"><span class="pn-gt">Mais telas</span>${mais.map(([k,t])=>pnItem(k,t,'pn-mi')).join('')}</div>
+      <div class="pn-m-conta"><span class="pn-gt pn-m-conta-gt">Conta</span><button type="button" class="pn-mi${v==='cfg'?' on':''}" data-pn="cfg"${v==='cfg'?' aria-current="page"':''}>${PN_ICONES.cfg}<span class="pn-t">Configurações</span></button><button type="button" class="pn-mi" data-nav="pub">${PN_ICONES.pub}<span class="pn-t">Ver site público</span></button></div>
+     </div></div>
+   </header>
+   <main class="mainc" tabindex="-1">${inner}</main>
+  </div>
+  <nav class="pn-bar" aria-label="Atalhos">${PN_BARRA.map(([k,t])=>`<button type="button" class="pn-bi${pnAtivo()===k?' on':''}" data-pn="${k}"${pnAtivo()===k?' aria-current="page"':''}>${PN_ICONES[k]}<span>${esc(t)}</span></button>`).join('')}<button type="button" class="pn-bi${naBarra?'':' on'}" data-pn-mais aria-haspopup="true" aria-expanded="false">${PN_ICONES.mais}<span>Mais</span></button></nav>
+  <div class="pn-veu" hidden></div>
+  </div>`;
+}
+/* menu da conta (computador) e folha "Mais" (celular) são o mesmo elemento */
+const PN={gatilho:null};
+function pnFechaMenu(semFoco){
+  const m=document.getElementById('pn-menu');if(!m||m.hidden)return;
+  m.hidden=true;document.body.classList.remove('pn-folha');
+  const veu=document.querySelector('.pn-veu');if(veu)veu.hidden=true;
+  document.querySelectorAll('#pn-av,[data-pn-mais]').forEach(b=>b.setAttribute('aria-expanded','false'));
+  if(!semFoco&&PN.gatilho&&PN.gatilho.isConnected)PN.gatilho.focus();
+}
+function pnAbreMenu(gatilho){
+  const m=document.getElementById('pn-menu');if(!m)return;
+  PN.gatilho=gatilho;m.hidden=false;
+  const mob=matchMedia('(max-width:860px)').matches;
+  document.body.classList.toggle('pn-folha',mob);
+  const veu=document.querySelector('.pn-veu');if(veu)veu.hidden=!mob;
+  document.querySelectorAll('#pn-av,[data-pn-mais]').forEach(b=>b.setAttribute('aria-expanded',b===gatilho?'true':'false'));
+  const p=[...m.querySelectorAll('button')].filter(b=>b.offsetParent!==null)[0];if(p)p.focus();
+}
+function pnAjudaDlg(){
+  const m=dlg('Ajuda','<h3>Ajuda</h3><p class="hint">Atalhos: Ctrl+K abre a busca de leads e telas; Esc fecha janelas e menus; Tab percorre os controles.</p><p class="hint">A IA só trabalha quando você clica em um botão de gerar. Nada é enviado ao cliente sem a sua revisão.</p><div class="row"><button type="button" class="btn" data-ok>Entendi</button></div>');
+  m.querySelector('[data-ok]').onclick=()=>m.remove();
 }
 function bindShell(){
-  $('#nvdem').onclick=()=>{A.view='demandas';admin()};
-  $('#nvassist').onclick=()=>{A.view='assistente';admin()};
-  $('#nvd').onclick=()=>{A.view='dash';admin()};$('#nvl').onclick=()=>{A.view='';admin()};$('#nvt').onclick=()=>{A.view='trk';T.id=null;T.msg='';admin()};$('#nvpost').onclick=()=>{A.view='posts';admin()};$('#nvk').onclick=()=>{A.view='kb';admin()};$('#nvc').onclick=()=>{A.view='cap';CAP.id=null;CAP.err='';CAP.msg='';admin()};$('#nvss').onclick=()=>{A.view='studio';SS.id=null;SS.err='';SS.msg='';admin()};$('#nvi').onclick=()=>{A.view='ias';admin()};$('#nvvg').onclick=()=>{A.view='vagas';A.vgc=null;A.vgTab=null;admin()};
-  $('#csv').onclick=()=>dl('leads.csv','nome,whatsapp,email,area,status,data\n'+getL().map(l=>[l.nome,l.whats,l.email,svcName(l),l.status,l.data].map(csvSafe).join(',')).join('\n'),'text/csv');
-  $('#bkp').onclick=()=>bkpDlg();
-  $('#impb').onclick=()=>$('#imp').click();
-  $('#imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''));if(!A.view){paintList();paintDet()}}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
-  paintDisk();pintaSave();
+  document.querySelectorAll('[data-pn]').forEach(b=>b.onclick=()=>pnIr(b.dataset.pn));
+  document.querySelectorAll('[data-pn-paleta]').forEach(b=>b.onclick=()=>pnPaletaAbre(b));
+  const alterna=b=>{const m=document.getElementById('pn-menu');if(m&&!m.hidden&&PN.gatilho===b)pnFechaMenu();else{pnFechaMenu(true);pnAbreMenu(b)}};
+  const av=document.getElementById('pn-av');if(av)av.onclick=()=>alterna(av);
+  document.querySelectorAll('[data-pn-mais]').forEach(b=>b.onclick=()=>alterna(b));
+  const aj=document.getElementById('pn-ajuda');if(aj)aj.onclick=pnAjudaDlg;
+  const veu=document.querySelector('.pn-veu');if(veu)veu.onclick=()=>pnFechaMenu();
+  const m=document.getElementById('pn-menu');
+  if(m)m.onkeydown=e=>{
+    const bs=[...m.querySelectorAll('button')].filter(b=>b.offsetParent!==null),i=bs.indexOf(document.activeElement);
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();pnFechaMenu()}
+    else if(e.key==='ArrowDown'){e.preventDefault();bs[(i+1)%bs.length].focus()}
+    else if(e.key==='ArrowUp'){e.preventDefault();bs[(i-1+bs.length)%bs.length].focus()}
+    else if(e.key==='Home'){e.preventDefault();bs[0].focus()}
+    else if(e.key==='End'){e.preventDefault();bs[bs.length-1].focus()}
+    else if(e.key==='Tab'){
+      /* a folha do celular prende o foco; o menu do computador fecha ao sair */
+      if(document.body.classList.contains('pn-folha')){if(e.shiftKey&&i<=0){e.preventDefault();bs[bs.length-1].focus()}else if(!e.shiftKey&&i===bs.length-1){e.preventDefault();bs[0].focus()}}
+      else pnFechaMenu(true)}
+  };
+  pintaSave();
+  if(A.view==='cfg')cfgBind();
+}
+document.addEventListener('mousedown',e=>{const m=document.getElementById('pn-menu');if(!m||m.hidden)return;if(e.target.closest('#pn-menu,#pn-av,[data-pn-mais]'))return;pnFechaMenu(true)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('.modal')){const m=document.getElementById('pn-menu');if(m&&!m.hidden)pnFechaMenu()}});
+/* ---- Configurações: tudo recolhido por padrão. O bloco do Backup no HD é isolado (fácil de remover quando o backup virar automático). ---- */
+function cfgBlocoBackup(){
+  return `<details class="pn-det" id="cfg-bkp"><summary><span class="pn-det-t">Backup no HD</span><span class="pn-det-s">Pasta do computador onde os dados são salvos</span></summary><div class="pn-det-c"><div id="disk" class="diskbar"></div></div></details>`;
+}
+function cfgBlocoDados(){
+  return `<details class="pn-det" id="cfg-dados"><summary><span class="pn-det-t">Dados e segurança</span><span class="pn-det-s">Exportar, importar e proteção do acesso</span></summary><div class="pn-det-c"><div class="dtools"><button type="button" id="csv" class="btn ghost">Exportar CSV</button><button type="button" id="bkp" class="btn ghost">Baixar backup</button><button type="button" id="impb" class="btn ghost">Importar backup</button><input type="file" id="imp" accept=".json" hidden><button type="button" id="npin" class="btn ghost">Trocar PIN</button><button type="button" id="lclean" class="btn ghost">Limpar leads antigos</button></div><p class="hint">Importar mescla com o que já existe. Trocar PIN e limpar leads antigos pedem confirmação.</p></div></details>`;
+}
+function cfgBlocoIAs(){
+  return `<details class="pn-det" id="cfg-ias"><summary><span class="pn-det-t">IAs</span><span class="pn-det-s">Modelos em uso e a tela de chaves</span></summary><div class="pn-det-c"><ul class="pn-lista"><li><span>IA 1 (criação)</span><b>${esc(CFG.ia1.model)}</b></li><li><span>IA 2 (atendimento)</span><b>${esc(CFG.ia2.model)}</b></li><li><span>IA 3 (captação)</span><b>${esc(CFG.ia3.model)}</b></li></ul><div class="row"><button type="button" class="btn ghost" data-pn="ias">Abrir a tela IAs</button></div></div></details>`;
+}
+function cfgInner(){
+  return `<h2 class="pt">Configurações</h2><p class="hint">Itens que quase nunca mudam ficam recolhidos, para ninguém mexer sem querer. Abra só o que precisar.</p>${storeWarn()}<div class="pn-dets">${cfgBlocoBackup()}${cfgBlocoDados()}${cfgBlocoIAs()}</div>`;
+}
+const leadsCsv=()=>dl('leads.csv','nome,whatsapp,email,area,status,data\n'+getL().map(l=>[l.nome,l.whats,l.email,svcName(l),l.status,l.data].map(csvSafe).join(',')).join('\n'),'text/csv');
+function cfgBind(){
+  const g=id=>document.getElementById(id);
+  document.querySelectorAll('.pn-det').forEach(d=>{const s=d.querySelector('summary');s.setAttribute('aria-expanded',d.open?'true':'false');d.addEventListener('toggle',()=>s.setAttribute('aria-expanded',d.open?'true':'false'))});
+  g('csv').onclick=leadsCsv;
+  g('bkp').onclick=()=>bkpDlg();
+  g('impb').onclick=()=>g('imp').click();
+  g('imp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{let o=JSON.parse(await f.text());if(o&&o.cripto){const s=await senhaDlg();e.target.value='';if(!s)return;o=await bkpDecifra(o,s)}const nd=orQuadroImportar(o.demandas),n=merge(o.leads||o),np=Array.isArray(o.prosp)?capMerge(o.prosp):0,nj=Array.isArray(o.proj)?ssMerge(o.proj):0;aviso(n+' lead(s) importado(s). '+nd+' demanda(s) importada(s).'+(np?' '+np+' prospect(s) importado(s).':'')+(nj?' '+nj+' projeto(s) do Studio importado(s).':'')+(MERGE_REJ?' '+MERGE_REJ+' ignorado(s) por estarem inválidos.':''))}catch(x){aviso(/Senha|inválido/.test((x&&x.message)||'')?x.message:'Arquivo inválido.')}};
+  paintDisk();
 }
 function admin(){
   if(!A.auth){
@@ -26,6 +164,7 @@ function admin(){
   if(A.view==='demandas'){setApp(admShell(orQuadroInner()));bindShell();return orQuadroBind()}
   if(A.view==='arte-demanda'){setApp(admShell(orQuadroArteInner()));bindShell();return reaArteBind(document.querySelector('.mainc'),'demanda:'+OR_QUADRO.aberta)}
   if(A.view==='assistente'){setApp(admShell(orAssistInner()));bindShell();return orAssistBind()}
+  if(A.view==='cfg'){setApp(admShell(cfgInner()));bindShell();return}
   if(A.view==='dash'){setApp(admShell(dashInner()));bindShell();return bindDash()}
   if(A.view==='tal'){A.view='vagas';A.vgTab='db';A.vgc=null;A.vg=null}
   if(A.view==='vagas'){setApp(admShell(vagasInner()));bindShell();return bindVagas()}

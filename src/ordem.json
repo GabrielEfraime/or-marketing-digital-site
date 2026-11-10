@@ -108,6 +108,10 @@
     {
       "arquivo": "src/css/28-site-studio.css",
       "descricao": "Site Studio: lista de projetos, itens da análise e chips de modo"
+    },
+    {
+      "arquivo": "src/css/29-minha-area-painel.css",
+      "descricao": "Minha área, direção C: casca (menu agrupado, topo, barra inferior), cartões, listas, formulários, Dashboard e Configurações"
     }
   ],
   "js": [
@@ -202,6 +206,10 @@
     {
       "arquivo": "src/js/22-minha-area.js",
       "descricao": "Minha Área: casca do painel, login por PIN, lista de leads, abas, ações e detalhe do lead"
+    },
+    {
+      "arquivo": "src/js/22-paleta-comando.js",
+      "descricao": "Paleta de comando (Ctrl+K) da Minha área: leads e telas, só dados locais, foco preso, Esc fecha"
     },
     {
       "arquivo": "src/js/23-demandas-quadro.js",

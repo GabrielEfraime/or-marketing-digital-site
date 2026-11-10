@@ -82,7 +82,8 @@ function dashCalc(){
   const ts=[];todos.filter(l=>l.track&&passa(l,false)).forEach(l=>l.track.tarefas.filter(x=>!x.done&&x.due).forEach(x=>ts.push({l,x})));
   ts.sort((a,b)=>a.x.due.localeCompare(b.x.due));R.tarefas=ts.slice(0,10);R.tarefasTotal=ts.length;
   const nd=Math.min(f.dias||90,90),cont={};for(let i=nd-1;i>=0;i--)cont[addDays(hoje,-i)]=0;
-  B.forEach(l=>{const d=new Date(leadT(l)).toISOString().slice(0,10);if(d in cont)cont[d]++});
+  B.forEach(l=>{const d=new Date(leadT(l)).toLocaleDateString('sv-SE');if(d in cont)cont[d]++});
+  R.ant=f.dias?todos.filter(l=>{const x=leadT(l);return x>=lim-f.dias*864e5&&x<lim&&passa(l,false)}).length:0;
   R.porDia=Object.entries(cont);
   const sv={};B.forEach(l=>svcs(l).forEach(k=>{sv[k]=(sv[k]||0)+1}));R.porSvc=Object.entries(sv).sort((a,b)=>b[1]-a[1]);
   const ord={recentes:(a,b)=>leadT(b)-leadT(a),nome:(a,b)=>a.nome.localeCompare(b.nome,'pt-BR'),status:(a,b)=>STATUS_ORD(a.status)-STATUS_ORD(b.status)||leadT(b)-leadT(a)};
@@ -94,7 +95,7 @@ const STATUS_ORD=s=>['novo','pronto','aprovado','aplicado','recusado'].indexOf(s
 /* ---- peças visuais ---- */
 function tabelaLeads(R){
   if(!R.lista.length)return '<p class="hint">Nenhum lead com esses filtros.</p>';
-  return `<div class="tbw"><table class="tbl"><thead><tr><th>Cliente</th><th>Serviços</th><th>Status</th><th>Plano</th><th>Orçamento</th><th>Recebido</th></tr></thead><tbody>${R.lista.slice(0,40).map(l=>`<tr data-lead="${esc(l.id)}" tabindex="0" role="link" aria-label="Abrir ${esc(l.nome)}"><td><b>${esc(l.nome)}</b></td><td>${esc(svcs(l).map(k=>CURTO[k]||MODS[k].name).join(', '))}</td><td><span class="chip ${esc(l.status)}">${esc(stl(l.status))}</span></td><td>${l.plano?esc(PLANO_NOME[l.plano]):'<span class="hint">—</span>'}</td><td>${(l.envios||[]).length?'enviado':(l.orc?'gerado':'<span class="hint">—</span>')}</td><td>${esc(dHora(leadT(l)))}</td></tr>`).join('')}</tbody></table></div>${R.lista.length>40?`<p class="hint">Mostrando 40 de ${R.lista.length}. Use os filtros para refinar.</p>`:''}`;
+  return `<div class="tbw"><table class="tbl"><thead><tr><th>Cliente</th><th>Serviços</th><th>Status</th><th>Plano</th><th>Orçamento</th><th>Recebido</th></tr></thead><tbody>${R.lista.slice(0,40).map(l=>`<tr data-lead="${esc(l.id)}" tabindex="0" role="link" aria-label="Abrir ${esc(l.nome)}"><td data-l="Cliente"><b>${esc(l.nome)}</b></td><td data-l="Serviços">${esc(svcs(l).map(k=>CURTO[k]||MODS[k].name).join(', '))}</td><td data-l="Status"><span class="chip ${esc(l.status)}">${esc(stl(l.status))}</span></td><td data-l="Plano">${l.plano?esc(PLANO_NOME[l.plano]):'<span class="hint">—</span>'}</td><td data-l="Orçamento">${(l.envios||[]).length?'enviado':(l.orc?'gerado':'<span class="hint">—</span>')}</td><td data-l="Recebido">${esc(dHora(leadT(l)))}</td></tr>`).join('')}</tbody></table></div>${R.lista.length>40?`<p class="hint">Mostrando 40 de ${R.lista.length}. Use os filtros para refinar.</p>`:''}`;
 }
 function taxas(R){
   const dec=R.apr+R.rec,t={};
@@ -110,68 +111,167 @@ function alertas(R){
   L.filter(l=>l.status==='aplicado'&&l.track).forEach(l=>{const n=nextDue(l.track);if(n&&n<hoje)a.push({proj:l.id,t:'Projeto com tarefa atrasada',n:l.nome})});
   return a;
 }
-function bentoCard(cls,titulo,corpo){return `<section class="bn ${cls}"><h3 class="dsh-h">${titulo}</h3>${corpo}</section>`}
-function numCard(cls,n,t,sub,c){return `<section class="bn ${cls}" style="--c:${c}"><span class="bn-t">${t}</span><b class="bn-n">${n}</b>${sub?`<span class="bn-s">${sub}</span>`:''}</section>`}
-function graficoBento(par){
-  const W=640,H=120,mx=Math.max(...par.map(p=>p[1]),1),st=W/par.length,bw=Math.max(2,Math.min(18,st*.7)),tot=par.reduce((a,p)=>a+p[1],0);
-  if(!tot)return '<p class="hint">Ainda não há dados neste período.</p>';
-  const dd=i=>{const p=par[i],q=i?par[i-1][1]:null;return fdate(p[0])+': '+p[1]+' lead(s)'+(q===null?'':(p[1]===q?', igual ao dia anterior':', '+(p[1]>q?'+':'')+(p[1]-q)+' em relação ao dia anterior'))};
-  return `<svg viewBox="0 0 ${W} ${H}" class="gdia gbn" role="group" aria-label="Leads recebidos por dia, ${tot} no total. Use as setas do teclado para ler cada dia.">${par.map((p,i)=>{const h=Math.max(p[1]?3:1,Math.round(p[1]/mx*(H-24)));return `<rect x="${(i*st+(st-bw)/2).toFixed(1)}" y="${H-14-h}" width="${bw.toFixed(1)}" height="${h}" rx="2" tabindex="${i===par.length-1?0:-1}" data-i="${i}" data-d="${esc(dd(i))}"><title>${esc(dd(i))}</title></rect>`}).join('')}<line x1="0" y1="${H-13.5}" x2="${W}" y2="${H-13.5}" stroke="currentColor" opacity=".25"/><text x="0" y="${H}" class="gt">${esc(fdate(par[0][0]))}</text><text x="${W}" y="${H}" text-anchor="end" class="gt">${esc(fdate(par[par.length-1][0]))}</text></svg><p class="gcap hint" role="status" aria-live="polite">Passe o cursor ou use as setas sobre as barras para ver o dia.</p>`;
+/* ---- Dashboard (direção C): só dados reais; textos de usuário sempre por esc() ---- */
+const PD_ICO=p=>'<svg class="pn-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+p+'</svg>';
+const PD_I={
+  pessoas:PD_ICO('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.9c1.9.7 3.2 2.4 3.5 5.1"/>'),
+  doc:PD_ICO('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'),
+  check:PD_ICO('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  pulso:PD_ICO('<path d="M3 12h4l3-7 4 14 3-7h4"/>'),
+  chat:PD_ICO('<path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/>'),
+  alvo:PD_ICO('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>'),
+  baixo:PD_ICO('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'),
+  sobe:PD_ICO('<path d="M7 17L17 7M8 7h9v9"/>'),
+  filtro:PD_ICO('<path d="M4 6h16M7 12h10M10 18h4"/>')
+};
+const PD_ATIV_IC={status:'check',orcamento:'doc',mensagem:'chat',envio:'chat',plano:'check',projeto:'pulso'};
+const PD_DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],PD_DIAS_L=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const pdYmd=t=>new Date(t).toLocaleDateString('sv-SE');
+/* traçado de uma série: curva monotônica (Fritsch-Carlson), sem ultrapassar os valores; x com folga de 3% nas bordas; y de 0 (base) a 100 (topo) */
+const pdX=(i,n)=>n>1?3+i/(n-1)*94:50,pdY=(v,mx)=>94-v/mx*86;
+function pdCaminho(v,mx){
+  const n=v.length;if(n<2)return '';
+  const x=v.map((_,i)=>pdX(i,n)),y=v.map(a=>pdY(a,mx)),h=x[1]-x[0],d=[];
+  for(let i=0;i<n-1;i++)d.push((y[i+1]-y[i])/h);
+  const m=new Array(n);m[0]=d[0];m[n-1]=d[n-2];
+  for(let i=1;i<n-1;i++)m[i]=d[i-1]*d[i]<=0?0:(d[i-1]+d[i])/2;
+  for(let i=0;i<n-1;i++){if(d[i]===0){m[i]=0;m[i+1]=0;continue}const a=m[i]/d[i],b=m[i+1]/d[i],s=a*a+b*b;if(s>9){const k=3/Math.sqrt(s);m[i]=k*a*d[i];m[i+1]=k*b*d[i]}}
+  let p='M'+x[0].toFixed(2)+' '+y[0].toFixed(2);
+  for(let i=0;i<n-1;i++)p+=' C'+(x[i]+h/3).toFixed(2)+' '+(y[i]+m[i]*h/3).toFixed(2)+' '+(x[i+1]-h/3).toFixed(2)+' '+(y[i+1]-m[i+1]*h/3).toFixed(2)+' '+x[i+1].toFixed(2)+' '+y[i+1].toFixed(2);
+  return p;
 }
-function funilLinks(R){
-  const et=[['Leads recebidos',R.recebidos,'todos'],['Com orçamento gerado',R.orc,'pronto'],['Orçamento enviado',R.env,'pronto'],['Aprovados',R.apr,'aprovado'],['Em execução',R.exec,'aplicado']],max=Math.max(R.recebidos,1);
-  return `<ol class="fn">${et.map(([t,n,f])=>`<li><button class="lnkb" data-flt="${f}">${t}</button><i style="width:${Math.max(n?2:0,Math.round(n/max*100))}%"></i><b>${n}</b></li>`).join('')}</ol><p class="hint">Cada etapa conta os leads do período que chegaram até ela. Clique para abrir a lista filtrada.</p>`;
+function pdSpark(serie){
+  const tot=serie.reduce((a,b)=>a+b,0);
+  if(!tot||serie.length<2)return '<svg class="pd-spark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="gh" d="M4 70 L96 70"/></svg>';
+  /* no máximo 12 pontos: soma por fatias (menos picos com poucos dados) */
+  let s=serie;if(s.length>12){const k=Math.ceil(s.length/12),o=[];for(let i=0;i<s.length;i+=k)o.push(s.slice(i,i+k).reduce((a,b)=>a+b,0));s=o}
+  return `<svg class="pd-spark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${pdCaminho(s,Math.max(...s,1))}"/></svg>`;
 }
-function dashPainel(R){
-  const hoje=today(),ev=ativGet().slice(0,8),tx=taxas(R),al=alertas(R);
+function pdMetrica(ico,t,v,nota,serie){
+  return `<section class="pn-card pd-met" aria-label="${esc(t)}"><div class="pd-top"><span class="pd-ico">${PD_I[ico]}</span><h3>${esc(t)}</h3></div><div class="pd-bt"><div><div class="pd-v">${esc(v)}</div><div class="pd-nt">${nota}</div></div>${serie?pdSpark(serie):''}</div></section>`;
+}
+/* série diária (em fatias dos dias do período) de um filtro sobre os leads do período */
+function pdSerie(R,fn){const m=new Map(R.porDia.map(p=>[p[0],0]));R.base.filter(fn).forEach(l=>{const k=pdYmd(leadT(l));if(m.has(k))m.set(k,m.get(k)+1)});return [...m.values()]}
+function pdGrafico(R){
+  const dias=R.porDia,n=dias.length,orcPorDia={};
+  const lim=dias.length?dias[0][0]:'';
+  ativGet().filter(e=>e.tipo==='orcamento').forEach(e=>{const k=pdYmd(e.t);if(k>=lim)orcPorDia[k]=(orcPorDia[k]||0)+1});
+  const a=dias.map(p=>p[1]),b=dias.map(p=>orcPorDia[p[0]]||0),tot=a.reduce((x,y)=>x+y,0),mx=Math.max(...a,...b,1);
+  const pills=[[7,'7 dias'],[30,'30 dias'],[90,'90 dias'],[0,'Tudo']].map(([v,t])=>`<button type="button" class="pd-pl" data-dias="${v}" aria-pressed="${DASH.dias===v}">${t}</button>`).join('');
+  const topo=`<div class="pd-hd"><div><h3>Leads por dia</h3><div class="pd-val">${tot}</div></div><div class="pd-pills" role="group" aria-label="Período do gráfico">${pills}</div></div>`;
+  const leg='<div class="pd-leg"><span><i></i>Leads recebidos</span><span><i class="b"></i>Orçamentos gerados</span></div>';
+  if(!tot)return `<section class="pn-card pd-graf">${topo}<div class="pd-plot pd-plot-v"><div class="pd-vazio"><p>Ainda não há leads neste período. O gráfico aparece quando o primeiro briefing chegar.</p><button type="button" class="btn pd-btn pd-sec" data-pn="cap">Captar clientes</button></div><svg class="pd-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="gh" d="M0 72 L100 72"/></svg></div>${leg}</section>`;
+  const desc=i=>fdate(dias[i][0])+': '+a[i]+' lead(s), '+b[i]+' orçamento(s)';
+  return `<section class="pn-card pd-graf">${topo}<div class="pd-plot" id="pd-plot" tabindex="0" role="group" aria-label="Leads recebidos por dia, ${tot} no total. Use as setas do teclado para ler cada dia.">
+   <svg class="pd-ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="l2" d="${pdCaminho(b,mx)}"/><path class="l1" d="${pdCaminho(a,mx)}"/></svg>
+   ${a.filter(x=>x>0).length<=12?a.map((x,i)=>x>0?`<span class="pd-pt" style="left:${pdX(i,n).toFixed(2)}%;top:${pdY(x,mx).toFixed(2)}%"></span>`:'').join(''):''}<span class="pd-dot" id="pd-dot" hidden></span><div class="pd-tip" id="pd-tip" hidden></div></div>
+   <p class="pd-dica" id="pd-dica" role="status" aria-live="polite">Passe o cursor ou use as setas sobre o gráfico para ver o dia.</p>${leg}<span hidden id="pd-dados" data-n="${n}">${esc(JSON.stringify(dias.map((p,i)=>[desc(i),a[i],b[i]])))}</span></section>`;
+}
+function pdSemana(R){
+  const c=[0,0,0,0,0,0,0];R.base.forEach(l=>{c[new Date(leadT(l)).getDay()]++});
+  const mx=Math.max(...c),tot=c.reduce((x,y)=>x+y,0),top=tot?c.indexOf(mx):-1;
+  return `<section class="pn-card pd-sem"><div class="pd-hd"><div><h3>Leads por dia da semana</h3><div class="pd-val">${top>=0?esc(PD_DIAS_L[top]):'—'}</div></div></div><div class="pd-bars" role="img" aria-label="Leads por dia da semana: ${c.map((x,i)=>PD_DIAS[i]+' '+x).join(', ')}">${c.map((x,i)=>`<div class="pd-bar${i===top?' on':''}"><div class="pd-tr"><i style="height:${tot?Math.max(x?4:0,Math.round(x/mx*100)):0}%"></i></div><span>${PD_DIAS[i]}</span></div>`).join('')}</div></section>`;
+}
+function pdAtiv(){
+  const ev=ativGet().slice(0,5);
+  const vazio='<div class="pd-vz"><span class="pd-ci2">'+PD_I.pulso+'</span><p>Sem atividades ainda. Elas aparecem aqui conforme você usa o painel.</p></div>';
+  return `<section class="pn-card pd-ativ"><div class="pd-hd"><h3>Atividade recente</h3><button type="button" class="pd-ver" id="pd-vertudo"${ev.length?'':' disabled'}>Ver tudo</button></div>${ev.length?`<ul class="pd-lista">${ev.map(e=>`<li><span class="pd-ci">${PD_I[PD_ATIV_IC[e.tipo]||'pulso']}</span><div class="pd-tx">${e.id?`<button type="button" class="pd-lk" data-lead="${esc(e.id)}"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></button>`:`<b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span>`}</div></li>`).join('')}</ul>`:vazio}</section>`;
+}
+function pdFunil(R){
+  const et=[['Leads recebidos',R.recebidos,'todos'],['Orçamento gerado',R.orc,'pronto'],['Orçamento enviado',R.env,'pronto'],['Aprovados',R.apr,'aprovado'],['Em execução',R.exec,'aplicado']],max=Math.max(R.recebidos,1);
+  return `<section class="pn-card pd-fun"><div class="pd-hd"><h3>Funil comercial</h3><button type="button" class="pd-ver" data-pn="">Abrir leads</button></div><ol class="pd-fn">${et.map(([t,n,f])=>`<li><button type="button" class="pd-lk" data-flt="${f}">${esc(t)}</button><i><b style="width:${Math.max(n?3:0,Math.round(n/max*100))}%"></b></i><em>${n}</em></li>`).join('')}</ol><p class="pd-nota">Cada etapa conta os leads do período que chegaram até ela. Toque no nome para abrir a lista filtrada.</p></section>`;
+}
+function pdMatriz(){
+  const ev=ativGet(),hoje=today(),c={};ev.forEach(e=>{const k=pdYmd(e.t);c[k]=(c[k]||0)+1});
+  const dias=[];for(let i=83;i>=0;i--)dias.push(addDays(hoje,-i));
+  const v=dias.map(d=>c[d]||0),tot=v.reduce((a,b)=>a+b,0),mx=Math.max(...v,1);
+  const cl=x=>!x?'':x>=mx*.75?' h4':x>=mx*.5?' h3':x>=mx*.25?' h2':' h1';
+  /* colunas = semanas, linhas = dias da semana (a primeira coluna começa no dia 84 atrás) */
+  return `<section class="pn-card pd-mat"><div class="pd-hd"><div><h3>Atividade por dia</h3><div class="pd-val">${tot} ${tot===1?'ação':'ações'}</div></div></div><div class="pd-heat" role="img" aria-label="Ações registradas por dia nas últimas 12 semanas: ${tot} no total">${v.map((x,i)=>`<i class="${cl(x).trim()}" title="${esc(fdate(dias[i])+': '+x+' ação(ões)')}"></i>`).join('')}</div><div class="pd-hnote"><span>12 semanas atrás</span><span>Hoje</span></div></section>`;
+}
+function pdVerTudo(){
+  const ev=ativGet().slice(0,100);
+  const m=dlg('Atividade recente','<h3>Atividade recente</h3><ul class="pd-lista pd-lista-dlg">'+ev.map(e=>`<li><span class="pd-ci">${PD_I[PD_ATIV_IC[e.tipo]||'pulso']}</span><div class="pd-tx"><b>${esc(e.txt)}</b><span>${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span></div></li>`).join('')+'</ul><div class="row"><button type="button" class="btn ghost" data-ok>Fechar</button></div>',{larga:true});
+  m.querySelector('[data-ok]').onclick=()=>m.remove();
+}
+function pdHero(R){
+  const tx=taxas(R);
   const per=DASH.dias?'nos últimos '+DASH.dias+' dias':'em todo o período';
   const sem=!R.recebidos&&!getL().length;
-  return `
-  <p class="bn-res">${sem?'Ainda não há leads. Quando alguém concluir um briefing no site, os números aparecem aqui.':`<b>${R.recebidos}</b> lead(s) ${per}, <b>${R.pend}</b> aguardando ação e <b>${R.apr}</b> aprovado(s).`}</p>
-  <div class="bento">
-   <section class="bn bn-hero"><h3 class="dsh-h">Leads por dia</h3><b class="bn-n big">${R.recebidos}</b><span class="bn-s">leads recebidos ${per}</span>${graficoBento(R.porDia)}</section>
-   ${numCard('',R.pend,'Pendentes','novo ou pronto','var(--st-novo)')}
-   ${numCard('',R.orc,'Orçamentos gerados',R.msg+' mensagens, '+R.env+' enviados','var(--st-pronto)')}
-   ${numCard('',R.apr,'Aprovados',R.rec+' recusados','var(--st-aprovado)')}
-   ${numCard('',tx.aprov.v,'Taxa de aprovação',esc(tx.aprov.nota),'var(--st-aplicado)')}
-   ${bentoCard('bn-w2','Precisa de atenção',al.length?`<ul class="alr">${al.slice(0,8).map(x=>`<li><span class="hint">${esc(x.t)}</span><button class="lnkb" ${x.proj?`data-proj="${esc(x.proj)}"`:`data-lead="${esc(x.id)}"`}>${esc(x.n)}</button></li>`).join('')}</ul>${al.length>8?`<p class="hint">Mostrando 8 de ${al.length}.</p>`:''}`:'<p class="hint">Nada exigindo atenção agora.</p>')}
-   ${bentoCard('bn-w2','Funil comercial',funilLinks(R))}
-   ${bentoCard('','Conversão',`<b class="bn-n">${tx.conv.v}</b><span class="bn-s">${esc(tx.conv.nota)}</span>`)}
-   ${bentoCard('','Projetos',`<ul class="psv"><li><span>Aguardando início</span><b>${R.aguard}</b></li><li><span>Em andamento</span><b>${R.and}</b></li><li><span>Finalizados</span><b>${R.fin}</b></li><li><span>Atrasados</span><b class="${R.atr?'late':''}">${R.atr}</b></li></ul>`)}
-   ${bentoCard('bn-w2','Tarefas e prazos próximos',R.tarefas.length?`<ul class="tkl">${R.tarefas.map(({l,x})=>`<li><button class="lnkb" data-proj="${esc(l.id)}"><b>${esc(l.nome)}</b> · ${esc(x.txt)}</button><span class="${x.due<hoje?'late':(x.due<=addDays(hoje,7)?'soon':'hint')}">${x.due<hoje?'atrasada · ':''}${esc(fdate(x.due))}</span></li>`).join('')}</ul>${R.tarefasTotal>10?`<p class="hint">Mostrando 10 de ${R.tarefasTotal} tarefas pendentes.</p>`:''}`:'<p class="hint">Nenhuma tarefa pendente com prazo.</p>')}
-   ${bentoCard('bn-w2','Serviços mais pedidos',R.porSvc.length?`<ul class="psv">${R.porSvc.map(([k,n])=>`<li><span>${esc(CURTO[k]||MODS[k].name)}</span><b>${n}</b></li>`).join('')}</ul>`:'<p class="hint">Ainda não há dados neste período.</p>')}
-   ${bentoCard('bn-w2','Atividade recente',ev.length?`<ul class="act">${ev.map(e=>`<li><span class="hint">${esc(dHora(e.t))} · ${esc(e.por||'Você')}</span>${e.id?`<button class="lnkb" data-lead="${esc(e.id)}">${esc(e.txt)}</button>`:esc(e.txt)}</li>`).join('')}</ul>`:'<p class="hint">Sem atividades registradas ainda. Elas aparecem aqui a partir de agora.</p>')}
+  let pill='<span class="pd-pillv">Sem período anterior</span>';
+  if(DASH.dias&&R.ant>0){const p=Math.round((R.recebidos-R.ant)/R.ant*100);pill=`<span class="pd-pillv${p>=0?' ok':' baixo'}">${p>=0?PD_I.sobe:''}${p>=0?'+':''}${p}% vs. ${DASH.dias} dias anteriores</span>`}
+  return `<section class="pd-hero" aria-labelledby="pd-hl"><span class="pd-lbl" id="pd-hl">Leads ${per}</span>
+   <div class="pd-big"><span class="pd-n">${R.recebidos}</span>${pill}</div>
+   <p class="pd-sub">${sem?'Quando alguém concluir um briefing no site, os números aparecem aqui.':`${R.pend} aguardando ação e ${R.apr} aprovado(s) no período.`}</p>
+   <div class="pd-acoes"><button type="button" class="btn pd-btn pd-pri" data-pn="cap">${PD_I.alvo}Captar clientes</button><button type="button" class="btn pd-btn pd-sec" id="pd-csv">${PD_I.baixo}Exportar CSV</button></div></section>`;
+}
+function dashPainel(R){
+  const hoje=today(),tx=taxas(R),al=alertas(R);
+  const dec=R.apr+R.rec;
+  const notaTx=tx.aprov.v==='—'?'Poucos dados (mínimo 3 decididos)':esc(R.apr+' de '+dec+' decididos');
+  return `<div class="pd-g pd-g4">${pdMetrica('pessoas','Pendentes',R.pend,'novo ou pronto',pdSerie(R,l=>l.status==='novo'||l.status==='pronto'))}${pdMetrica('doc','Orçamentos gerados',R.orc,esc(R.msg+' mensagens, '+R.env+' enviados'),pdSerie(R,l=>l.orc))}${pdMetrica('check','Aprovados',R.apr,esc(R.rec+' recusados'),pdSerie(R,l=>l.status==='aprovado'||l.status==='aplicado'))}${pdMetrica('pulso','Taxa de aprovação',tx.aprov.v,notaTx,null)}</div>
+  <div class="pd-g pd-g83">${pdGrafico(R)}${pdSemana(R)}</div>
+  <div class="pd-g pd-g3">${pdAtiv()}${pdFunil(R)}${pdMatriz()}</div>
+  <div class="pd-g pd-g2">
+   <section class="pn-card"><h3 class="pd-h3">Precisa de atenção</h3>${al.length?`<ul class="pd-ul">${al.slice(0,8).map(x=>`<li><span class="pd-mut">${esc(x.t)}</span><button type="button" class="pd-lk" ${x.proj?`data-proj="${esc(x.proj)}"`:`data-lead="${esc(x.id)}"`}>${esc(x.n)}</button></li>`).join('')}</ul>${al.length>8?`<p class="pd-nota">Mostrando 8 de ${al.length}.</p>`:''}`:'<p class="pd-mut">Nada exigindo atenção agora.</p>'}</section>
+   <section class="pn-card"><h3 class="pd-h3">Tarefas e prazos próximos</h3>${R.tarefas.length?`<ul class="pd-ul">${R.tarefas.map(({l,x})=>`<li class="pd-li2"><button type="button" class="pd-lk" data-proj="${esc(l.id)}"><b>${esc(l.nome)}</b> · ${esc(x.txt)}</button><span class="${x.due<hoje?'late':(x.due<=addDays(hoje,7)?'soon':'pd-mut')}">${x.due<hoje?'atrasada · ':''}${esc(fdate(x.due))}</span></li>`).join('')}</ul>${R.tarefasTotal>10?`<p class="pd-nota">Mostrando 10 de ${R.tarefasTotal} tarefas pendentes.</p>`:''}`:'<p class="pd-mut">Nenhuma tarefa pendente com prazo.</p>'}</section>
   </div>
-  <section class="panel" style="margin-top:14px"><h3 class="dsh-h">Leads do período (${R.lista.length})</h3>${tabelaLeads(R)}</section>
-  <p class="hint dsh-nota">Todos os números vêm dos leads e acompanhamentos salvos neste navegador. Orçamento não é receita: o painel não soma valores de propostas. Taxa de aprovação = aprovados ÷ (aprovados + recusados); conversão = aprovados ÷ leads recebidos, ambas no período filtrado.</p>`;
+  <div class="pd-g pd-g3">
+   <section class="pn-card"><h3 class="pd-h3">Projetos</h3><ul class="pd-ul pd-kv"><li><span>Aguardando início</span><b>${R.aguard}</b></li><li><span>Em andamento</span><b>${R.and}</b></li><li><span>Finalizados</span><b>${R.fin}</b></li><li><span>Atrasados</span><b class="${R.atr?'late':''}">${R.atr}</b></li></ul></section>
+   <section class="pn-card"><h3 class="pd-h3">Conversão</h3><div class="pd-v pd-v2">${esc(tx.conv.v)}</div><p class="pd-nota">${esc(tx.conv.nota)}</p></section>
+   <section class="pn-card"><h3 class="pd-h3">Serviços mais pedidos</h3>${R.porSvc.length?`<ul class="pd-ul pd-kv">${R.porSvc.map(([k,n])=>`<li><span>${esc(CURTO[k]||MODS[k].name)}</span><b>${n}</b></li>`).join('')}</ul>`:'<p class="pd-mut">Ainda não há dados neste período.</p>'}</section>
+  </div>
+  <section class="pn-card pd-tab"><h3 class="pd-h3">Leads do período (${R.lista.length})</h3>${tabelaLeads(R)}</section>
+  <p class="pd-nota pd-rodape">Todos os números vêm dos leads e acompanhamentos salvos neste navegador. Orçamento não é receita: o painel não soma valores de propostas. Taxa de aprovação = aprovados ÷ (aprovados + recusados); conversão = aprovados ÷ leads recebidos, ambas no período filtrado. Os gráficos de atividade contam só o que foi registrado a partir de agora.</p>`;
 }
 function dashInner(){
   const o=(v,t,sel)=>`<option value="${esc(v)}" ${String(sel)===String(v)?'selected':''}>${esc(t)}</option>`;
-  return `<h2 class="pt">Dashboard</h2><p class="hint">Visão da operação com os dados reais da sua conta.</p>${storeWarn()}
+  const ativo=!!(DASH.status||DASH.svc||DASH.plano||DASH.q||DASH.ord!=='recentes');
+  return `<h2 class="pn-sr">Dashboard</h2>${storeWarn()}<div id="pd-raiz"><div class="pd-head"><div id="dash-h"></div>
+  <details class="pd-fil"${ativo?' open':''}><summary>${PD_I.filtro}<span>Filtros${ativo?' (ativos)':''}</span></summary>
   <div class="dsh-f" role="group" aria-label="Filtros do dashboard">
-   <label>Período<select id="df-dias">${[[7,'Últimos 7 dias'],[30,'Últimos 30 dias'],[90,'Últimos 90 dias'],[0,'Todo o período']].map(([v,t])=>o(v,t,DASH.dias)).join('')}</select></label>
    <label>Status<select id="df-status">${o('','Todos',DASH.status)}${['novo','pronto','aprovado','aplicado','recusado'].map(s=>o(s,stl(s),DASH.status)).join('')}</select></label>
    <label>Serviço<select id="df-svc">${o('','Todos',DASH.svc)}${Object.entries(MODS).filter(([k,m])=>!m.oculto).map(([k,m])=>o(k,CURTO[k]||m.name,DASH.svc)).join('')}</select></label>
    <label>Plano<select id="df-plano">${o('','Todos',DASH.plano)}${Object.entries(PLANO_NOME).map(([k,t])=>o(k,t,DASH.plano)).join('')}</select></label>
    <label>Ordenar a lista<select id="df-ord">${o('recentes','Mais recentes',DASH.ord)}${o('nome','Nome',DASH.ord)}${o('status','Status',DASH.ord)}</select></label>
    <label class="dsh-q">Cliente<input id="df-q" type="search" placeholder="Buscar por nome" value="${esc(DASH.q)}" maxlength="80" autocomplete="off"></label>
-  </div><div id="dashc"></div>`;
+  </div></details></div><div id="dashc"></div></div>`;
 }
 function pintaDash(){
   const el=document.getElementById('dashc');if(!el)return;
-  A.sig=sig();const R=dashCalc();el.innerHTML=dashPainel(R);
+  A.sig=sig();const R=dashCalc();
+  const antes=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.dias:null;
+  el.innerHTML=dashPainel(R);document.getElementById('dash-h').innerHTML=pdHero(R);const raiz=document.getElementById('pd-raiz');
   el.querySelectorAll('[data-lead]').forEach(b=>{const ir=()=>{A.view='';A.sel=b.dataset.lead;A.tab='orc';A.edit=false;A.err='';A.fs=false;admin()};b.onclick=ir;if(b.tagName==='TR')b.onkeydown=e=>{if(e.key==='Enter')ir()}});
   el.querySelectorAll('[data-flt]').forEach(b=>b.onclick=()=>{A.view='';A.filter=b.dataset.flt;admin()});
-  const gc=el.querySelector('.gcap');
-  const bars=[...el.querySelectorAll('.gbn rect')];
-  bars.forEach((r,i)=>{const diz=()=>{if(gc)gc.textContent=r.dataset.d;bars.forEach(x=>x.classList.toggle('on',x===r))};
-    r.onmouseenter=diz;r.onfocus=diz;
-    r.onkeydown=e=>{const j=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:e.key==='Home'?0:e.key==='End'?bars.length-1:-1;
-      if(j>=0&&j<bars.length){e.preventDefault();bars[i].tabIndex=-1;bars[j].tabIndex=0;bars[j].focus()}}});
+  raiz.querySelectorAll('[data-pn]').forEach(b=>b.onclick=()=>pnIr(b.dataset.pn));
+  el.querySelectorAll('[data-dias]').forEach(b=>b.onclick=()=>{DASH.dias=+b.dataset.dias;pintaDash();const n=document.querySelector('[data-dias="'+DASH.dias+'"]');if(n)n.focus()});
   el.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{A.view='trk';T.id=b.dataset.proj;T.tab='tarefas';admin()});
+  const csv=document.getElementById('pd-csv');if(csv)csv.onclick=leadsCsv;
+  const vt=document.getElementById('pd-vertudo');if(vt)vt.onclick=pdVerTudo;
+  pdBindPlot(el);
+}
+/* leitura do gráfico por mouse, toque e teclado (setas, Home e End) */
+function pdBindPlot(el){
+  const plot=el.querySelector('#pd-plot'),dd=el.querySelector('#pd-dados');if(!plot||!dd)return;
+  let dados=[];try{dados=JSON.parse(dd.textContent)}catch(e){return}
+  const dot=el.querySelector('#pd-dot'),tip=el.querySelector('#pd-tip'),dica=el.querySelector('#pd-dica'),n=dados.length;
+  const mx=Math.max(...dados.map(x=>Math.max(x[1],x[2])),1);
+  const mostra=i=>{
+    i=Math.max(0,Math.min(n-1,i));plot.dataset.i=i;
+    const x=pdX(i,n),y=pdY(dados[i][1],mx);
+    dot.hidden=false;dot.style.left=x+'%';dot.style.top=y+'%';
+    tip.hidden=false;tip.innerHTML='<b></b><span></span>';tip.firstChild.textContent=dados[i][1]+' lead(s)';tip.lastChild.textContent=dados[i][0].split(': ')[0]+' · '+dados[i][2]+' orçamento(s)';
+    tip.classList.toggle('esq',x>60);tip.style.left=x+'%';tip.style.top=Math.min(Math.max(y,22),78)+'%';
+    dica.textContent=dados[i][0];
+  };
+  const idx=e=>{const r=plot.getBoundingClientRect();return Math.round(((e.clientX-r.left)/r.width*100-3)/94*(n-1))};
+  plot.onpointermove=e=>mostra(idx(e));plot.onpointerdown=e=>mostra(idx(e));
+  plot.onfocus=()=>mostra(plot.dataset.i!=null&&plot.dataset.i!==''?+plot.dataset.i:n-1);
+  plot.onkeydown=e=>{const i=+(plot.dataset.i??n-1),j=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:e.key==='Home'?0:e.key==='End'?n-1:null;if(j!==null){e.preventDefault();mostra(j)}};
 }
 function bindDash(){
-  const m={'df-dias':['dias',v=>+v],'df-status':['status',v=>v],'df-svc':['svc',v=>v],'df-plano':['plano',v=>v],'df-ord':['ord',v=>v]};
+  const m={'df-status':['status',v=>v],'df-svc':['svc',v=>v],'df-plano':['plano',v=>v],'df-ord':['ord',v=>v]};
   Object.entries(m).forEach(([id,[k,fn]])=>{const e=document.getElementById(id);if(e)e.onchange=()=>{DASH[k]=fn(e.value);pintaDash()}});
   const q=document.getElementById('df-q');if(q)q.oninput=()=>{DASH.q=q.value;pintaDash()};
   pintaDash();

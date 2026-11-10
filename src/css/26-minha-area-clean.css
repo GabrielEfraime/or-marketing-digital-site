@@ -45,7 +45,7 @@ html body.adm input:focus-visible,html body.adm select:focus-visible,html body.a
 html body.adm ::placeholder{color:rgba(234,224,213,.38)}
 
 /* cartões: sólidos, borda fina, sem brilho */
-html body.adm .panel,html body.adm .kpi,html body.adm .sc,html body.adm .mbox,html body.adm .bn{background:var(--panel)!important;border:1px solid var(--bd)!important;box-shadow:none}
+html body.adm .panel,html body.adm .kpi,html body.adm .sc,html body.adm .mbox,html body.adm .bn{background:var(--panel);border:1px solid var(--bd);box-shadow:none}
 html body.adm .panel{border-radius:18px}
 html body.adm .sc,html body.adm .kpi,html body.adm .bn{border-radius:16px}
 /* cartões de resumo: a cor do status vira um ponto antes da legenda (mesmo ponto dos selos de status) */

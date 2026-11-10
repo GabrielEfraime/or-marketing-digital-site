@@ -36,7 +36,8 @@ Os números seguem a ordem real de carga em `src/ordem.json` (sem letras e sem b
 | 19 | `backup-disco` | Pasta de backup (File System Access API), `merge()` por data, backup cifrado |
 | 20 | `minha-area-estado` | Minha área, estado e utilitários: `A`, `J`, `svcs`, `svcName`, `parseOrc`, `statLine` |
 | 21 | `assistente-setor` | Assistente interno por setor (`orAssist*`, `OR_SETORES`) |
-| 22 | `minha-area` | `admShell`, `admin()` (PIN), lista de leads, abas, ações e detalhe do lead |
+| 22 | `minha-area` | Casca da Minha área (direção C): `admShell` (menu agrupado, barra de topo com breadcrumb, busca, avisos, ajuda e avatar, barra inferior no celular), `pnIr()` (troca de tela por estado), menu da conta/folha "Mais", tela Configurações (`A.view==='cfg'`: Backup no HD, Dados e segurança, IAs, recolhidos), `admin()` (PIN), lista de leads, abas, ações e detalhe do lead |
+| 22 | `paleta-comando` | Paleta Ctrl+K (`pnPaletaAbre`): telas e leads, só dados locais, foco preso, Esc fecha |
 | 23 | `demandas-quadro` | Quadro de demandas (`orQuadro*`, `OR_QUADRO`, `OR_COLUNAS`): dados, normalização, importação, lista e eventos |
 | 24 | `demandas-quadro-ia` | Demandas com IA: arte da demanda (`orQuadroArteIA`), imagem (`orQuadroImagemIA`) e planejamento (`orQuadroPlanejar`) |
 | 25 | `especialistas-estrategia` | `ESP` (um especialista por serviço), `PM_CORE`, `PM_MOD`, `gen()` |
