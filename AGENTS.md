@@ -12,6 +12,7 @@ OR Marketing Digital: agência do Rio de Janeiro (foco em empresas e pequenos ne
 | Regras de trabalho e qualidade | este arquivo |
 | Arquitetura e mapa dos arquivos | `ARCHITECTURE.md` |
 | Visual, tokens e componentes | `DESIGN_SYSTEM.md` |
+| Método de design e marketing (tipografia, SWOT, AIDA, STP, Ansoff, processo) | `METODO.md` |
 | Testes, evidências e validação visual | `TESTING.md` |
 | Requisitos do Site Studio (SS-001 a SS-043) | `SPEC.md` |
 | Auditoria de conformidade do SPEC | `spec-compliance/REPORT.md` e `MATRIZ-ALINHAMENTO.md` |
@@ -71,6 +72,7 @@ Documentos históricos (`docs/ESPECIFICACAO-COMPLETA.md`, `docs/PLANO-SUPABASE.m
 Use só quando o assunto pede: arquitetura, frontend, backend, UX/UI e design visual, segurança, banco de dados, SEO, performance, testes, integração com IA. Um especialista por tarefa; sem agentes redundantes para tarefa simples. Os agentes do Claude estão em `.claude/agents/` (fora do repositório).
 
 ## Qualidade visual (prioridade máxima)
+Siga o processo e os princípios de `METODO.md` (diagnóstico, pesquisa, planejamento, criação, validação, entrega).
 Página "pronta" não é página que renderiza. Antes de interface grande: duas ou três direções de design, escolha justificada. Evite o visual genérico de IA (veja `DESIGN_SYSTEM.md`). Toda mudança visual precisa de captura de tela real (desktop e celular) comparada com o planejado.
 
 ## Fora de escopo sem decisão do CEO
