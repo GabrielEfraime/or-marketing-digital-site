@@ -1,6 +1,6 @@
 /* Site Studio: só o que as classes da Minha área e da Captação ainda não resolvem */
 #studio .ss-lista,#studio .ss-itens{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-#studio .ss-itens li{line-height:1.5}
+#studio .ss-itens li{line-height:var(--line-height-body)}
 #studio .ss-lk{all:unset;box-sizing:border-box;display:grid;gap:2px;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--ctl);border-radius:12px;cursor:pointer;color:var(--fg)}
 #studio .ss-lk:hover{border-color:rgba(198,172,142,.6)}
 #studio .ss-lk:focus-visible{outline:2px solid var(--focus);outline-offset:2px}

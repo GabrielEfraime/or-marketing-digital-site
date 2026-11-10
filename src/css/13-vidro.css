@@ -78,13 +78,13 @@ body.adm .tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .plc h4{margin:0;font:700 15px var(--fb)}
 .plc .vl{margin:0;padding:0;display:block;font:700 22px/var(--lh-t) var(--fb);font-variant-numeric:tabular-nums}
 .plc small{opacity:.85;font-size:13px;line-height:var(--lh-ui)}
-.plc .tg{font:600 12px ui-monospace,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--focus)}
+.plc .tg{font:600 12px ui-monospace,Consolas,monospace;letter-spacing:var(--ls-caps-sm);text-transform:uppercase;color:var(--focus)}
 
 /* ----- vagas e RH ----- */
 .vgf{padding:clamp(16px,3vw,26px);border-radius:var(--gl-r);background:var(--gl-bg);border:1px solid var(--gl-bd);box-shadow:var(--gl-fx)}
 .rhint{border-left:3px solid var(--warn);padding:8px 12px;border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--warn) 10%,transparent);font-size:var(--t-sm)}
 .rhr{padding:14px 16px;border-radius:var(--gl-r);background:var(--gl-solid);border:1px solid var(--gl-bd);display:grid;gap:8px}
-.rhr h4{margin:6px 0 0;font:700 13px ui-monospace,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.rhr h4{margin:6px 0 0;font:700 13px ui-monospace,Consolas,monospace;letter-spacing:var(--ls-caps);text-transform:uppercase;opacity:.85}
 .rhr ul{margin:0;padding-left:18px;display:grid;gap:4px}
 
 /* ----- modais: fundo desfocado,painel sólido,cabeçalho e rodapé definidos ----- */
@@ -104,7 +104,7 @@ body.adm .tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 /* ----- cantos arredondados em todo o site e painel (o estilo United zerava os raios) ----- */
 :root{--r1:8px;--r2:14px;--r3:20px}
 .v-cta-row,.v-job,.v-empty,.v-form{border-radius:24px}
-.svc{align-items:center;font:600 13px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;border-radius:16px}
+.svc{align-items:center;font:600 13px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:var(--ls-caps);text-transform:uppercase;border-radius:16px}
 .gl{border-radius:30px}
 .pane.fs{border-radius:0}
 

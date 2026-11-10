@@ -16,10 +16,10 @@ html body.adm{
 
 /* conteúdo */
 html body.adm .mainc{padding:clamp(22px,3.2vw,48px) clamp(18px,3.2vw,52px)}
-html body.adm .pt{margin:0 0 8px;font:600 clamp(28px,2.8vw,40px)/1.1 var(--fd);letter-spacing:-.025em}
+html body.adm .pt{margin:0 0 8px;font:600 clamp(28px,2.8vw,40px)/var(--line-height-title) var(--fd);letter-spacing:-.025em}
 html body.adm .hint{color:rgba(234,224,213,.6)}
 html body.adm label{font:600 14px/var(--lh-ui) var(--fb);color:rgba(234,224,213,.86)}
-html body.adm .dsh-f label,html body.adm .mper,html body.adm .dsh-h,html body.adm .tbl th{font-family:var(--fb);font-weight:600;letter-spacing:.14em;color:rgba(234,224,213,.6);opacity:1}
+html body.adm .dsh-f label,html body.adm .mper,html body.adm .dsh-h,html body.adm .tbl th{font-family:var(--fb);font-weight:600;letter-spacing:var(--ls-caps-wide);color:rgba(234,224,213,.6);opacity:1}
 html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select,html body.adm textarea{
   font:400 15px/var(--lh-ui) var(--fb);color:var(--or-marfim);background-color:var(--inpbg);border:1px solid rgba(234,224,213,.12);border-radius:12px}
 html body.adm input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),html body.adm select{min-height:46px}
@@ -33,7 +33,7 @@ html body.adm .sc,html body.adm .kpi{border-radius:16px}
 /* cartões de resumo: a cor do status vira um ponto antes da legenda (mesmo ponto dos selos de status) */
 html body.adm .sc{border-top-width:1px}
 html body.adm .sc span::before{content:"";display:inline-block;width:6px;height:6px;margin:0 8px 1px 0;border-radius:50%;vertical-align:middle;background:var(--c,var(--or-areia))}
-html body.adm .sc b{font:600 clamp(28px,3vw,38px)/1 var(--fd);letter-spacing:-.03em}
+html body.adm .sc b{font:600 clamp(28px,3vw,38px)/1 var(--fd);letter-spacing:var(--ls-title)}
 html body.adm .sc span{font-size:var(--t-sm);color:rgba(234,224,213,.62)}
 
 /* lista de leads e status */
@@ -45,7 +45,7 @@ html body.adm .it.pronto{border-left-color:var(--st-pronto)}
 html body.adm .it.aprovado{border-left-color:var(--st-aprovado)}
 html body.adm .it.aplicado{border-left-color:var(--st-aplicado)}
 html body.adm .it.recusado{border-left-color:var(--st-recusado)}
-html body.adm .chip{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;padding:4px 9px;border-radius:999px;font:600 12px/var(--lh-t) var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--or-marfim);background:rgba(234,224,213,.06);border:1px solid var(--bd)}
+html body.adm .chip{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;padding:4px 9px;border-radius:999px;font:600 12px/var(--lh-t) var(--fb);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--or-marfim);background:rgba(234,224,213,.06);border:1px solid var(--bd)}
 html body.adm .chip::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:currentColor}
 html body.adm .chip.novo{color:var(--st-novo);background:rgba(198,172,142,.1);border-color:rgba(198,172,142,.3)}
 html body.adm .chip.pronto{color:var(--st-pronto);background:rgba(234,224,213,.08);border-color:rgba(234,224,213,.24)}

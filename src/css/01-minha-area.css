@@ -61,7 +61,7 @@ body.adm input[type=checkbox]{width:auto}
 .pin{width:min(420px,100%)}
 .iacard h3{font-size:22px}
 .wmw{line-height:1}
-.wm{font:700 22px var(--fd),sans-serif;letter-spacing:-.02em;text-transform:lowercase}
+.wm{font:700 22px var(--fd),sans-serif;letter-spacing:var(--ls-title-sm);text-transform:lowercase}
 .wt{font:400 12px var(--fd),sans-serif;letter-spacing:.45em;opacity:.7;margin-top:5px}
 .mi svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:5px}
 .xsec{border:1px solid var(--bd);border-radius:16px;padding:18px;margin:0 0 16px;background:var(--panel);font-size:15px;line-height:var(--lh-body)}

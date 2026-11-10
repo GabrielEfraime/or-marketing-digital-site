@@ -4,7 +4,7 @@
 .cap-lnk:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
 .cap-k4{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 18px}
 .cap-kp{border:1px solid var(--bd);border-radius:14px;padding:12px 14px;background:var(--surf2);display:flex;flex-direction:column;gap:2px;min-width:0}
-.cap-kp b{font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.cap-kp b{font-size:24px;line-height:var(--line-height-title);font-variant-numeric:tabular-nums}
 .cap-kp span{font-size:var(--t-xs);color:var(--fg2)}
 .cap-f{margin-top:14px;position:relative;z-index:5}
 .capcw:focus-within{z-index:60}

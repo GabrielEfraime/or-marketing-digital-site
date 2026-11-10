@@ -1,10 +1,10 @@
 /* ===== Dashboards da Minha área (mesmo vidro e mesmas cores do site) ===== */
 .dsh-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0 20px}
-.dsh-f label,.mper{display:grid;gap:6px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.9}
+.dsh-f label,.mper{display:grid;gap:6px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:var(--ls-caps);text-transform:uppercase;opacity:.9}
 .dsh-f select,.dsh-f input,.mper select{width:100%;min-height:44px;font:500 15px var(--fb);letter-spacing:0;text-transform:none;color:var(--fg);background:var(--gl-bg);border:1px solid var(--ctl);border-radius:10px;padding:0 12px}
 .dsh-q{grid-column:span 2}
 @media(max-width:640px){.dsh-q{grid-column:auto}}
-.dsh-h{margin:18px 0 10px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.dsh-h{margin:18px 0 10px;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:var(--ls-caps-wide);text-transform:uppercase;opacity:.85}
 .fn{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .fn li{display:grid;grid-template-columns:minmax(120px,1.1fr) 2fr 3ch;gap:12px;align-items:center;font-size:var(--t-sm)}
 .fn i{display:block;height:12px;border-radius:999px;background:linear-gradient(90deg,#5E503F,#C6AC8E);min-width:0}
@@ -18,7 +18,7 @@
 .late{color:var(--err);font-weight:700;white-space:nowrap}
 .soon{color:var(--warn);font-weight:700;white-space:nowrap}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
-.tbl th{text-align:left;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.75;padding:8px 10px;border-bottom:1px solid var(--gl-bd)}
+.tbl th{text-align:left;font:600 12px ui-monospace,"Cascadia Mono",Consolas,monospace;letter-spacing:var(--ls-caps);text-transform:uppercase;opacity:.75;padding:8px 10px;border-bottom:1px solid var(--gl-bd)}
 .tbl td{padding:10px;border-bottom:1px solid var(--gl-bd);vertical-align:middle}
 .tbl tbody tr{cursor:pointer;transition:background .15s}
 .tbl tbody tr:hover{background:var(--gl-bg)}.tbl tbody tr:focus-visible{background:var(--gl-bg);outline:2px solid var(--focus);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--focus)}

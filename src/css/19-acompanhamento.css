@@ -62,15 +62,15 @@
 .gcard[data-fmt=carrossel] .gcov{background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),radial-gradient(120% 90% at 100% 100%,rgba(198,172,142,.3),transparent 60%),linear-gradient(160deg,var(--panel),var(--pane))}
 .gcard:hover .gcov{transform:translateY(-4px);box-shadow:0 20px 44px rgba(0,0,0,.55);border-color:rgba(198,172,142,.55)}
 .gcard:focus-visible .gcov{outline:2px solid var(--focus);outline-offset:2px}
-.gfmt{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);font:700 12px ui-monospace,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}
+.gfmt{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);font:700 12px ui-monospace,Consolas,monospace;letter-spacing:var(--ls-caps);text-transform:uppercase}
 .gfmt svg{width:14px;height:14px;fill:none;stroke:#C6AC8E;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gfmt.big{font-size:var(--t-xs)}
 .gprev{flex:1;min-height:0;font-size:var(--t-sm);line-height:var(--lh-ui);color:rgba(234,224,213,.82);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .gprev b{display:block;color:#EAE0D5;margin-bottom:4px}
 .gprev.vaz{color:rgba(234,224,213,.45)}
-.gbig{font:800 40px/1 var(--fd);letter-spacing:-.03em}
+.gbig{font:800 40px/1 var(--fd);letter-spacing:var(--ls-title)}
 .gbig small{font-size:18px;opacity:.55;margin-left:2px}
-.gnum{font:800 30px/1 var(--fd);letter-spacing:-.03em;color:#C6AC8E}
+.gnum{font:800 30px/1 var(--fd);letter-spacing:var(--ls-title);color:#C6AC8E}
 .gcov.pc .chip{align-self:flex-start;margin:0}
 .gmeta{display:flex;flex-direction:column;gap:2px;min-width:0}
 .gmeta b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -78,7 +78,7 @@
 .gcard.vazio{cursor:default}
 .gcard.vazio .gcov{background:transparent;border:1.5px dashed var(--bd);color:var(--fg2);font-size:13px;justify-content:center;align-items:center}
 .gcard.vazio .gnum{color:var(--fg2);opacity:.6}
-.pr-head h3{font:800 clamp(26px,3vw,38px)/1.1 var(--fd);margin:10px 0 4px;letter-spacing:-.02em}
+.pr-head h3{font:800 clamp(26px,3vw,38px)/var(--line-height-title) var(--fd);margin:10px 0 4px;letter-spacing:var(--ls-title-sm)}
 /* página da peça (como a página de um projeto) */
 .proj{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
 .proj-main{display:flex;flex-direction:column;gap:8px;min-width:0}
@@ -113,7 +113,7 @@
 /* visão geral: mês do contrato e demandas */
 .mes-c{display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px;padding:18px 20px;border-radius:18px;border:1px solid rgba(198,172,142,.35);background:rgba(198,172,142,.07);margin:0 0 8px}
 .mes-i{display:flex;flex-direction:column;gap:2px}
-.mes-i b{font:800 30px/1 var(--fd);letter-spacing:-.02em}
+.mes-i b{font:800 30px/1 var(--fd);letter-spacing:var(--ls-title-sm)}
 .mes-i .hint{margin:0}
 .mes-p{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px}
 .dem{padding:10px 14px}

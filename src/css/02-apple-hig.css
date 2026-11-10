@@ -19,5 +19,5 @@ html .skip:focus,html .skip:focus-visible{outline:3px solid #EAE0D5!important;ou
 body.pub .fcol button,body.pub .fcol a{min-height:44px;display:inline-flex;align-items:center}
 body.pub .nav .lnk{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
 body.pub p,body.pub .sub{max-width:68ch;text-wrap:pretty}
-body.pub h1,body.pub h2,body.pub h3{letter-spacing:-.03em;line-height:1.1;hyphens:none;text-wrap:balance}
+body.pub h1,body.pub h2,body.pub h3{letter-spacing:var(--ls-title);line-height:var(--line-height-title);hyphens:none;text-wrap:balance}
 body.pub .svp-body a,body.pub .foot a{text-decoration-thickness:1px;text-underline-offset:3px}

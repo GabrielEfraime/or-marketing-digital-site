@@ -18,8 +18,32 @@ Terrosa, sóbria, premium. Só **tema escuro**. Sem laranja. Interface **sem emo
 
 ## 2. Tipografia
 - Títulos: **Sora** (`--fd`). Texto e interface: **Inter** (`--fb`). Fontes locais (woff2 embutido); nunca Google Fonts.
-- Escala: `--t-xs` 12 · `--t-sm` 14 · `--t-md` 16 · `--t-lg` 20 · `--t-xl` 28 · `--t-2xl` 40 px. Altura de linha: título 1,2 · interface 1,5 · texto 1,6.
-- Títulos gigantes (acima de `--t-2xl`) só no topo do site. Seções comuns usam a escala acima; variar o peso e a composição, não só o tamanho.
+- Fonte única dos tokens: `:root` de `src/css/23-identidade-earthen.css`. Não declare altura de linha, tamanho ou espaçamento de letras com número solto: use o token (ou o apelido antigo, que aponta para ele).
+- Títulos gigantes (acima de `--t-2xl`) só no topo do site. Seções comuns usam a escala; variar o peso e a composição, não só o tamanho.
+
+### Tokens de tipografia
+| Token | Valor | Uso |
+|---|---|---|
+| `--line-height-body` | 1,5 | texto corrido e interface (apelidos `--lh-body`, `--lh-ui`) |
+| `--line-height-subtitle` | 1,25 | subtítulos e números de destaque (apelido `--lh-t`) |
+| `--line-height-title` | 1,1 | títulos de seção de várias linhas, com acento ou cedilha |
+| `--line-height-display` | 0,9 | títulos gigantes de uma ou duas linhas (início da home e cabeçalho de serviço) |
+| `--t-xs` a `--t-2xl` | 12, 14, 16, 20, 28, 40 px | escala fixa da interface |
+| `--t-3xl` | clamp(28px, 4vw, 42px) | título de seção do site |
+| `--t-prose` | clamp(17px, 1.5vw, 20px) | parágrafo de leitura do site |
+| `--t-display` | clamp(42px, 8.2vw, 128px) | título principal da home |
+| `--ls-display-xl` / `--ls-display` | -0,045em / -0,04em | títulos gigantes (apertados) |
+| `--ls-title` / `--ls-title-sm` | -0,03em / -0,02em | títulos e subtítulos |
+| `--ls-caps-sm` / `--ls-caps` / `--ls-caps-wide` | 0,08em / 0,1em / 0,14em | caixa-alta pequena (rótulos, etiquetas) |
+
+### Regras
+1. Os valores são ponto de partida: 0,9 só em título de **uma ou duas linhas**, sem descendentes expostos. Título de várias linhas, com acento (Ê, Ç) ou texto misto usa `--line-height-title` (1,1). Se 0,9 cortar ou encostar linhas, suba.
+2. Linhas de controle (botão, ícone, `line-height:1`, alturas fixas em px de 24, 32 ou 48) ficam como estão: quem manda é a altura mínima de 44px.
+3. Títulos: `text-wrap:balance`; parágrafos e itens: `text-wrap:pretty` (ambos na base, `01-tokens-reset.css`). Não desligar.
+4. Caixa-alta pequena (abaixo de 14px) leva espaçamento positivo (`--ls-caps*`); título grande leva negativo; nunca negativo em texto corrido.
+5. Tamanho em `clamp()` no site público; escala fixa na Minha área. Sem fonte nova: só Sora e Inter locais.
+6. Contraste é decidido pela cor, não pela tipografia: ao criar variação, conferir 4,5:1 (texto normal) e 3:1 (texto grande).
+7. Mudou altura de linha em tela da Minha área? Medir de novo os vãos (16px no desktop, 12px no celular), a igualdade de altura entre cartões vizinhos e os alvos de 44px.
 
 ## 3. Espaço, movimento e camadas
 - Espaço: `--sp-1..7` = 4, 8, 12, 16, 24, 32, 48 px. Altura do menu `--nav-h` 68px.
