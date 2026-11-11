@@ -52,3 +52,13 @@ Nenhuma funcionalidade foi alterada nesta etapa (só documentos). O app continua
 4. Implantar, em ambiente controlado, as travas técnicas aprovadas e rodar os 16 testes.
 5. Verificar as referências legais nas fontes oficiais.
 6. Relatório final de implantação.
+
+## Atualização de 11/11/2026 (após aprovação do desenho pelo CEO)
+| Item | Status |
+|---|---|
+| Desenho de governança (níveis, matriz, agentes) | **aprovado** pelo CEO |
+| Registro central de chamadas de IA (só metadados, 300 entradas, painel na tela IAs) | **desenvolvida e testada** em função e no navegador com `fetch` simulado (commit `0c0eda2`); **não publicada** |
+| Neutralização de prompt injection em todas as chamadas de IA | **desenvolvida e testada** em função (`brief`, `ctxCliente`) e por leitura de código; **não publicada** |
+| Testes novos | 91 testes passam; nenhuma IA real foi chamada |
+| Travas de permissão, ferramentas por agente, hook, proteção do `main` | **planejada** (`TRAVAS-PROPOSTAS.md`), aguardando OK separado do CEO |
+| Teto de gasto, expiração de leads, texto da política de privacidade | **pendente** de decisão do CEO |
