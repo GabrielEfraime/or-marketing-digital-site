@@ -13,7 +13,7 @@ function ssEntrada(v){
   return {site:'',ig:''};
 }
 /* tira do texto de fora as tags que o app usa para separar dado de instrução (SS-011): quem cola texto não consegue "fechar" o bloco de dados */
-const ssNeutraliza=v=>String(v==null?'':v).replace(/[\u00ad\u034f\u061c\u180e\u200b-\u200f\u2060\ufeff]/g,'').replace(/\uff1c/g,'<').replace(/\uff1e/g,'>').replace(/<\s*\/?\s*(?:fatos|pedido|html_atual|negocio|colado|system|assistant|user)[\w-]*[^>]{0,200}>?/gi,'[tag removida]');
+const ssNeutraliza=neutraliza; /* a regra geral mora em 00-util.js (neutraliza) */
 /* fatos numerados que a IA pode usar. "d" vem pronto do app (sem telefone: o telefone não entra na análise). */
 function ssFatos(d){
   const f=[],add=(txt,origem)=>{const t=txtT(ssNeutraliza(txt),400);if(t)f.push({txt:t,origem})};
@@ -74,7 +74,7 @@ async function ssAnalisar(id){
   SS.ult={tipo:'analisar'};
   SS.busy=true;SS.err='';SS.msg='';SS.prog='Analisando…';ssPaint();
   try{
-    const txt=await askF(ssPromptAnalise(fatos),x=>{SS.prog='Analisando… '+x.length+' caracteres';ssProg()},{slot:'ia2',max:1800,temp:0.3});
+    const txt=await askF(ssPromptAnalise(fatos),x=>{SS.prog='Analisando… '+x.length+' caracteres';ssProg()},{slot:'ia2',dado:'fatos',quem:'Site Studio: analise',max:1800,temp:0.3});
     const an=ssParseAnalise(txt,fatos);
     if(!an)throw new Error('A IA não devolveu a análise. Tente de novo.');
     an.em=Date.now();an.ia=IA_QUEM||(CFG.ia2&&CFG.ia2.model)||'';

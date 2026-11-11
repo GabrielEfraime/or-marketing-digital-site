@@ -75,6 +75,14 @@ function iaCard(s,t,d){
   <div id="${s}kw"><label for="${s}c">Chave da API</label><input id="${s}c" type="password" placeholder="${c.key?'Chave salva (deixe vazio para manter)':'Cole a chave aqui'}" autocomplete="off" spellcheck="false"></div>
   <div class="row"><button class="btn ghost" id="${s}t">Testar</button><button class="btn ghost" id="${s}f">Ver modelos disponíveis</button></div><p class="hint" id="${s}r"></p></div>`;
 }
+/* resumo de leitura do registro de chamadas (só metadados; nada de texto do cliente) */
+const IALOG_VER=12;
+function iaLogHtml(){
+  const a=iaLogGet(),u=a.slice(-IALOG_VER).reverse(),ok=a.filter(x=>x.res==='ok').length,fb=a.filter(x=>x.fb).length;
+  const li=x=>'<li><b>'+esc(new Date(x.t||0).toLocaleString('pt-BR'))+'</b> · '+esc(x.quem||'')+' · '+esc((LABEL[x.slot]||x.slot||'')+' ('+(x.prov||'')+', '+(x.modelo||'')+')')+(x.fb?' · <span class="hint">trocou de '+esc(x.fb.de)+' para '+esc(x.fb.para)+'</span>':'')+' · pedido '+esc(int(x.pIn))+' e resposta '+esc(int(x.pOut))+' caracteres · dado: '+esc(x.dado||'')+' · resultado: '+esc(x.res||'')+'</li>';
+  return '<div class="panel"><h4>Registro das chamadas de IA</h4><p class="hint">Guarda só quando, qual IA respondeu, tamanho e resultado. Não guarda o texto do pedido nem da resposta, nome, telefone nem chave. Ficam as últimas '+IALOG_MAX+' neste navegador.</p>'
+   +(a.length?'<p class="hint" role="status">'+esc(a.length)+' chamada(s) registradas: '+esc(ok)+' com sucesso, '+esc(a.length-ok)+' com erro ou cancelada, '+esc(fb)+' com troca de IA. Últimas '+esc(u.length)+':</p><ul class="cx">'+u.map(li).join('')+'</ul><div class="row"><button class="btn ghost" id="iolimpa" type="button">Limpar o registro</button></div>':'<p class="hint">Nenhuma chamada registrada ainda.</p>')+'</div>';
+}
 function iasInner(){
   return `<h2 class="pt">IAs</h2><p class="hint">As IAs rodam na Groq, cada uma com uma função. A <b>IA 1</b> (Qwen 3.8 27B) cria posts, legendas, roteiros, textos das artes, kits e mensagens. A <b>IA 2</b> (GPT-OSS 120B) planeja e atende: calendário editorial, demandas, estratégia, briefing, orçamento, perfil do cliente, anúncios e relatórios. A <b>IA 3</b> (GPT-OSS 120B) cuida da captação de clientes. Cole a chave da Groq em uma delas e as outras usam a mesma. As imagens das artes saem pelo Pollinations, e o Gemini fica de reserva de emergência. Se uma IA falhar, o site tenta as outras e avisa quem respondeu.</p>
   <p class="hint">Sem servidor (como no site do GitHub), as chaves ficam cifradas só neste navegador.${COFRE_SITE?' Este site tem um cofre: em outro computador ou tablet, destrave com a senha do site (abaixo) em vez de colar a chave.':' Em outro computador ou navegador, cole de novo.'}</p>${cofreHtml()}
@@ -86,6 +94,7 @@ function iasInner(){
   <label for="imgc">Chave do Gemini</label><input id="imgc" type="password" placeholder="${CFG.img.key?'Chave salva (deixe vazio para manter)':'Cole a chave aqui'}" autocomplete="off" spellcheck="false">
   <div class="row"><button class="btn ghost" id="imgt">Testar</button></div><p class="hint" id="imgr" role="status"></p></div></div>
   <div class="panel">${Object.keys(IA_LIM).length?'<h4>Limites que a Groq informou</h4><ul class="cx">'+Object.entries(IA_LIM).map(([m,v])=>'<li><b>'+esc(m)+'</b>: '+(v.tpm?int(v.tpm)+' tokens por minuto':'limite não informado')+' <span class="hint">(aviso de '+esc(new Date(v.em||0).toLocaleString('pt-BR'))+')</span></li>').join('')+'</ul><p class="hint">O site encolhe os pedidos para caber nesses limites. Para limites maiores, o plano pago da Groq (Developer) cobra por uso: confira o preço atual em console.groq.com.</p>':''}</div>
+  ${iaLogHtml()}
   <label class="tg2b"><input type="checkbox" id="lemb" ${CFG.lembrar===false?'':'checked'}> Lembrar as chaves neste computador</label><p class="hint">As chaves ficam cifradas (AES-GCM) só neste navegador, separadas das configurações, e não entram em backup nem em exportação. Desmarcado, elas valem só até fechar a aba. Protege contra leitura casual; não protege de quem usa este computador.</p>
   <div class="row"><button class="btn" id="iasave">Salvar</button><button class="btn ghost" id="iaclr">Apagar as chaves</button></div><p class="hint" id="iam"></p>`;
 }
@@ -103,7 +112,7 @@ function bindIas(){
   cofreBind(()=>{if(typeof admin==='function')admin()});
   const rd=s=>({kind:$('#'+s+'k').value,url:$('#'+s+'u').value.trim(),model:$('#'+s+'m').value.trim(),key:($('#'+s+'c')&&$('#'+s+'c').value.trim())||CFG[s].key||''});
   const test=async(c,r)=>{const t0=Date.now();r.textContent='Testando…';
-    try{const out=await ask([{role:'user',content:'Responda só com a palavra: ok'}],()=>{},{cfg:c,max:30});r.textContent='Respondeu em '+((Date.now()-t0)/1000).toFixed(1)+'s ('+(out||'sem texto').slice(0,30)+').'}
+    try{const out=await ask([{role:'user',content:'Responda só com a palavra: ok'}],()=>{},{cfg:c,max:30,dado:'teste',quem:'Tela IAs: testar'});r.textContent='Respondeu em '+((Date.now()-t0)/1000).toFixed(1)+'s ('+(out||'sem texto').slice(0,30)+').'}
     catch(e){r.textContent=e.message}};
   for(const s of IAS){
     $('#'+s+'k').onchange=e=>{const d=IADEF[e.target.value];$('#'+s+'u').value=d.url;$('#'+s+'m').value=d.model};
@@ -115,6 +124,7 @@ function bindIas(){
         else r.textContent='Esta plataforma não lista modelos.';
       }catch(e){r.textContent='Não consegui listar. Confira a chave, o endereço e a internet.'}};
   }
+  const lo=document.getElementById('iolimpa');if(lo)lo.onclick=()=>confirma('Apagar o registro das chamadas de IA deste navegador? Não dá para desfazer.',()=>{iaLogLimpa();admin()},{ok:'Apagar',titulo:'Limpar o registro?'});
   $('#iaclr').onclick=()=>{IA_CHAVES.forEach(s=>{CFG[s].key=''});saveCfg();keysSave(true);$('#iam').textContent='Chaves apagadas deste navegador.';document.querySelectorAll('#ia1c,#ia2c,#ia3c,#imgc,#polc').forEach(i=>{i.value='';i.placeholder='Cole a chave aqui'})};
   $('#iasave').onclick=async()=>{Object.assign(CFG,{ia1:rd('ia1'),ia2:rd('ia2'),ia3:rd('ia3'),img:{...CFG.img,key:$('#imgc').value.trim()||CFG.img.key||''},pol:{...CFG.pol,key:$('#polc').value.trim()||CFG.pol.key||''},lembrar:$('#lemb').checked,t:Date.now()});
     sset('cfg2',JSON.stringify(semChave()));diskSaveSoon();$('#iam').textContent='Salvando…';

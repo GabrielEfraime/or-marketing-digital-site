@@ -173,7 +173,7 @@ async function ssRodaIAReal(id,tipo,pedido){
   if(!(await ssConfereLimite(p)))return;
   SS.busy=true;SS.err='';SS.msg='';SS.prog=rot+'…';ssPaint();
   try{
-    const out=await askF(msgs,x=>{SS.prog=rot+'… '+x.length+' caracteres';ssProg()},{slot:'ia1',max:9000,temp:0.6});
+    const out=await askF(msgs,x=>{SS.prog=rot+'… '+x.length+' caracteres';ssProg()},{slot:'ia1',dado:'html',quem:'Site Studio: site',max:9000,temp:0.6});
     const h=ssExtraiHtml(out);
     if(!h)throw new Error('A IA não devolveu o HTML completo do site. A versão atual foi mantida; tente de novo.');  /* SS-024: nada de versão quebrada */
     const n=await ssGuardaVersao(id,h,tipo==='gerar'?(p.vAtual?'Site gerado de novo':'Primeira versão'):txtT(pedido,400));

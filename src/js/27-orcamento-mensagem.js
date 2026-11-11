@@ -58,7 +58,7 @@ function checarValores(txt,C,soMsg){
   (soMsg?['medio']:['basico','medio','max']).forEach(pk=>{const T=C.tiers[pk];if(T.inicio&&!found.some(n=>Math.abs(n-T.inicio)<0.01))prob.push('o total para começar do pacote '+LBL[pk.toUpperCase()]+' ('+rs(T.inicio)+') não aparece')});
   return prob;
 }
-const ctxCliente=l=>`CLIENTE: ${l.nome}\nRESUMO DO CLIENTE:\n${l.ficha||qaOf(l).map(x=>`- ${x.q} ${x.a}`).join('\n')}\n\n${usoRespostas(l)}`;
+const ctxCliente=l=>`CLIENTE: ${neutraliza(l.nome)}\nRESUMO DO CLIENTE:\n${neutraliza(l.ficha)||qaOf(l).map(x=>`- ${neutraliza(x.q)} ${neutraliza(x.a)}`).join('\n')}\n\n${usoRespostas(l)}`;
 const SYS_ORC=l=>'Você faz parte da equipe da '+CFG.brand+' (Rio de Janeiro) e monta orçamentos e mensagens claros e honestos em português do Brasil, assinando como equipe ("nós") e sem citar o nome de nenhuma pessoa. Use SOMENTE os valores e itens da tabela de preços fornecida. Se algo não estiver na tabela, escreva "a confirmar" em vez de inventar. Confira as somas. Use SOMENTE as informações do briefing; nunca troque o assunto nem o negócio do cliente. Nunca prometa resultado.\n\n'+protocolo(svcs(l))+(kb(['orc','msg'],l)?'\n\n'+kb(['orc','msg'],l):'');
 const MSG_REGRAS='A mensagem de WhatsApp tem DUAS partes escritas por você, separadas por uma linha só com ---FECHO---. Os pacotes (o que cada um inclui, prazos e valores) NÃO devem ser escritos por você: o sistema os insere entre as duas partes, a partir da tabela de preços. TOM: português brasileiro natural, como uma pessoa que leu o briefing e entendeu o negócio; próximo e objetivo, sem intimidade forçada, sem elogio automático, sem fórmulas de venda e sem pressionar. PARTE 1, a abertura (2 ou 3 frases curtas): cumprimente pelo primeiro nome, cite o que o cliente vende, a região, o objetivo ou a dificuldade que ele descreveu (só o que está no briefing; nunca invente fatos, problemas, público ou resultados) e diga que logo abaixo estão as opções. Varie a forma de abrir; não comece sempre igual. PARTE 2, o fechamento (até 3 frases): diga qual opção combina mais com o briefing e por quê, em uma frase; se a opção mais simples bastar, diga isso com franqueza (não indique a do meio por padrão); termine com uma pergunta ou próximo passo simples, diferente a cada mensagem (não use sempre a mesma frase). Nunca escreva valores, listas de itens, prazos nem os pacotes: o sistema os insere. Evite "estratégia completa", "otimização contínua" e "acompanhamento personalizado". Sem markdown, no máximo 1 emoji, no máximo 650 caracteres somando as duas partes.';
 const FECHO_PADRAO='Me conta qual dessas opções chega mais perto do que você precisa agora, que a gente ajusta o que for preciso.';
@@ -91,7 +91,7 @@ const MSG_RUIM=m=>!m||m.length<80||m.length>3500||/\*\*|^#{1,3} /m.test(m);
 async function chamarOrc(msgs,C,tipo){
   let out='',prob=[];
   for(let i=0;i<2;i++){
-    out=clean(await askF(msgs,t=>live('orc',clean(t)),{slot:'ia2',max:tipo==='msg'?700:4800,temp:i?0.1:0.2}));
+    out=clean(await askF(msgs,t=>live('orc',clean(t)),{slot:'ia2',dado:'briefing',quem:'Orcamento e mensagem',max:tipo==='msg'?700:4800,temp:i?0.1:0.2}));
     const k=out.indexOf('---MENSAGEM---'),raw=tipo==='msg'?out:(k<0?'':out.slice(k+14).trim()),body=tipo==='msg'?'':(k<0?out:out.slice(0,k)).trim();
     const partesMsg=raw.split('---FECHO---'),abertura=(partesMsg[0]||'').trim(),fecho=(partesMsg[1]||'').trim();
     const msg=abertura?comporMsg(abertura,fecho,C):'';

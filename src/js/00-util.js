@@ -5,6 +5,13 @@ const brl=n=>'R$ '+(Number(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:
 const arr=a=>Array.isArray(a)?a:[];
 const hexLum=h=>{const n=parseInt(h.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;return(.2126*r+.7152*g+.0722*b)/255};
 
+/* Neutralização de prompt injection (POP-IA-001): texto livre do visitante ou de terceiros entra no pedido à IA como DADO. Tira caracteres
+   invisíveis, volta ＜ ＞ (largura total) para < > e troca as tags que o projeto usa para delimitar blocos por "[tag removida]", para o texto
+   não conseguir fechar o bloco e escrever instruções fora dele. O conteúdo continua legível ao modelo. Não mexe em preço nem em regras. */
+const NEUTRA_TAGS='briefing|fatos|pedido|html_atual|negocio|colado|system|assistant|user|developer|tool|instructions|peca|projeto|lead|referencias_visuais|think';
+const NEUTRA_RE=new RegExp('<\\s*/?\\s*(?:'+NEUTRA_TAGS+')[\\w-]*[^>]{0,200}>?','gi');
+const neutraliza=v=>String(v==null?'':v).replace(/[\u00ad\u034f\u061c\u180e\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g,'').replace(/\uff1c/g,'<').replace(/\uff1e/g,'>').replace(NEUTRA_RE,'[tag removida]');
+
 /* IndexedDB: um só jeito de abrir e de fazer uma transação. Os nomes dos bancos e das lojas NÃO mudam
    ('estudio-ia'/'kv', 'vyxa-cv'/'f', 'or-arquivos'/'f'), senão os dados já salvos somem. */
 const idbAbre=(nome,loja)=>new Promise((res,rej)=>{try{const q=indexedDB.open(nome,1);q.onupgradeneeded=()=>q.result.createObjectStore(loja);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}catch(e){rej(e)}});

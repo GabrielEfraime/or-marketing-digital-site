@@ -27,7 +27,24 @@ function limGroq(t){t=String(t||'');const o={};const m=t.match(/try again in ([0
 const tempoTxt=s=>s<90?Math.ceil(s)+' s':s<5400?Math.ceil(s/60)+' min':Math.round(s/3600)+' h';
 function iaAviso(msg){let e=document.getElementById('iaaviso');if(!msg){if(e)e.remove();return}if(!e){e=document.createElement('div');e.id='iaaviso';e.setAttribute('role','status');document.body.appendChild(e)}e.textContent=msg}
 const esperaAb=(ms,sig)=>new Promise((res,rej)=>{if(sig?.aborted){rej(new DOMException('Chamada interrompida.','AbortError'));return}const abort=()=>{clearTimeout(k);rej(new DOMException('Chamada interrompida.','AbortError'))},k=setTimeout(()=>{sig?.removeEventListener('abort',abort);res()},ms);if(sig)sig.addEventListener('abort',abort,{once:true})});
+/* Registro central das chamadas de IA (POP-IA-001). Guarda SÓ metadados: hora, quem acionou, IA/provedor/modelo que respondeu, fallback,
+   tamanhos em caracteres, categoria do dado e resultado. NUNCA guarda o texto do pedido nem da resposta, chave, nome ou telefone. Máximo de 300. */
+const IALOG_CHAVE='iaLog2',IALOG_MAX=300;
+const iaLogGet=()=>{try{const a=JSON.parse(sget(IALOG_CHAVE)||'[]');return Array.isArray(a)?a.filter(x=>x&&typeof x==='object'):[]}catch(e){return []}};
+const iaLogLimpa=()=>{sset(IALOG_CHAVE,'[]')};
+const iaLogTxt=(v,n)=>String(v==null?'':v).replace(/[^\w.\-\/: ]+/g,'').slice(0,n);
+const iaProv=u=>{const h=String(u||'');return /groq\.com/i.test(h)?'groq':/googleapis\.com/i.test(h)?'gemini':/pollinations/i.test(h)?'pollinations':'outro'};
+const iaTam=m=>(Array.isArray(m)?m:[]).reduce((n,x)=>n+(x&&typeof x.content==='string'?x.content.length:Array.isArray(x&&x.content)?x.content.reduce((k,y)=>k+(y&&typeof y.text==='string'?y.text.length:0),0):0),0);
+function iaLogRes(e){if(!e)return 'ok';if(e.name==='AbortError'||/interrompida/i.test(e.message||''))return 'cancelado';const h=String(e.message||'').match(/erro (\d{3})/);if(h)return 'erro '+h[1];return /limite/i.test(e.message||'')?'erro 429':/demorou/i.test(e.message||'')?'tempo esgotado':/falta a chave/i.test(e.message||'')?'sem chave':'erro'}
+function iaLogReg(d){try{const e={t:Date.now(),slot:iaLogTxt(d.slot,8),prov:iaLogTxt(d.prov,16),modelo:iaLogTxt(d.modelo,60),fb:d.fb&&d.fb.de?{de:iaLogTxt(d.fb.de,60),para:iaLogTxt(d.fb.para,60)}:null,pIn:Math.max(0,Math.round(+d.pIn||0)),pOut:Math.max(0,Math.round(+d.pOut||0)),dado:iaLogTxt(d.dado,24)||'nao-informado',res:iaLogTxt(d.res,20)||'ok',quem:iaLogTxt(d.quem,40)||'nao-informado'};
+  const a=iaLogGet();a.push(e);sset(IALOG_CHAVE,JSON.stringify(a.slice(-IALOG_MAX)))}catch(x){}}
 async function ask(msgs,onChunk,o={}){
+  const c=o.cfg||CFG[o.slot||'ia1']||{},pIn=iaTam(msgs);let out='',err=null;
+  try{out=await askRaw(msgs,onChunk,o);return out}
+  catch(e){err=e;throw e}
+  finally{iaLogReg({slot:o.slot||(o.cfg?'teste':'ia1'),prov:iaProv(c.url||IADEF.openai.url),modelo:c.model,fb:o._fb?{de:o._fb,para:c.model}:null,pIn,pOut:String(out||'').length,dado:o.dado,res:iaLogRes(err),quem:o.quem})}
+}
+async function askRaw(msgs,onChunk,o={}){
   if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
@@ -73,7 +90,7 @@ async function askF(msgs,cb,o){
     const cands=IAS.filter(s=>s!==o.slot).map(s=>CFG[s]).filter(c=>c&&c.model&&keyDe(c)&&!sameCfg(c,atual));
     /* reserva de emergência: o Gemini (cartão da tela IAs), por último e sempre com aviso */
     if(!o.cfg&&CFG.img&&keyDe(CFG.img)&&!/googleapis[.]com/.test(atual.url||''))cands.push({kind:'openai',url:GEMINI_URL,model:IA_DEF.img.model,key:keyDe(CFG.img)});
-    for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');let out;try{cb('');out=await ask(msgs,cb,{...o,cfg:c})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2);continue}
+    for(const c of cands){if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');let out;try{cb('');out=await ask(msgs,cb,{...o,cfg:c,_fb:atual.model})}catch(e2){if(o.signal?.aborted||e2.name==='AbortError')throw e2;erros.push(e2);continue}
       try{iaAviso('A IA principal ('+atual.model+') não respondeu; quem respondeu foi '+c.model+(/googleapis[.]com/.test(c.url||'')?' (reserva de emergência)':'')+'. Revise com atenção.');setTimeout(()=>iaAviso(''),8000)}catch(x){} // troca nunca silenciosa
       IA_QUEM=c.model||'';return out}
     if(erros.length>1&&erros.every(x=>/limite/i.test(x.message)))throw new Error('Todas as IAs estão no limite agora ('+erros.map(x=>{const m=x.message.match(/\(([^)]+)\)/),w=x.message.match(/(volta em|libera em) ([^).]+)/);return (m?m[1]:'IA')+(w?' '+w[1]+' '+w[2]:'')}).join('; ')+'). Espere o tempo indicado.');

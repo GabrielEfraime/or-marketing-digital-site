@@ -37,9 +37,9 @@ function perfilDoBriefing(l){
 const perfilDe=l=>(l.track&&isObj(l.track.perfil)&&l.track.perfil)||perfilDoBriefing(l);
 const REGRA_NICHO='Tudo precisa ser específico para o nicho, o público, a região e o objetivo deste cliente, a partir do perfil e das respostas do briefing. Não use ideias genéricas que serviriam para qualquer negócio nem exemplos de outros nichos, e nunca troque o negócio do cliente. Se uma informação não estiver no perfil nem nas respostas, não suponha: marque [a confirmar com o cliente]. Escreva em linguagem simples e prática para o dono de um negócio pequeno, com ações viáveis para pouca verba e pouco tempo.';
 function ctxIA(l){
-  const p=perfilDe(l),lin=PERFIL_CAMPOS.filter(([k])=>p[k]).map(([k,n])=>'- '+n+': '+p[k]).join('\n');
-  const vis=new Set(),resp=qaOf(l).filter(x=>!vazio(x.a)&&!vis.has(norm(x.q))&&vis.add(norm(x.q))).map(x=>'- '+x.q+' '+String(x.a).slice(0,400)).join('\n').slice(0,6000);
-  return '<briefing>\nPERFIL DO CLIENTE (base de tudo o que você gerar para ele):\n'+(lin||'(perfil ainda vazio)')+(l.ficha?'\n\nRESUMO CONFIRMADO DO BRIEFING:\n'+String(l.ficha).slice(0,1500):'')+'\n\nRESPOSTAS DO CLIENTE NO BRIEFING:\n'+(resp||'(sem respostas registradas)')+'\n</briefing>';
+  const p=perfilDe(l),lin=PERFIL_CAMPOS.filter(([k])=>p[k]).map(([k,n])=>'- '+n+': '+neutraliza(p[k])).join('\n');
+  const vis=new Set(),resp=qaOf(l).filter(x=>!vazio(x.a)&&!vis.has(norm(x.q))&&vis.add(norm(x.q))).map(x=>'- '+neutraliza(x.q)+' '+neutraliza(String(x.a).slice(0,400))).join('\n').slice(0,6000);
+  return '<briefing>\nPERFIL DO CLIENTE (base de tudo o que você gerar para ele):\n'+(lin||'(perfil ainda vazio)')+(l.ficha?'\n\nRESUMO CONFIRMADO DO BRIEFING:\n'+neutraliza(String(l.ficha).slice(0,1500)):'')+'\n\nRESPOSTAS DO CLIENTE NO BRIEFING:\n'+(resp||'(sem respostas registradas)')+'\n</briefing>';
 }
 function perfilHtml(l){
   const p=perfilDe(l),n=PERFIL_CAMPOS.filter(([k])=>p[k]).length,busy=T.busy==='perfil';
@@ -57,7 +57,7 @@ async function perfilIA(id){
    {role:'user',content:ctxIA(l)+'\n\nDevolva o JSON com estas chaves (o valor ao lado é o que cada uma significa): {'+campos+'}'}];
   T.busy='perfil';T.pMsg='';T.relLive=0;trkPaint();
   try{
-    const out=await askF(msgs,s=>{T.relLive=s.length;const b=document.querySelector('[data-act=perfilia]');if(b)b.textContent='Organizando… '+s.length+' caracteres'},{slot:'ia2',json:true,max:1800,temp:0.2}),j=xj(out);
+    const out=await askF(msgs,s=>{T.relLive=s.length;const b=document.querySelector('[data-act=perfilia]');if(b)b.textContent='Organizando… '+s.length+' caracteres'},{slot:'ia2',dado:'briefing',quem:'Perfil do cliente',json:true,max:1800,temp:0.2}),j=xj(out);
     if(!j)throw new Error('A IA não devolveu o perfil num formato legível. Tente de novo.');
     trkSet(id,t=>{const p=isObj(t.perfil)?t.perfil:perfilDoBriefing(l);PERFIL_CAMPOS.forEach(([k])=>{const v=j[k];if(typeof v==='string'&&v.trim())p[k]=v.trim().slice(0,600)});p.fonte='ia';p.em=today();t.perfil=p});
     T.pMsg='Perfil organizado. Confira os campos: o que estiver errado, corrija aqui e a IA passa a usar a versão corrigida.';T.pAbre=true;

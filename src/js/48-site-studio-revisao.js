@@ -32,7 +32,7 @@ async function ssRevisarSiteReal(id){
   if(!html){SS.err='Não achei o HTML desta versão neste navegador. Gere o site de novo.';return ssPaint()}
   SS.ult={tipo:'revisar'};SS.busy=true;SS.err='';SS.msg='';SS.prog='Revisando com outra IA…';ssPaint();
   try{
-    const txt=await askF(ssPedidoRevisao(html,p.nome,ssDadosSite(p).fatos),x=>{SS.prog='Revisando com outra IA… '+x.length+' caracteres';ssProg()},{slot:'ia2',max:1800,temp:0.2});
+    const txt=await askF(ssPedidoRevisao(html,p.nome,ssDadosSite(p).fatos),x=>{SS.prog='Revisando com outra IA… '+x.length+' caracteres';ssProg()},{slot:'ia2',dado:'html',quem:'Site Studio: revisao',max:1800,temp:0.2});
     const r=ssParseRevisao(txt);if(!r)throw new Error('A IA não devolveu a revisão. Tente de novo.');
     const quem=IA_QUEM||(CFG.ia2&&CFG.ia2.model)||'',gerou=(p.vers.find(v=>v.n===p.vAtual)||{}).ia||'';
     SS.rev={id,n:p.vAtual,em:Date.now(),ia:quem,mesmaIA:!!gerou&&gerou===quem,...r};  /* o revisor pode cair no mesmo modelo que gerou: avisa na tela */

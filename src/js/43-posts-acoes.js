@@ -59,12 +59,12 @@ async function reaPostsGerarPlano(id,fid,y,m){
   const dt=new Date(y,m,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
   const msgs=[
     {role:"system",content:"Você é estrategista editorial da OR Marketing Digital. Gere uma pauta com exatamente uma linha por data recebida. Use só fatos do briefing; não invente ofertas, resultados, datas comemorativas, dados nem depoimentos. Distribua ângulos variados entre educação, confiança, produto/serviço e interação, respeitando nicho, público, tom e restrições. Evite repetir temas existentes. Responda somente JSON válido, sem markdown, neste formato: [{\"data\":\"YYYY-MM-DD\",\"tema\":\"...\",\"objetivo\":\"...\",\"formato\":\"...\"}]. Copie literalmente as datas fornecidas e devolva exatamente a quantidade pedida."+(rgpBloco(l)?"\n\n"+rgpBloco(l):"")},
-    {role:"user",content:"CLIENTE: "+l.nome+"\nSERVIÇO CONTRATADO: "+(MODS[f.k]?MODS[f.k].name:f.k)+"\nREDE E FORMATO: "+(f.rede||"redes sociais")+" · "+(FMT[f.fmt]||f.fmt)+"\nMÊS: "+dt+"\nQUANTIDADE PREVISTA NO ESCOPO: "+qtd+"\nDATAS A DISTRIBUIR: "+datas.join(", ")+"\nIDENTIDADE: "+String(marca.nomePerfil||l.nome)+" · "+String(marca.instagram||"perfil não informado")+"\n\nBRIEFING COMPLETO DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,12000)+"\n\nTEMAS JÁ UTILIZADOS:\n"+(anteriores.join("; ")||"nenhum registrado")+"\n\nCrie uma pauta adequada para cada data."}
+    {role:"user",content:"CLIENTE: "+neutraliza(l.nome)+"\nSERVIÇO CONTRATADO: "+(MODS[f.k]?MODS[f.k].name:f.k)+"\nREDE E FORMATO: "+(f.rede||"redes sociais")+" · "+(FMT[f.fmt]||f.fmt)+"\nMÊS: "+dt+"\nQUANTIDADE PREVISTA NO ESCOPO: "+qtd+"\nDATAS A DISTRIBUIR: "+datas.join(", ")+"\nIDENTIDADE: "+neutraliza(String(marca.nomePerfil||l.nome))+" · "+neutraliza(String(marca.instagram||"perfil não informado"))+"\n\nBRIEFING COMPLETO DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,12000)+"\n\nTEMAS JÁ UTILIZADOS:\n"+(anteriores.join("; ")||"nenhum registrado")+"\n\nCrie uma pauta adequada para cada data."}
   ];
   T.id=id;T.cic=null;T.busy="posts-plano:"+id;REA_POSTS_STATE.year=y;REA_POSTS_STATE.month=m;REA_POSTS_STATE.client=id;REA_POSTS_STATE.front=fid;REA_POSTS_STATE.notice="A IA está lendo o briefing e montando as pautas do mês…";admin();
   let plano;
   try{
-    const raw=clean(await askF(msgs,s=>{const e=document.querySelector(".rea-post-notice");if(e)e.textContent="A IA está montando o plano editorial… "+s.length+" caracteres"},{slot:"ia2",max:2200,temp:.55}));
+    const raw=clean(await askF(msgs,s=>{const e=document.querySelector(".rea-post-notice");if(e)e.textContent="A IA está montando o plano editorial… "+s.length+" caracteres"},{slot:"ia2",dado:"briefing",quem:"Plano de posts",max:2200,temp:.55}));
     plano=reaPostsExtrairPlano(raw,datas);
   }catch(e){T.busy="";REA_POSTS_STATE.notice=e.message||"A IA não conseguiu criar a pauta.";admin();return}
   const per=perSel(l.track),chunk=Math.max(1,Math.min(LOTE[f.fmt]||4,6));let criadas=0;
@@ -92,10 +92,10 @@ async function reaPostsGerarLegenda(id,pid){
   T.busy="posts-legenda:"+id;
   const msgs=[
     {role:"system",content:"Você escreve a legenda de uma publicação social usando exclusivamente os fatos do briefing. Entregue uma legenda pronta em português do Brasil, natural, clara e apropriada ao público. Não invente promessas, preços, estatísticas, depoimentos ou garantias. Inclua chamada para ação e no máximo cinco hashtags somente se fizer sentido. "+fwBloco(["social"],"texto")+(rgpBloco(l)?"\n\n"+rgpBloco(l):"")},
-    {role:"user",content:"BRIEFING DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,8000)+"\n\nPOST PARA ADAPTAÇÃO:\n<POST>\n"+String(p.txt||"").slice(0,5000)+"\n</POST>\n\nTítulo: "+String(p.titulo||"")}
+    {role:"user",content:"BRIEFING DO CLIENTE:\n"+String(ctxIA(l)||"").slice(0,8000)+"\n\nPOST PARA ADAPTAÇÃO:\n<POST>\n"+neutraliza(String(p.txt||"").slice(0,5000)).replace(/<\s*\/?\s*POST\s*>/gi,"[tag removida]")+"\n</POST>\n\nTítulo: "+neutraliza(String(p.titulo||""))}
   ];
   REA_POSTS_STATE.notice="A IA está adaptando a legenda ao briefing…";admin();
-  try{const out=clean(await askF(msgs,()=>{},{slot:"ia1",max:900,temp:.65}));trkSet(id,t=>{const x=(t.pecas||[]).find(y=>y.id===pid);if(x)x.legenda=out});REA_POSTS_STATE.notice="Legenda criada por IA com o contexto do briefing. Revise antes de usar."}
+  try{const out=clean(await askF(msgs,()=>{},{slot:"ia1",dado:"briefing",quem:"Legenda",max:900,temp:.65}));trkSet(id,t=>{const x=(t.pecas||[]).find(y=>y.id===pid);if(x)x.legenda=out});REA_POSTS_STATE.notice="Legenda criada por IA com o contexto do briefing. Revise antes de usar."}
   catch(e){REA_POSTS_STATE.notice=e.message||"Não consegui gerar a legenda."}
   T.busy="";admin();
 }
