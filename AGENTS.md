@@ -13,6 +13,7 @@ OR Marketing Digital: agência do Rio de Janeiro (foco em empresas e pequenos ne
 | Arquitetura e mapa dos arquivos | `ARCHITECTURE.md` |
 | Visual, tokens e componentes | `DESIGN_SYSTEM.md` |
 | Método de design e marketing (tipografia, SWOT, AIDA, STP, Ansoff, processo) | `METODO.md` |
+| Governança de IA (autonomia 1/2/3, definição de pronto, matriz, POPs, conformidade, testes) | `governanca/GOVERNANCA-IA.md` (proposta v0.1, ainda não aprovada) |
 | Testes, evidências e validação visual | `TESTING.md` |
 | Requisitos do Site Studio (SS-001 a SS-043) | `SPEC.md` |
 | Auditoria de conformidade do SPEC | `spec-compliance/REPORT.md` e `MATRIZ-ALINHAMENTO.md` |
