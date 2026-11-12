@@ -1,6 +1,6 @@
-# Travas técnicas propostas (ainda NÃO aplicadas)
+# Travas técnicas: aplicadas em 11/11/2026 (parte local); GitHub pendente
 
-**Status: PROPOSTA, nada foi alterado na máquina nem no GitHub.** Estas travas mudam permissões do Claude Code nesta máquina e as regras do repositório. Cada uma é nível 3: só entra com o OK explícito do CEO. Regra de prompt não substitui trava técnica (`GOVERNANCA-IA.md` §3).
+**Status real (11/11/2026, CEO autorizou):** itens 1 e 2 **implantados** nesta máquina e **ainda sem teste de reteste completo**; item 3 (hook) **não criado**; item 4 (proteção do `main`) **só o dono pode ligar no GitHub**; itens 5 e 6 **aguardam decisão**. Mudanças em relação à proposta: push em `main` e merge **pedem confirmação** (em vez de negar, para o fluxo de publicação continuar possível); push forçado, `reset --hard` e a leitura de `.env` e `.env.local` ficam **negados**; `tools` mínimas só nos 7 agentes de texto e pesquisa (pesquisador, analista, contador, copywriter, vendedor, atendente, gestor-de-trafego), porque restringir testador, dev-seguranca, desenvolvedor, web-designer e gerente-geral cortaria o acesso ao navegador e aos testes; backups dos arquivos antigos ficam ao lado (`.bak-2026-11-11`). Limite: `Bash(cat .env)` não é coberto pela regra de leitura. Estas travas mudam permissões do Claude Code nesta máquina e as regras do repositório. Cada uma é nível 3: só entra com o OK explícito do CEO. Regra de prompt não substitui trava técnica (`GOVERNANCA-IA.md` §3).
 
 ## 1. Regras de permissão do Claude Code (nesta máquina)
 Arquivo: `E:\SITE IA\.claude\settings.local.json` (hoje vazio, sem regras). Proposta, para revisar antes de aplicar:
