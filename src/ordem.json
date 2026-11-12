@@ -98,6 +98,10 @@
       "descricao": "Rótulos entre traços em areia, palavra-chave em pílula nos títulos e dúvidas em barras com +"
     },
     {
+      "arquivo": "src/css/30-restyle-site.css",
+      "descricao": "Repaginação do site público (11/11/2026): fonte da identidade nos botões e rótulos, uma escala de títulos, uma pílula por página, contraste, menu alinhado, estados de hover e foco"
+    },
+    {
       "arquivo": "src/css/26-minha-area-clean.css",
       "descricao": "Minha área repaginada: fundo liso, cartões sólidos, rótulos em Inter, status na paleta, traço em areia no menu"
     },

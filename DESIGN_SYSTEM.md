@@ -44,6 +44,8 @@ Terrosa, sóbria, premium. Só **tema escuro**. Sem laranja. Interface **sem emo
 5. Tamanho em `clamp()` no site público; escala fixa na Minha área. Sem fonte nova: só Sora e Inter locais.
 6. Contraste é decidido pela cor, não pela tipografia: ao criar variação, conferir 4,5:1 (texto normal) e 3:1 (texto grande).
 7. Mudou altura de linha em tela da Minha área? Medir de novo os vãos (16px no desktop, 12px no celular), a igualdade de altura entre cartões vizinhos e os alvos de 44px.
+- Sem fonte monoespaçada no site público (botões, menu, rótulos, índices): tudo em Inter. Botões e menu em caixa normal; caixa alta só em rótulo curto (`src/css/30-restyle-site.css`, 11/11/2026).
+- Sem revelação ao rolar (fade-in de seções): o conteúdo já está visível e o foco do teclado nunca cai em algo escondido. Os serviços empilham sem inclinar; no celular não empilham.
 
 ## 3. Espaço, movimento e camadas
 - Espaço: `--sp-1..7` = 4, 8, 12, 16, 24, 32, 48 px. Altura do menu `--nav-h` 68px.

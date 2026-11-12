@@ -1,0 +1,53 @@
+/* Repaginação do site público (11/11/2026, skill design-taste-frontend, escopo "restyle"): mesmo layout, mesmas seções,
+   mesmos formulários. Corrige o que a medição apontou, na ordem tipo, cor, moldura, estados e componentes.
+   Vem por último no site: vence as camadas anteriores sem !important novo (usa especificidade com body.pub). */
+
+/* 1. TIPO
+   A interface usava uma fonte monoespaçada do sistema em botões, menu, rótulos e rodapé, fora da identidade (só Sora e Inter).
+   Agora tudo é Inter, em caixa alta curta só onde é rótulo. */
+body.pub .mnav button,body.pub .nav-cta,body.pub .v-btn,body.pub .v-link,body.pub .v-n,body.pub .v-sc-k,body.pub .v-tick,
+body.pub .v-count,body.pub .v-tag,body.pub .v-mn,body.pub .v-pcn,body.pub #opcoes .v-opts li::before,body.pub .svc,body.pub .rhr h4,body.pub .plc .tg,body.pub .v-form label,body.pub .foot .fcol button,body.pub .foot-b,body.pub .ph li{
+  font-family:var(--fb),system-ui,sans-serif;letter-spacing:var(--ls-caps-sm)}
+body.pub .mnav button{font-size:13px;font-weight:600;letter-spacing:normal;text-transform:none}
+body.pub .nav-cta,body.pub .v-btn{font-size:14px;font-weight:600;letter-spacing:normal;text-transform:none}
+body.pub .v-link{font-size:14px;font-weight:600;letter-spacing:normal;text-transform:none}
+
+/* Uma escala de títulos: título monumental só no topo (DESIGN_SYSTEM, regra 3). O AI-Driven volta ao tamanho dos h2. */
+body.pub .v-ai-h.v-h2{font-size:clamp(32px,5.2vw,80px);letter-spacing:var(--ls-title);line-height:var(--line-height-display)}
+/* h3 de cartão, de serviço e de passo no mesmo tamanho */
+body.pub .v-pill{font-family:var(--fb),system-ui,sans-serif;font-size:14px;font-weight:600;letter-spacing:normal;text-transform:none}
+body.pub .v-pc h3,body.pub .v-sc-steps h3,body.pub .v-opts h3,body.pub .v-mb h3{font-size:clamp(26px,2.8vw,40px);line-height:var(--line-height-title);letter-spacing:var(--ls-title-sm)}
+
+/* Palavra em pílula: no máximo uma por página (DESIGN_SYSTEM, regra 2). Fica a do Manifesto; as outras viram cor de destaque. */
+body.pub .v-pl{background:none;color:var(--or-areia);padding:0;margin:0;border-radius:0}
+body.pub .v-lime .v-pl{background:none;color:var(--or-obsidiana)}
+body.pub #manifesto .v-pl{background:var(--or-areia);color:var(--or-obsidiana);padding:0 .2em .05em;margin:0 .02em;border-radius:.22em}
+
+/* 2. COR: texto de leitura com contraste de sobra */
+body.pub .v-t3 .v-lead{color:rgba(234,224,213,.94)}
+body.pub .v-hero-t{position:relative}
+body.pub .v-hero-t::before{content:"";position:absolute;z-index:-1;inset:-12% -10%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(10,9,8,.62),rgba(10,9,8,0))}
+body.pub .v-pc p{opacity:1;color:rgba(234,224,213,.94)}
+body.pub .v-pc .v-pcq{opacity:1;color:rgba(234,224,213,.86)}
+
+/* 3. MOLDURA: o menu na mesma linha de borda do conteúdo, numa barra só; a assinatura não quebra no celular */
+body.pub .nav .navi{max-width:1320px}
+body.pub .nav .brandb{white-space:nowrap}
+@media(max-width:420px){body.pub .nav .wmw{display:none}}
+/* a seta de rolar dentro da primeira tela, longe da dobra */
+body.pub .v-t3s{bottom:clamp(32px,5vh,56px);height:64px}
+/* serviços: sem inclinar (texto inclinado cansa, DESIGN_SYSTEM regra 7); no celular a lista não empilha por cima */
+@media(max-width:759px){body.pub .v-pc{position:static}}
+
+/* 4. ESTADOS
+   Rolagem suave só nos cliques do menu (já pedem 'smooth' no JS): com o teclado, o foco chega na hora e o anel aparece. */
+html:focus-within{scroll-behavior:auto}
+/*botão sobe 1px ao passar o mouse e afunda ao clicar; anel de foco sempre visível */
+@media(prefers-reduced-motion:no-preference){
+  body.pub .v-btn,body.pub .nav-cta,body.pub .v-pill{transition:transform .16s cubic-bezier(.2,.7,.2,1),filter .2s,background-color .2s}
+  body.pub .v-btn:hover,body.pub .nav-cta:hover,body.pub .v-pill:hover{transform:translateY(-1px)}
+  body.pub .v-btn:active,body.pub .nav-cta:active,body.pub .v-pill:active{transform:translateY(0) scale(.98)}
+}
+body.pub .v-btn:focus-visible,body.pub .v-link:focus-visible,body.pub .nav-cta:focus-visible,body.pub .v-pill:focus-visible,
+body.pub .mnav button:focus-visible,body.pub .brandb:focus-visible{outline:2px solid var(--focus);outline-offset:3px}

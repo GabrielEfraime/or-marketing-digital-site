@@ -1,7 +1,7 @@
 /* AI-Driven: esfera de água + painel JARVIS */
 .v-ai-in{display:grid;grid-template-columns:minmax(min-content,1fr) minmax(0,1fr);gap:clamp(24px,5vw,88px) clamp(16px,2vw,32px);align-items:center}
 body.pub .v-ai-t>p{max-width:min(100%,36rem)}
-.v-ai-h{font-size:clamp(60px,11.4vw,180px)!important;letter-spacing:-.055em!important;line-height:var(--line-height-display)!important;max-width:none!important;color:#EAE0D5}
+.v-ai-h{max-width:none!important;color:#EAE0D5}/* tamanho de h2 comum (11/11/2026): título monumental só no topo */
 .v-ai-t .v-btn{margin-top:clamp(24px,3vw,40px)}
 .v-ai-stage{position:relative;aspect-ratio:1;width:100%;justify-self:end}
 .v-ai-stage canvas{position:absolute;display:block}

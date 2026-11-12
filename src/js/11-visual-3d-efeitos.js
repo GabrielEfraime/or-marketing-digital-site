@@ -282,10 +282,12 @@ function pilhaStart(){
   const mede=()=>{topo=L.map(li=>parseFloat(getComputedStyle(li).top)||0)};
   const passo=()=>{raf=0;
     if(!L[0].isConnected){removeEventListener('scroll',pede);removeEventListener('resize',remede);return}
+    /* no celular a lista não empilha (CSS): sem escala nem escurecer */
+    if(innerWidth<760){C.forEach(c=>{c.style.transform='';c.style.setProperty('--esc','0')});return}
     const p=L.map((li,i)=>{const d=li.getBoundingClientRect().top-topo[i];return 1-Math.min(1,Math.max(0,d/li.offsetHeight))});
-    const giro=innerWidth<700?2:3;
+    /* sem inclinar o cartão (11/11/2026): texto inclinado borra e cansa (DESIGN_SYSTEM, regra 7); fica só o encolher dos de baixo */
     L.forEach((li,i)=>{let s=0;for(let j=i+1;j<L.length;j++)s+=p[j];s=Math.min(s,3);
-      C[i].style.transform='rotate('+((i%2?-1:1)*giro*(1-p[i])).toFixed(2)+'deg) scale('+(1-.035*s).toFixed(3)+')';
+      C[i].style.transform='scale('+(1-.035*s).toFixed(3)+')';
       C[i].style.setProperty('--esc',(Math.min(s,1)*.3).toFixed(3))});
   };
   const pede=()=>{if(!raf)raf=requestAnimationFrame(passo)};

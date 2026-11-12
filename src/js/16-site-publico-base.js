@@ -31,10 +31,7 @@ function vida(){
     const ln=(amp,k,ph)=>{let d='M0 '+(60+amp*Math.sin(ph));for(let i=1;i<=288;i++){const X=i*10;d+=' L'+X+' '+(60+amp*Math.sin(X/1440*6.2832*k+ph)).toFixed(1)}return d};
     w.innerHTML='<svg viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="'+ln(22,1,0)+'"/></svg><svg viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="'+ln(14,2,1.7)+'"/></svg><svg viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="'+ln(9,3,3.1)+'"/></svg>';
     t.appendChild(w)});
-  if(reduz||!('IntersectionObserver' in window))return;
-  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('rv-in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
-  alvo.querySelectorAll('.guide h2,.pgrid li,.aif-card,.aif-stage,.sols h2,.ofh,.sc2,.band .sec>*,.tl li,.qa-in h2,.qa-sub,.fq,.cc,.cta-band .sec>*,.svp-body>*,.vl li,.foot-top>*,.mq,.v-rv').forEach(el=>{
-    const i=[...el.parentElement.children].indexOf(el);el.classList.add('rv');el.style.transitionDelay=Math.min(i,8)*70+'ms';io.observe(el)});
+  /* Sem revelação ao rolar (11/11/2026): o conteúdo já está lá quando a seção chega, e o foco do teclado nunca cai em algo invisível. */
 }
 const ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 /* assinatura do manual: OR + divisor + MARKETING DIGITAL (o divisor é a borda de .wmw) */
