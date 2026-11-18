@@ -108,7 +108,7 @@ function bindIas(){
   for(const s of IAS){
     $('#'+s+'k').onchange=e=>{const d=IADEF[e.target.value];$('#'+s+'u').value=d.url;$('#'+s+'m').value=d.model};
     $('#'+s+'t').onclick=()=>test(rd(s),$('#'+s+'r'));
-    $('#'+s+'f').onclick=async()=>{const c=rd(s),r=$('#'+s+'r');
+    $('#'+s+'f').onclick=async()=>{const c=rd(s),r=$('#'+s+'r');if(modoPrompt()){r.textContent=MSG_MODO_PROMPT;return}
       try{
         if(c.kind==='openai'){const j=await (await fetch((c.url||IADEF.openai.url).replace(/\/$/,'')+'/models',{headers:{Authorization:'Bearer '+c.key}})).json();const n=(j.data||[]).map(m=>m.id);
           $('#'+s+'l').innerHTML=n.map(x=>`<option value="${esc(x)}">`).join('');r.textContent=n.length?n.length+' modelos disponíveis. Clique no campo Modelo para escolher.':'A plataforma não listou modelos. Confira a chave.'}
@@ -122,9 +122,11 @@ function bindIas(){
     $('#iam').textContent=!n?'Salvo. Nenhuma chave foi colada ainda.':r==='ok'?'Salvo. '+n+' chave(s) cifrada(s) neste navegador. Clique em Testar em cada IA.':r==='aba'?'Salvo, mas as chaves valem só até fechar esta aba'+(CFG.lembrar===false?' (você desmarcou "Lembrar as chaves").':': este navegador não deixou guardar com cifra (janela anônima ou armazenamento bloqueado).'):'Salvei a configuração, mas NÃO consegui guardar as chaves. Abra o site pelo endereço normal (não em janela anônima) e tente de novo.';
     document.querySelectorAll('#ia1c,#ia2c,#ia3c,#imgc,#polc').forEach(i=>{i.value='';const s=i.id.slice(0,3);i.placeholder=CFG[s].key?'Chave salva (deixe vazio para manter)':'Cole a chave aqui'})};
   $('#imgt').onclick=async()=>{const r=$('#imgr'),k=$('#imgc').value.trim()||keyDe(CFG.img);if(!k){r.textContent='Cole a chave do Gemini primeiro.';return}r.textContent='Testando…';
+    if(modoPrompt()){r.textContent=MSG_MODO_PROMPT;return}
     try{const x=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1',{headers:{'x-goog-api-key':k}});r.textContent=x.ok?'O Google aceitou a chave. Ela já serve de reserva para o texto; imagem só com o faturamento ativo.':'O Google recusou a chave (erro '+x.status+'). Confira e cole de novo.'}
     catch(e){r.textContent='Não consegui falar com o Google. Confira a internet.'}};
   $('#polt').onclick=async()=>{const r=$('#polr'),k=$('#polc').value.trim()||keyDe(CFG.pol);if(!k){r.textContent='Cole a chave do Pollinations primeiro.';return}r.textContent='Testando…';
+    if(modoPrompt()){r.textContent=MSG_MODO_PROMPT;return}
     try{const x=await fetch('https://gen.pollinations.ai/account/key',{headers:{Authorization:'Bearer '+k}});r.textContent=x.ok?'O Pollinations aceitou a chave. Clique em Salvar para guardar.':'O Pollinations recusou a chave (erro '+x.status+'). Use a chave secreta, que começa com sk_.'}
     catch(e){r.textContent='Não consegui falar com o Pollinations. Confira a internet.'}};
 }

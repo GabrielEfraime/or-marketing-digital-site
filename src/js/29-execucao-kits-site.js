@@ -197,9 +197,9 @@ function bindExec(l){lpBind();
   if(g('xpv')&&l.xsite)g('xpv').srcdoc=l.xsite.html;
   if(g('exall'))g('exall').onclick=()=>execAll(l.id);
 }
-async function execGen(id,which,corr){
-  const l=getL().find(x=>x.id===id);if(!l)return;
-  const lab={ads:'o kit de Google Ads',social:'o kit de redes sociais',site:'o site'}[which],base=brief(l).split('\n\nTarefa:')[0];
+// Pedido da IA para o kit de execução (ads, social ou site); o prompt-mestre (48-prompt-mestre.js) usa este mesmo texto.
+function execMsgs(l,which,corr){
+  const base=brief(l).split('\n\nTarefa:')[0];
   const prev=which==='ads'?l.xads:which==='social'?l.xsoc:l.xsite&&l.xsite.html;
   const fix=corr&&prev?`\n\nRESPOSTA ANTERIOR (tinha erro):\n${typeof prev==='string'?prev:JSON.stringify(prev)}\n\nCORREÇÃO DO CONSULTOR (obrigatória, siga à risca): ${corr}\nRefaça tudo corrigindo isso e mantendo o que estava certo.`:'';
   let msgs,opt;
@@ -217,6 +217,12 @@ async function execGen(id,which,corr){
       {role:'user',content:base+lpBloco(l)+saBloco(l)+'\n\nTarefa: '+MODS[key].task+fix}];
     opt={slot:'ia1',max:9000,temp:0.6};
   }
+  return {msgs,opt};
+}
+async function execGen(id,which,corr){
+  const l=getL().find(x=>x.id===id);if(!l)return;
+  const lab={ads:'o kit de Google Ads',social:'o kit de redes sociais',site:'o site'}[which];
+  const {msgs,opt}=execMsgs(l,which,corr);
   Object.assign(J.ex,{on:true,id,live:'',t0:Date.now(),what:lab});A.err='';A.sel=id;paintList();paintDet();
   try{
     const out=await askF(msgs,t=>live('ex',clean(t)),opt);

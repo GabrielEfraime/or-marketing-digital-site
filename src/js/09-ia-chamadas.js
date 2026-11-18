@@ -29,6 +29,7 @@ function iaAviso(msg){let e=document.getElementById('iaaviso');if(!msg){if(e)e.r
 const esperaAb=(ms,sig)=>new Promise((res,rej)=>{if(sig?.aborted){rej(new DOMException('Chamada interrompida.','AbortError'));return}const abort=()=>{clearTimeout(k);rej(new DOMException('Chamada interrompida.','AbortError'))},k=setTimeout(()=>{sig?.removeEventListener('abort',abort);res()},ms);if(sig)sig.addEventListener('abort',abort,{once:true})});
 async function ask(msgs,onChunk,o={}){
   if(o.signal?.aborted)throw new DOMException('Chamada interrompida.','AbortError');
+  if(typeof pmTrava==='function')pmTrava(); // incondicional: nem o teste de chave (cfg:) passa em modo prompt
   msgs=comNucleo(msgs);
   const c=o.cfg||CFG[o.slot||'ia1'],nm=o.cfg?'A IA':LABEL[o.slot||'ia1'];
   const oss=/gpt-oss|gemini/i.test(c.model||''),qw=/qwen/i.test(c.model||''),gq=/api\.groq\.com/.test(c.url||''),gox=gq&&/gpt-oss/i.test(c.model||''),est=Math.ceil(JSON.stringify(msgs).length/3.2),hd={'Content-Type':'application/json'};
@@ -66,6 +67,7 @@ async function ask(msgs,onChunk,o={}){
 }
 const sameCfg=(a,b)=>a.kind===b.kind&&a.url===b.url&&a.model===b.model;
 async function askF(msgs,cb,o){
+  if(typeof pmTrava==='function')pmTrava(); // modo prompt: nem a troca automática de IA pode chamar a rede
   try{const r=await ask(msgs,cb,o);IA_QUEM=(o.cfg||CFG[o.slot||'ia1']||{}).model||'';return r}
   catch(e){
     if(o.signal?.aborted||e.name==='AbortError')throw e;

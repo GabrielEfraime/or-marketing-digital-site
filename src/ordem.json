@@ -98,6 +98,10 @@
       "descricao": "Rótulos entre traços em areia, palavra-chave em pílula nos títulos e dúvidas em barras com +"
     },
     {
+      "arquivo": "src/css/31-modo-prompt.css",
+      "descricao": "Modo prompt: esconde os botões que geram com IA (classe sem-ia no html)"
+    },
+    {
       "arquivo": "src/css/26-minha-area-clean.css",
       "descricao": "Minha área repaginada: fundo liso, cartões sólidos, rótulos em Inter, status na paleta, traço em areia no menu"
     },
@@ -350,6 +354,10 @@
     {
       "arquivo": "src/js/48-cofre-site.js",
       "descricao": "Cofre do site: chaves de IA cifradas na própria página, abertas com uma senha em cada aparelho"
+    },
+    {
+      "arquivo": "src/js/48-prompt-mestre.js",
+      "descricao": "Prompt-mestre: monta sem IA o pedido (resumo, estratégia, orçamento, kits, peças) para colar no Claude ou no ChatGPT, guarda a resposta colada e traz a trava do modo prompt"
     },
     {
       "arquivo": "src/js/49-whatsapp-ias-inicializacao.js",
