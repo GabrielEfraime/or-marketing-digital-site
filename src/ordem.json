@@ -102,6 +102,10 @@
       "descricao": "Repaginação do site público (11/11/2026): fonte da identidade nos botões e rótulos, uma escala de títulos, uma pílula por página, contraste, menu alinhado, estados de hover e foco"
     },
     {
+      "arquivo": "src/css/32-site-previa.css",
+      "descricao": "Prévia do site público: botão secundário, problemas da primeira tela, cartões de projetos, objetivos e oferta detalhada"
+    },
+    {
       "arquivo": "src/css/26-minha-area-clean.css",
       "descricao": "Minha área repaginada: fundo liso, cartões sólidos, rótulos em Inter, status na paleta, traço em areia no menu"
     },
@@ -190,6 +194,10 @@
     {
       "arquivo": "src/js/17-site-publico-paginas.js",
       "descricao": "pub() (home), svcPage() (serviço), vagasPage() (vagas)"
+    },
+    {
+      "arquivo": "src/js/17b-site-publico-previa.js",
+      "descricao": "Prévia do site público: primeira tela, seção Projetos (projeto próprio e demonstrações) e oferta detalhada de Criação de sites; marcadores de pendência do CEO"
     },
     {
       "arquivo": "src/js/18-briefing-assistente.js",
