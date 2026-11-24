@@ -191,34 +191,42 @@ function paintDet(){
   if(sp&&document.getElementById('sslk'))document.getElementById('sslk').onclick=()=>{A.view='studio';SS.id=sp.id;SS.js='';SS.err='';SS.msg='';admin()};
 }
 function paneHtml(l,o,h){
+  const b=paneHtml0(l,o,h);
+  return modoPrompt()&&pmColaAqui(l)?b+pmCola(l):b;
+}
+function paneHtml0(l,o,h){
   const wait=t=>`<p class="hint">${t}</p>`;
   if(A.tab==='exec')return execPane(l);
+  if(A.tab==='pm')return pmPane(l);
   if(A.tab==='brief')return `<div class="qa">${qaOf(l).map(x=>`<p><b>${esc(x.q)}</b><br>${esc(x.a||'—')}</p>`).join('')}</div>`;
   if(A.tab==='ficha'){
     if(mineJ('orc',l)&&J.orc.what==='ficha')return md(J.orc.live)||wait('A IA está lendo o briefing…');
+    if(modoPrompt())return `<p class="hint">Cole aqui o resumo que o Claude ou o ChatGPT fez (etapa 1 da aba "Prompt para Claude/GPT") ou escreva o seu. Se algo estiver errado, corrija aqui: os pedidos das próximas etapas usam este resumo como verdade. Salva sozinho ao sair do campo.</p><textarea id="fic" style="min-height:260px">${esc(l.ficha||'')}</textarea>`;
     return `<p class="hint">Este é o resumo que a IA fez do briefing. Confira se ela entendeu certo: se algo estiver errado, corrija aqui e todo o resto (orçamento, estratégia, execução e mensagem) passa a usar este resumo como verdade.</p><textarea id="fic" style="min-height:260px">${esc(l.ficha||'')}</textarea>`;
   }
   if(A.tab==='plano'){
     if(A.edit&&l.entrega)return `<textarea id="txt">${esc(l.entrega)}</textarea>`;
     if(mineJ('plano',l))return md(J.plano.live)||wait('A IA está pensando…');
     if(h&&A.sub==='prev')return `<iframe id="pv" sandbox="allow-scripts" title="Preview do site"></iframe>`;
-    return l.entrega?md(l.entrega):wait('Ainda não gerado. Clique em "Gerar plano com IA".');
+    return l.entrega?md(l.entrega):wait(modoPrompt()?'Ainda sem estratégia. Copie o pedido na aba "Prompt para Claude/GPT" e cole a resposta abaixo.':'Ainda não gerado. Clique em "Gerar plano com IA".');
   }
   if(A.tab==='orc'){
     if(mineJ('orc',l)&&J.orc.what==='orc')return md(J.orc.live.replace(/---(BASICO|MEDIO|MAX|MENSAGEM)---/g,(x,k)=>'\n## '+LBL[k]+'\n'))||wait('A IA está pensando…');
     if(o.BASICO||o.MEDIO||o.MAX)return `<div class="tiers">${['BASICO','MEDIO','MAX'].map(k=>o[k]?`<div class="tier"><h3>${LBL[k]}</h3>${md(o[k])}</div>`:'').join('')}</div>`;
-    return l.orc?md(l.orc):wait('Ainda não gerado. Clique em "Gerar 3 orçamentos + mensagem".');
+    return l.orc?md(l.orc):wait(modoPrompt()?'Ainda sem orçamento. Copie o pedido (etapa 3) na aba "Prompt para Claude/GPT" e cole a resposta abaixo: o site confere os valores pela tabela e monta a mensagem de WhatsApp.':'Ainda não gerado. Clique em "Gerar 3 orçamentos + mensagem".');
   }
   if(mineJ('orc',l))return J.orc.what==='msg'?(md(J.orc.live)||wait('Reescrevendo…')):wait('A mensagem aparece aqui quando os orçamentos terminarem…');
-  return l.msg?`<textarea id="msg">${esc(l.msg)}</textarea>`:wait('A mensagem é gerada junto com os orçamentos.');
+  return l.msg?`<textarea id="msg">${esc(l.msg)}</textarea>`:wait(modoPrompt()?'Ainda sem mensagem. Ela é montada quando você cola o orçamento na aba Orçamentos, ou cole uma mensagem pronta abaixo.':'A mensagem é gerada junto com os orçamentos.');
 }
 function actions(l,h){
+  if(modoPrompt()&&['plano','orc','ficha','msg'].includes(A.tab))return pmAcoes(l,h);
   const dp=J.plano.on?'disabled':'',dq=J.orc.on?'disabled':'',done=l.entrega&&!J.plano.on;
   if(A.tab==='plano')return `<div class="row" style="margin-top:12px"><button class="btn" id="gen" ${dp}>${l.entrega?'Gerar de novo':'Gerar plano com IA'}</button>${done?`<button class="btn ghost" id="ed">${A.edit?'Ver':'Editar'}</button><button class="btn ghost" id="cp">Copiar</button>${h?`<button class="btn ghost" id="sb">${A.sub==='prev'?'Ver código':'Ver preview'}</button><button class="btn ghost" id="dh">Baixar site</button>`:''}<button class="btn ghost" id="fs">Ler em tela cheia</button>`:''}</div>`;
   if(A.tab==='orc')return `<div class="row" style="margin-top:12px"><button class="btn" id="orc" ${dq}>${l.orc?'Gerar orçamentos de novo':'Gerar 3 orçamentos + mensagem'}</button><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
   if(A.tab==='ficha')return `<div class="row" style="margin-top:12px"><button class="btn" id="ficgo" ${dq}>${l.ficha?'Gerar de novo':'Gerar resumo'}</button>${l.ficha?`<button class="btn ok" id="redo" ${dq}>Refazer orçamentos com este resumo</button>`:''}</div>`;
   if(A.tab==='exec')return `<div class="row" style="margin-top:12px"><button class="btn" id="exall" ${J.ex.on?'disabled':''}>Gerar tudo da execução</button><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
   if(A.tab==='msg')return `<div class="row" style="margin-top:12px">${l.msg&&!J.orc.on?`<button class="btn wa" id="wm">${WAI} Enviar no WhatsApp</button>`+'<button class="btn ghost" id="em">Enviar por e-mail</button><button class="btn ghost" id="cm">Copiar mensagem</button><button class="btn ghost" id="fs">Ler em tela cheia</button>':''}<button class="btn ${l.msg?'ghost':''}" id="orc" ${dq}>${l.msg?'Gerar de novo':'Gerar orçamentos + mensagem'}</button></div>`;
+  if(A.tab==='pm')return '';
   return `<div class="row" style="margin-top:12px"><button class="btn ghost" id="fs">Ler em tela cheia</button></div>`;
 }
 /* Estratégia e execução: geradas no Acompanhamento (depois que o cliente fecha), com os mesmos botões e o mesmo painel de leitura do lead. */
@@ -228,11 +236,11 @@ function detMini(l,tab){
 }
 function detail(l){
   const o=parseOrc(l.orc||''),h=isSite(l)?htmlOf(l.entrega):'';
-  const tabs=[['brief','Briefing'],['ficha','Resumo'+(l.ficha?IC.feito:'')],['orc','Orçamentos'+(l.orc?IC.feito:'')],['msg','Mensagem'+(l.msg?IC.feito:'')]];
+  const tabs=[['pm','Prompt para Claude/GPT'],['brief','Briefing'],['ficha','Resumo'+(l.ficha?IC.feito:'')],['orc','Orçamentos'+(l.orc?IC.feito:'')],['msg','Mensagem'+(l.msg?IC.feito:'')]];
   if(!tabs.some(([k])=>k===A.tab))A.tab='orc';
   return `<div class="panel dt"><div class="dthead"><div><h3>${esc(l.nome)} <span class="chip ${l.status}">${stl(l.status)}</span></h3>
   <p class="hint">${svcIc(l)} ${svcName(l)} · ${esc(l.whats)}${(l.envios||[]).length?' · <b>orçamento enviado '+(l.envios.slice(-1)[0].via==='email'?'por e-mail':'no WhatsApp')+' em '+esc(l.envios.slice(-1)[0].quando)+'</b>':''} ${l.email?'· '+esc(l.email):''}</p>${planosCards(l)}${briefPainel(l)}${rvPainel(l)}${rgpPainel(l)}${l.guia?'<p class="hint"><b>Veio do roteiro "ainda não sei o que preciso".</b> Os serviços foram sugeridos pelo app; confirme com o cliente antes de enviar o orçamento.</p>':''}</div>
-  <div class="row" style="margin:0">${!l.orc&&l.status!=='recusado'?`<button class="btn hl" id="gall" ${anyBusy()?'disabled':''}>${l.ficha?'Gerar o orçamento com a IA':'Gerar resumo e orçamento com a IA'}</button>`:''}${l.msg?`<button class="btn wa" id="wsend">${WAI} Enviar orçamento no WhatsApp</button><button class="btn ghost" id="emsend">Enviar por e-mail</button>`:''}${(l.entrega||l.orc)&&!['aprovado','aplicado','recusado'].includes(l.status)?'<button class="btn ok" id="ap">Aprovar</button><button class="btn ghost" id="rec">Marcar como recusado</button>':''}${l.status==='recusado'?'<button class="btn ghost" id="reab">Reabrir</button>':''}<button class="btn ghost" id="lgx">Exportar dados (LGPD)</button><button class="btn ghost" id="lgd">Apagar cliente</button></div></div>
+  <div class="row" style="margin:0">${!l.orc&&l.status!=='recusado'&&!modoPrompt()?`<button class="btn hl" id="gall" ${anyBusy()?'disabled':''}>${l.ficha?'Gerar o orçamento com a IA':'Gerar resumo e orçamento com a IA'}</button>`:''}${l.msg?`<button class="btn wa" id="wsend">${WAI} Enviar orçamento no WhatsApp</button><button class="btn ghost" id="emsend">Enviar por e-mail</button>`:''}${(l.entrega||l.orc)&&!['aprovado','aplicado','recusado'].includes(l.status)?'<button class="btn ok" id="ap">Aprovar</button><button class="btn ghost" id="rec">Marcar como recusado</button>':''}${l.status==='recusado'?'<button class="btn ghost" id="reab">Reabrir</button>':''}<button class="btn ghost" id="lgx">Exportar dados (LGPD)</button><button class="btn ghost" id="lgd">Apagar cliente</button></div></div>
   <div class="tabs" role="tablist">${tabs.map(([k,t])=>`<button class="tab ${A.tab===k?'on':''}" data-t="${k}" role="tab" id="dtb-${k}" aria-controls="pane" aria-selected="${A.tab===k}">${t}</button>`).join('')}</div>
   <p class="hint plsel"><label>Plano escolhido pelo cliente <select id="plsel"><option value="">ainda não escolheu</option>${Object.entries(PLANO_NOME).map(([k,t])=>`<option value="${k}" ${l.plano===k?'selected':''}>${t}</option>`).join('')}</select></label>${l.planoEm?' · registrado em '+esc(dHora(Date.parse(l.planoEm)||Date.now())):''}</p>
   <div class="stat" id="stat">${esc(statLine())}</div>
@@ -244,7 +252,7 @@ const fimLead=l=>['novo','pronto','aprovado'].includes(l.status)?'<div class="df
 function bind(l){
   const g=id=>document.getElementById(id),rp=()=>{paintList();paintDet()};
   document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{A.tab=b.dataset.t;A.edit=false;paintDet()});
-  bindExec(l);rvBind(l);rgpBind(l);
+  bindExec(l);rvBind(l);rgpBind(l);pmBind(l);
   if(g('fic'))g('fic').onchange=()=>upd(l.id,{ficha:g('fic').value.trim(),fichaOk:true});
   if(g('ficgo'))g('ficgo').onclick=()=>ficha(l.id);
   if(g('gall'))g('gall').onclick=()=>gerarTudo(l.id);

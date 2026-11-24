@@ -35,3 +35,21 @@ Cada entrada guarda: quem revisou o quê, o que achou, **o que o outro concordou
 | **Bem feito:** `esc()` em todos os textos da revisão, HTML e fatos tratados como dado, revisão antiga avisada | Concordo | — | Preservar |
 
 **Resultado:** 70 testes; correções comprovadas no navegador (faixa fora do iframe, CSP sem rede, fundo inerte, clique duplo = 1 chamada, retry da revisão, aviso de mesma IA). Divergências de método: nenhuma sobre o que corrigir.
+
+## 2026-11-18 · Modo prompt e aba "Prompt para Claude/GPT"
+
+- **Quem escreveu:** Claude Code. **Quem revisou:** Codex CLI 0.167.0, `codex exec -s read-only`, em **pasta limpa** (só arquivos rastreados pelo git mais as mudanças; sem `.env` nem documentos internos). Mudanças ainda sem commit na branch `claude/prompt-mestre`.
+
+| Achado do Codex | Veredito do Claude | Evidência | Ação |
+|---|---|---|---|
+| **Bloqueante:** o modo prompt ainda deixava passar chamadas de rede de IA (`ask` com `cfg:`, testes e lista de modelos na tela IAs, `rvLerUma`) | **Concordo.** | `ask()` só travava sem `cfg`; os testes de `49` e `rvLerUma` usam `fetch` direto | Trava única `pmTrava()` em `ask`, `askF`, `iaImagem`, `rvLerUma` e nos testes da tela IAs; verificado no navegador: 0 requisições de rede |
+| **Bloqueante:** HTML colado salvo e exibido sem `ssBlindaExport` | **Concordo em parte.** O caminho é o mesmo do HTML gerado pela IA do site (`29-execucao-kits-site.js`, prévia em `sandbox="allow-scripts"` e `dlHtml`), que já existia antes | linhas 194 e 197 do arquivo não foram tocadas | Limite de 400 mil caracteres antes de salvar. **Pendente, tarefa à parte:** rotear o download do kit de site por `ssBlindaExport` (afeta a IA e a colagem) |
+| **Bloqueante:** orçamento ou mensagem com aviso de valor ainda pode ser salvo e enviado | **Discordo como bloqueante.** | O fluxo da IA do site já funcionava assim: aviso vermelho "Confira antes de enviar", e o consultor revisa (AGENTS.md). A colagem usa a mesma conferência `checarValores` | Mantido; decisão do CEO se quiser bloquear o envio com aviso pendente |
+| **Regressão:** `[data-sa]` escondia "Medir no Google (PageSpeed)", que não usa IA; faltavam seletores de IA | **Concordo.** | `data-sa="psi"` e `"ia"` | Seletor trocado para `[data-sa="ia"]`; incluídos `data-ss="gerar/revisar"`, `data-cap="msg/site/filasite"`, `data-rea-post-generate`, `data-rea-art-action="imagem"` |
+| **Alto:** o filtro de dados pessoais perde telefone com espaços duplicados e deixa o nome completo | **Concordo em parte.** | reproduzido no navegador | Separadores flexíveis no telefone; o nome completo do cliente volta a ser só o primeiro nome. `@` de redes, URLs e endereços ficam: decisão do CEO |
+| **Médio:** posts gravados no ciclo errado (`perSel` usa `T.cic` global); mínimo de 1 peça mesmo com escopo cheio | **Concordo em parte.** | `perSel=t=>'c'+(T.cic\|\|cicAtual(t))`; reproduzido com `T.cic='c9'` | Usa o ciclo atual do próprio cliente. O mínimo de 1 peça fica, igual ao botão por frente do Acompanhamento |
+| **Baixo:** etapa escolhida vaza de um lead para o outro | **Concordo.** | `A.pmEt` global | Guardada por lead (`A.pmEtLead`); verificado |
+| **Baixo:** mudança de modo em outra aba não atualiza a classe CSS | **Concordo em parte.** | evento `storage` | Reaplica a classe; não repinta a tela |
+| **Bem feito:** refatoração dos pedidos sem mudança de comportamento, `esc()`/`md()`, sem lookbehind, 80 testes | Concordo | Revisão do Codex | Preservar |
+
+**Resultado:** 80 testes passando; correções comprovadas no navegador. **Divergência de método:** uma (orçamento com aviso). **Custo observado:** uma chamada de revisão, somente leitura, contada no plano ChatGPT do usuário.

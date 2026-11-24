@@ -14,7 +14,7 @@ function rvPainel(l){
   return `<div class="bmod" id="rvpn"><h3 class="dsh-h">Referências de identidade visual</h3>
   <p class="hint">Envie só material da marca do cliente: logo, manual, posts e artes, embalagem, fachada, site ou perfil. Fotos pessoais, documentos e prints de conversa são recusados pela IA e apagados. As imagens ficam só neste navegador e só vão para a IA se você confirmar.</p>
   ${R.length?`<ul class="alr rv-lista">${R.map(item).join('')}</ul>`:''}
-  <div class="row"><label class="btn ghost">Enviar imagens<input type="file" id="rvup" accept="image/png,image/jpeg,image/webp" multiple hidden aria-label="Enviar imagens de identidade visual"></label><button type="button" class="btn" id="rvler" ${pend?'':'disabled'}>Ler com IA${pend?' ('+pend+')':''}</button></div>
+  <div class="row"><label class="btn ghost">Enviar imagens<input type="file" id="rvup" accept="image/png,image/jpeg,image/webp" multiple hidden aria-label="Enviar imagens de identidade visual"></label>${modoPrompt()?'':`<button type="button" class="btn" id="rvler" ${pend?'':'disabled'}>Ler com IA${pend?' ('+pend+')':''}</button>`}</div>
   <div class="hint" id="rvst" role="status" aria-live="polite"></div>
   ${l.refLeitura?`<label for="rvtxt"><b>Leitura das imagens</b> <span class="hint">(feita por IA; revise e corrija antes de usar)</span></label><textarea id="rvtxt" rows="6">${esc(l.refLeitura)}</textarea>`:''}</div>`;
 }
@@ -28,6 +28,7 @@ const rvDataUrl=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=
 function rvJson(t){const m=clean(t).match(/\{[\s\S]*\}/);if(!m)return null;try{return JSON.parse(m[0].replace(/,\s*([}\]])/g,'$1'))}catch(e){return null}}
 /* Confere e lê UMA imagem. Só vira "aceita" se a IA disser aceita=true e a categoria estiver na lista; qualquer outra coisa é recusa. */
 async function rvLerUma(blob,chave){
+  pmTrava();
   const url=await rvDataUrl(blob),cfg=CFG.img||{},
     r=await fetch(GEMINI_URL+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+chave},signal:AbortSignal.timeout(60000),
       body:JSON.stringify({model:cfg.model||'gemini-3.5-flash',temperature:0.1,max_tokens:800,messages:[{role:'system',content:RV_SYS},{role:'user',content:[{type:'text',text:'Confira e leia esta imagem seguindo as regras.'},{type:'image_url',image_url:{url}}]}]})});

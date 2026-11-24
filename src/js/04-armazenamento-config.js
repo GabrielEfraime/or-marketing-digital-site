@@ -16,7 +16,7 @@ const CFG={kb:{sobre:'',regras:'',exemplos:'',licoes:[]},brand:BRAND,precos:PREC
 const semChave=()=>{const o={...CFG};IA_CHAVES.forEach(s=>{o[s]={...CFG[s],key:''}});return o};
 /* Copia para CFG só os campos conhecidos de uma configuração vinda de fora (config.json do HD, outra aba, localStorage), sem Object.assign direto.
    Ignora __proto__, constructor e prototype em qualquer nível. "local" libera também os campos que só existem no navegador (pin, lembrar, skipKeys, moverGemini). */
-const CFG_TIPOS={kb:'o',kbAntigo:'o',kbAntigo2:'o',apagados:'a',brand:'s',precos:'s',precosAntigos:'s',whats:'s',pinh:'s',t:'n'},CFG_LOCAIS={pin:'s',lembrar:'b',skipKeys:'a',moverGemini:'b'};
+const CFG_TIPOS={kb:'o',kbAntigo:'o',kbAntigo2:'o',apagados:'a',brand:'s',precos:'s',precosAntigos:'s',whats:'s',pinh:'s',t:'n'},CFG_LOCAIS={pin:'s',lembrar:'b',skipKeys:'a',moverGemini:'b',iaBotoes:'b'};
 const cfgLimpa=v=>{if(Array.isArray(v))return v.map(cfgLimpa);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))if(k!=='__proto__'&&k!=='constructor'&&k!=='prototype')o[k]=cfgLimpa(v[k]);return o}return v};
 const cfgTipoOk=(t,v)=>t==='o'?(v&&typeof v==='object'&&!Array.isArray(v)):t==='a'?Array.isArray(v):t==='s'?typeof v==='string':t==='n'?(typeof v==='number'&&isFinite(v)):t==='b'?typeof v==='boolean':false;
 const cfgMescla=(o,local)=>{
@@ -80,7 +80,7 @@ if(CFG.pinh)delete CFG.pin;
 if(CFG.seededPr!=='v3'){if(CFG.precos&&!/MARCADOR-TABELA-V3/.test(CFG.precos)&&!/^EXEMPLOS:/.test(CFG.precos))CFG.precosAntigos=CFG.precos;CFG.precos=PRECOS;CFG.seededPr='v3';CFG.t=Date.now();saveCfg()}
 /* Outra aba salvou: puxa a configuração e as chaves de lá, para esta aba não gravar por cima com dados velhos (e apagar a chave). */
 addEventListener('storage',e=>{try{
-  if(e.key==='cfg2'&&e.newValue){const ks=IA_CHAVES.map(s=>CFG[s].key);cfgMescla(JSON.parse(e.newValue),true);IA_CHAVES.forEach((s,i)=>{CFG[s]={...IA0(s),...CFG[s],key:ks[i]}})}
+  if(e.key==='cfg2'&&e.newValue){const ks=IA_CHAVES.map(s=>CFG[s].key);cfgMescla(JSON.parse(e.newValue),true);IA_CHAVES.forEach((s,i)=>{CFG[s]={...IA0(s),...CFG[s],key:ks[i]}});if(typeof pmAplicaModo==='function')pmAplicaModo()}
   if(e.key==='ikeys2')keysLoad(true);
 }catch(x){}});
 /* Por ora as três IAs rodam no Gemini: configurações antigas (OpenAI, Groq ou a IA reserva) migram uma vez. A chave do Google é a única que continua valendo; as outras saem. */

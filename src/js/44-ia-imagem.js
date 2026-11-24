@@ -38,6 +38,7 @@ function iaPolErro(status){
   return 'O Pollinations não criou a imagem (erro '+status+').';
 }
 async function iaImagem(prompt,formato){
+  if(typeof pmTrava==='function')pmTrava();
   const proporcao=IA_IMG_PROPORCAO[formato]||'4:5',pk=keyDe(CFG.pol),gk=iaImgChave(),pedidos=[];
   if(pk)IA_POL_MODELOS.forEach(model=>pedidos.push({tipo:'pol',model,pede:()=>fetch(iaPolUrl(prompt,formato,model),{headers:{Authorization:'Bearer '+pk},signal:AbortSignal.timeout(120000)})}));
   if(gk)IA_IMG_MODELOS.forEach(model=>pedidos.push({tipo:'gem',model,pede:()=>fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':gk},body:JSON.stringify(iaImgCorpo(prompt,proporcao)),signal:AbortSignal.timeout(120000)})}));

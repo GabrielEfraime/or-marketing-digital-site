@@ -1,0 +1,13 @@
+/* Modo prompt (padrão): o site não gera nada com IA. Esconde os botões que chamam a IA; a trava em ask() e iaImagem() (JS) segura qualquer um que escape. */
+html.sem-ia :is(
+  #exall,[data-x],[data-sa="ia"],
+  [data-act="kit"],[data-act^="kit:"],[data-act="sitegen"],[data-act^="sitegen:"],
+  [data-act="rel"],[data-act^="rel:"],
+  [data-act="gerartudo"],[data-act^="gerartudo:"],[data-act="frgen"],[data-act^="frgen:"],
+  [data-act="pcgen"],[data-act^="pcgen:"],[data-act="escgen"],[data-act^="escgen:"],
+  [data-act="ia"],[data-act^="ia:"],[data-act="iafix"],[data-act^="iafix:"],[data-act="iapeca"],[data-act^="iapeca:"],
+  [data-act="pcbrief"],[data-act^="pcbrief:"],[data-act="perfilia"],[data-act^="perfilia:"],
+  [data-rea-post-plan],[data-rea-post-caption],[data-rea-post-generate],[data-rea-art-action="sugerir"],[data-rea-art-action="imagem"],
+  [data-ss="gerar"],[data-ss="revisar"],[data-cap="msg"],[data-cap="site"],[data-cap="filasite"],
+  #or-q-planejar,#or-q-ia
+){display:none!important}
