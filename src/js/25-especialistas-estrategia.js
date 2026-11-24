@@ -168,9 +168,7 @@ const PM_MOD={
 const PM_CURTO='Princípios: use só o que o cliente informou, não invente nem prometa resultado, proteja dados pessoais e nunca peça senha.';
 const protocolo=mods=>PM_CORE+'\n\n'+(mods||[]).map(k=>PM_MOD[k]).filter(Boolean).join('\n');
 // Pedido da IA para a Estratégia; o prompt-mestre (48-prompt-mestre.js) usa este mesmo texto.
-const genMsgs=l=>[{role:'system',content:svcs(l).map(k=>MODS[k].sys).join(' ')+' Use SOMENTE informações do briefing; nunca troque o assunto nem o negócio do cliente; se faltar algo, escreva "a confirmar". '+' '+escopoTxt(svcs(l))+'\n\n'+PM_CORE+'\n\n'+especialista(svcs(l))+(fwBloco(svcs(l),'plano')?'
-
-'+fwBloco(svcs(l),'plano'):'')+(kb('plano',l)?'\n\n'+kb('plano',l):'')},{role:'user',content:brief(l)+(isSite(l)?lpBloco(l)+saBloco(l):'')+'\n\nIMPORTANTE: o trabalho é para o negócio e o objetivo descritos acima. Use só informações do briefing e não mude de assunto.'}];
+const genMsgs=l=>[{role:'system',content:svcs(l).map(k=>MODS[k].sys).join(' ')+' Use SOMENTE informações do briefing; nunca troque o assunto nem o negócio do cliente; se faltar algo, escreva "a confirmar". '+' '+escopoTxt(svcs(l))+'\n\n'+PM_CORE+'\n\n'+especialista(svcs(l))+(fwBloco(svcs(l),'plano')?'\n\n'+fwBloco(svcs(l),'plano'):'')+(kb('plano',l)?'\n\n'+kb('plano',l):'')},{role:'user',content:brief(l)+(isSite(l)?lpBloco(l)+saBloco(l):'')+'\n\nIMPORTANTE: o trabalho é para o negócio e o objetivo descritos acima. Use só informações do briefing e não mude de assunto.'}];
 async function gen(id,extra){
   const l=getL().find(x=>x.id===id);if(!l)return;
   const msgs=genMsgs(l);
